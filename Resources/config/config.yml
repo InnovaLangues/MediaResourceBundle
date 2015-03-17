@@ -7,3 +7,5 @@ plugin:
           name: innova_media_resource
           is_exportable: false
           icon: res_file.png
+              - name: administrate
+                menu_name: administrate
