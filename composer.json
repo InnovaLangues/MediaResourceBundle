@@ -30,7 +30,7 @@
         "claroline/core-bundle": "~4.1"
     },
     "autoload": {
-        "psr-0": { "Innova\\MediaResource": "" }
+        "psr-0": { "Innova\\MediaResourceBundle": "" }
     },
-    "target-dir": "Innova/MediaResource"
+    "target-dir": "Innova/MediaResourceBundle"
 }
