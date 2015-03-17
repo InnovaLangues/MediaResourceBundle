@@ -1,0 +1,5 @@
+innova_media_resource:
+    resource: "@InnovaMediaResourceBundle/Controller/"
+    prefix:   /
+    type: annotation
+    

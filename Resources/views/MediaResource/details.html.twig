@@ -1,0 +1,142 @@
+{% extends  "InnovaMediaResourceBundle::layout.html.twig" %}
+
+{% block media_resource_content %}  
+
+    <form role="form" enctype="multipart/form-data" id="media_resource_form"  method="post" {% if edit %} action="{{path('media_resource_save', {'id':resource.id})}}"  {% endif %} name="edit">
+
+        <!-- toolbar : save exercise - show / hide text - show / hide media(s) - switch media display waveform - video -->
+        <div class="row">
+            <div class="col-md-6">
+                {% if edit %}
+                    <div contenteditable="true" class="exercise-title">{{resource.name}}</div>
+                    <input type="hidden" name="title" value="{{resource.name}}" />
+                {% else %}
+                    <div class="exercise-title">{{resource.name}}</div>
+                {% endif %} 
+            </div>
+            <div class="col-md-6 text-right">
+                <div class="btn-group">
+                    {% if edit %}
+                        <button type="submit" class="btn btn-default fa fa-floppy-o" title="Save"></button>  
+                    {% endif %}                    
+                </div>
+            </div>
+        </div>
+        <!-- waveform -->
+        <hr/>
+        <div class="row media-container">
+            <div class="col-md-12">
+                <div id="audio-player">
+                    <div id="wave-timeline"></div>
+                    <div id="waveform">
+                        <div class="progress progress-striped active" id="progress-bar">
+                            <div class="progress-bar progress-bar-info"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr/>
+        <!-- media controls -->
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <button type="button" role="button" class="btn btn-default fa fa-step-backward" data-action="backward" title="Move backward">
+                </button>
+                <button type="button" class="btn btn-default" data-action="play" title="Play / Pause">
+                    <i class="fa fa-play"></i>
+                    /
+                    <i class="fa fa-pause"></i>
+                </button>
+                <button type="button" class="btn btn-default fa fa-step-forward" data-action="forward" title="Move forward">
+                </button>
+               
+                {% if edit %}
+                    <button type="button" class="btn btn-danger fa fa-flag" data-action="mark">
+                    </button> 
+                {% endif %}
+                 <button type="button" class="btn btn-default fa fa-question" data-action="help" title="Aide">
+                </button>
+            </div>
+        </div>
+        <hr/>
+        <!-- segments -->
+        <div class="row">
+            <div class="col-md-12 text-center regions-container">               
+                {% if regions | length > 0 %}
+                    {% for region in regions %}
+                        <div class="row form-row region">
+                            <div class="col-xs-1">                                    
+                                <div class="time-text start">{{ region.start | hmsTime }}</div>
+                            </div>
+                            <div class="col-xs-1">
+                                <div class="time-text end">{{ region.end | hmsTime }}</div>
+                            </div>
+                            {% if edit %}
+                                <div class="col-xs-8">
+                                    <div onclick="goTo( {{ region.start}} );" contenteditable="true" class="text-left note">{{ region.note | raw }}</div>
+                                </div>
+                            {% else %}
+                                <div class="col-xs-10">
+                                    <div onclick="goTo( {{ region.start}} );" class="text-left note">{{ region.note | raw }}</div>
+                                </div>
+                            {% endif %}
+                            {% if edit %}
+                                <div class="col-xs-2">
+                                    <div class="btn-group" role="group">
+                                        <button role="button" type="button" class="btn btn-default fa fa-cog" title="configurer la region." onclick="configRegion(this);"> </button>
+                                        <button role="button" type="button" class="btn btn-danger fa fa-trash-o" title="supprimer la region." onclick="deleteRegion(this);"></button>
+                                    </div>
+                                </div>
+                            {% endif %}                            
+                            <input type="hidden" class="hidden-start" name="start[]" value="{{ region.start }}" required="required">
+                            <input type="hidden" class="hidden-end" name="end[]" value="{{ region.end }}" required="required">
+                            <input type="hidden" class="hidden-note" name="note[]" value="{{ region.note }}">
+                            <input type="hidden" class="hidden-region-id" name="region-id[]" value="{{ region.id }}">
+                            <!-- Region config  -->
+                            <input type="hidden" class="hidden-config-help-region-id" name="help-region-id[]" value="">
+                            <input type="hidden" class="hidden-config-loop" name="loop[]" value="{{ region.regionConfig.hasLoop ? '1' : '0' }}">
+                            <input type="hidden" class="hidden-config-backward" name="backward[]" value="{{ region.regionConfig.hasBackward ? '1' : '0' }}">
+                            <input type="hidden" class="hidden-config-rate" name="rate[]" value="{{ region.regionConfig.hasRate ? '1' : '0' }}">
+                            <input type="hidden" class="hidden-config-text" name="text[]" value="{{ region.regionConfig.helpText ? region.regionConfig.helpText : '' }}">
+                        </div>
+                    {% endfor %}                
+                {% endif %}
+            </div>
+        </div>
+    </form>
+
+   
+
+    <!-- hidden fields -->
+    <input type="hidden" name="editing" value="{{edit ? 1:0}}">
+    <input type="hidden" name="type" value="audio">
+    <input type="hidden" name="audio-url" value="{{asset('bundles/innovamediaresource/uploads/')}}{{resource.medias[0].url}}">
+    {% if edit %}
+        <input type="hidden" name="update_url" value="{{path('media_resource_save', {'id':resource.id})}}" />
+        
+        <input type="hidden" name="region_add" value="{{path('region_add')}}" />
+        <input type="hidden" name="region_delete" value="{{path('region_delete')}}" />
+        <input type="hidden" name="region_config" value="{{path('region_config')}}" />
+        
+    {% endif %}
+   
+
+{% endblock %}
+
+{% block javascripts  %}
+    {{parent()}}
+    {% javascripts         
+        '@InnovaMediaResourceBundle/Resources/public/js/wavesurfer/wavesurfer.js' 
+        '@InnovaMediaResourceBundle/Resources/public/js/wavesurfer/webaudio.js' 
+        '@InnovaMediaResourceBundle/Resources/public/js/wavesurfer/drawer.js' 
+        '@InnovaMediaResourceBundle/Resources/public/js/wavesurfer/drawer.canvas.js'
+        '@InnovaMediaResourceBundle/Resources/public/js/wavesurfer/plugins/wavesurfer.timeline.js'
+        '@InnovaMediaResourceBundle/Resources/public/js/wavesurfer/plugins/wavesurfer.regions.js'
+        '@InnovaMediaResourceBundle/Resources/public/js/wavesurfer/plugins/wavesurfer.minimap.js'
+        '@InnovaMediaResourceBundle/Resources/public/js/play.js'
+        '@InnovaMediaResourceBundle/Resources/public/js/DomUtils.js'
+        
+    %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %} 

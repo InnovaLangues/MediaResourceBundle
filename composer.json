@@ -1,0 +1,36 @@
+{
+    "name": "innova/media-resource-bundle",
+    "description" : "Claroline Media resource Bundle",
+    "type" : "claroline-plugin",
+    "authors" : [{
+			"name" : "Arnaud Bey",
+			"email" : "arnaud.bey@u-grenoble3.fr"
+		}, {
+			"name" : "Axel Penin",
+			"email" : "axel.penin@u-grenoble3.fr"
+		}, {
+			"name" : "Eric Vincent",
+			"email" : "eric.vincent@u-grenoble3.fr"
+		}, {
+			"name" : "Donovan Tengblad",
+			"email" : "donovan.tengblad@u-grenoble3.fr"
+		}, {
+			"name" : "Patrick Guillou",
+			"email" : "patrick.guillou@u-grenoble3.fr"
+		}, {
+			"name" : "Nicolas Dufour",
+			"email" : "nicolas.dufour@u-grenoble3.fr"
+		}
+	],
+    "keywords": ["Claroline", "MediaResource"],
+    "homepage": "http://github.com/InnovaLangues/MediaResourceBundle",
+    "license": "MIT",
+    "require": {
+        "php": ">=5.4.1",
+        "claroline/core-bundle": "~4.1"
+    },
+    "autoload": {
+        "psr-0": { "Innova\\MediaResource": "" }
+    },
+    "target-dir": "Innova/MediaResource"
+}

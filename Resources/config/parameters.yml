@@ -1,0 +1,10 @@
+parameters:
+    # Controllers
+    innova_media_resource.controller.media_resource.class:  Innova\MediaResourceBundle\Controller\MediaResourceController
+    
+    # Managers
+    innova_media_resource.manager.media_resource.class:     Innova\MediaResourceBundle\Manager\MediaResourceManager
+    
+    # Listeners
+    innova_media_resource.listener.media_resource.class:    Innova\MediaResourceBundle\Listener\Resource\MediaResourceListener
+    

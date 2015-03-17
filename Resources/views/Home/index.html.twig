@@ -1,0 +1,35 @@
+{% set layout = "ClarolineCoreBundle:Workspace:layout.html.twig" %}
+
+{% if isDesktop() %}
+    {% set layout = "ClarolineCoreBundle:Desktop:layout.html.twig" %}
+{% endif %}
+
+{% extends layout %}
+
+{% block section_content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Choisissez ce que vous voulez faire :</h3>
+        </div>
+    </div>
+    <hr/>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="list-group">
+                <a href="#" class="list-group-item">
+                    <h4 class="list-group-item-heading"><i class="fa fa-ellipsis-v"></i> Segmenter un média <i class="fa fa-ellipsis-v"></i> </h4>
+                    <p class="list-group-item-text">Segmenter un média...</p>
+                </a>
+                <a href="#" class="list-group-item">
+                    <h4 class="list-group-item-heading"><i class="fa fa-ellipsis-v"></i> Associer un média à une activité <i class="fa fa-ellipsis-v"></i></h4>
+                    <p class="list-group-item-text">permet d'associer et de paramétrer un média segmenté pour créer une activité.</p>
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{parent()}}
+    
+{% endblock %}

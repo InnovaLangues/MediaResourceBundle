@@ -1,0 +1,15 @@
+#services:
+#    innova.listener.media_resource_listener:
+#        class: Innova\MediaResourceBundle\Listener\Resource\MediaResourceListener
+#        calls:
+#            - [setContainer, ["@service_container"]]
+#        tags:
+#            - { name: kernel.event_listener, event: open_media_resource, method: onMediaResourceOpen }
+            
+services:
+    innova.listener.media_resource:
+        class: %innova_media_resource.listener.media_resource.class%
+        calls:
+            - [setContainer, ["@service_container"]]
+        tags:
+            - { name: kernel.event_listener, event: open_media_resource, method: onMediaResourceOpen }

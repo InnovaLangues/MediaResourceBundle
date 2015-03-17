@@ -1,0 +1,41 @@
+{% set layout = "ClarolineCoreBundle:Workspace:layout.html.twig" %}
+
+{% if isDesktop() %}
+    {% set layout = "ClarolineCoreBundle:Desktop:layout.html.twig" %}
+{% endif %}
+
+{% extends layout %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    {% stylesheets debug=false filter='cssmin'  output='bundles/innovamediaresource/css/innova_media_resource.css'
+        '@InnovaMediaResourceBundle/Resources/public/css/innova_media_resource.css'
+    %}
+    <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}
+
+{% block content %}
+    <div class="media-resource-content-container">
+        {% block media_resource_content %}
+        {% endblock %}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{parent()}}
+
+    {% javascripts
+      
+        '@InnovaMediaResourceBundle/Resources/public/js/jquery.restfulizer.js'
+        '@InnovaMediaResourceBundle/Resources/public/js/bootbox.js'
+        '@InnovaMediaResourceBundle/Resources/public/js/JavascriptUtils.js'
+        '@InnovaMediaResourceBundle/Resources/public/js/StringUtils.js'
+        '@InnovaMediaResourceBundle/Resources/public/js/WavesurferUtils.js'
+        '@InnovaMediaResourceBundle/Resources/public/js/innova_media_resource.js'
+    %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}
