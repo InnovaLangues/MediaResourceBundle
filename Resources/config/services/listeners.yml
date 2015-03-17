@@ -12,4 +12,5 @@ services:
         calls:
             - [setContainer, ["@service_container"]]
         tags:
-            - { name: kernel.event_listener, event: open_media_resource, method: onMediaResourceOpen }
+            - { name: kernel.event_listener, event: administrate_media_resource, method: onAdministrate }
+            - { name: kernel.event_listener, event: open_media_resource, method: onOpen }

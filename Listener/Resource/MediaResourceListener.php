@@ -10,6 +10,8 @@ use Claroline\CoreBundle\Event\DeleteResourceEvent;
 use Claroline\CoreBundle\Event\CreateFormResourceEvent;
 use Claroline\CoreBundle\Event\CreateResourceEvent;
 use Claroline\CoreBundle\Event\CopyResourceEvent;
+use Claroline\CoreBundle\Event\CustomActionResourceEvent;
+
 
 
 use Innova\MediaResourceBundle\Entity\MediaResource;
@@ -26,37 +28,36 @@ class MediaResourceListener extends ContainerAware
      * @param  \Claroline\CoreBundle\Event\OpenResourceEvent $event
      * @throws \Exception
      */
-    public function onMediaResourceOpen(OpenResourceEvent $event)
+    public function onAdministrate(CustomActionResourceEvent $event)
     {
-        /*$path = $event->getResource();
-        if ($path->isPublished()) {
-            $route = $this->container->get('router')->generate(
-                'innova_path_player_index',
-                array (
-                    'workspaceId' => $path->getWorkspace()->getId(),
-                    'pathId' => $path->getId(),
-                    'stepId' => $path->getRootStep()->getId()
-                )
-            );
-        }
-        else {
-            $route = $this->container->get('router')->generate(
-                'claro_workspace_open_tool',
-                array(
-                    'workspaceId' => $path->getWorkspace()->getId(),
-                    'toolName' => 'innova_path'
-                )
-            );
-
-            $this->container->get('session')->getFlashBag()->add(
-                'warning',
-                $this->container->get('translator')->trans("path_open_not_published_error", array(), "innova_tools")
-            );
-        }*/
-        die('MediaResourceListener');
-        $event->setResponse(new RedirectResponse($route));
-        $event->stopPropagation();
+        
+		$mediaResource = $event->getResource();
+		$route = $this->container
+		->get('router')
+		->generate(
+			'innova_media_resource_administrate',
+				array (
+				'mediaResourceId' => $mediaResource->getId(),
+				)
+		);
+		$event->setResponse(new RedirectResponse($route));
+		$event->stopPropagation();
     }
+    
+    public function onOpen(OpenResourceEvent $event)
+	{
+		$mediaResource = $event->getResource();
+		$route = $this->container
+		->get('router')
+		->generate(
+			'innova_media_resource_open',
+				array (
+				'mediaResourceId' => $mediaResource->getId(),
+				)
+		);
+		$event->setResponse(new RedirectResponse($route));
+		$event->stopPropagation();
+	}
 
    
 }

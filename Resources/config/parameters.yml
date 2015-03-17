@@ -7,4 +7,3 @@ parameters:
     
     # Listeners
     innova_media_resource.listener.media_resource.class:    Innova\MediaResourceBundle\Listener\Resource\MediaResourceListener
-    

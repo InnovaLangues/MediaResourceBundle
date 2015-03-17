@@ -21,18 +21,36 @@ class MediaResourceController extends Controller {
      */
     protected $mediaResourceManager;
 
+   
+    
+     /**
+	* Display a media resource
+	*
+	* 
+	* @Route(
+	* "/{mediaResourceId}",
+	* name="innova_media_resource_open",
+	* )
+	* @Method("GET")
+	*/
+     public function openAction() {
+       
+    }
+    
     /**
-     * Class constructor
-     *
-     * @param \Innova\MediaResourceBundle\Manager\MediaResourceManager $mediaResourceManager
-     *
-     */
-    /* public function __construct(MediaResourceManager $mediaResourceManager)
-      {
-      $this->mediaResourceManager = $mediaResourceManager;
-      } */
-
-    //public function __construct() {}
+	* Administrate a media resource
+	*
+	* 
+	* @Route(
+	* "/{mediaResourceId}",
+	* name="innova_media_resource_administrate",
+	* )
+	* @Method("GET")
+	*/
+     public function openAction() {
+       
+    }
+    
 
     /**
      * http://localhost/patrick/ENPA/web/app_dev.php/innova_media_resource/
