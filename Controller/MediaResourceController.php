@@ -47,7 +47,7 @@ class MediaResourceController extends Controller {
 	* )
 	* @Method("GET")
 	*/
-     public function openAction() {
+     public function administrateAction() {
        
     }
     
