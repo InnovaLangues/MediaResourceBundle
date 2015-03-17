@@ -8,5 +8,5 @@ plugin:
           is_exportable: false
           icon: res_file.png
           actions:
-              - name: mediaresource
+              - name: media_resource
               - menu_name: test_menu
