@@ -38,9 +38,9 @@ class MediaResourceHandler
 
     /**
      * Class constructor
-     * @param \Innova\MediaResourceBundle\Manager\MediaResourceManager $activityManager
+     * @param \Innova\MediaResourceBundle\Manager\MediaResourceManager $mediaResourceManager
      */
-    public function __construct(ActivityManager $mediaResourceManager)
+    public function __construct(MediaResourceManager $mediaResourceManager)
     {
         $this->mediaResourceManager = $mediaResourceManager;
     }
@@ -69,7 +69,7 @@ class MediaResourceHandler
     /**
      * Set current form
      * @param  \Symfony\Component\Form\FormInterface               $form
-     * @return\Innova\MediaResourceBundle\Form\Handler\MediaResourceHandler
+     * @return \Innova\MediaResourceBundle\Form\Handler\MediaResourceHandler
      */
     public function setForm(FormInterface $form)
     {

@@ -140,7 +140,7 @@ var actions = {
 $(document).ready(function () {
     // get some hidden inputs usefull values
     currentExerciseType = 'audio';
-    audioUrl = $('input[name="audio-url"]').val();
+    audioUrl = $('input[name="audio-url"]').val();   
     isEditing = parseInt($('input[name="editing"]').val()) === 1 ? true : false;
 
     // bind data-action events
@@ -201,8 +201,6 @@ $(document).ready(function () {
         wavesurfer.on('error', hideProgress);
     }());
 
-
-
     wavesurfer.init(wavesurferOptions);
 
     /* Minimap plugin */
@@ -242,6 +240,7 @@ $(document).ready(function () {
         }
     });
 
+    
     wavesurfer.on('seek', function () {
         /* if ('video' === currentExerciseType) {
          var currentTime = wavesurfer.getCurrentTime();
@@ -337,9 +336,25 @@ $(document).ready(function () {
             }
         });
     });
-
+    
+    $('#media_resource_form').on('submit', function (e) {
+        e.preventDefault();
+        var url = $(this).attr('action');
+        var type = $(this).attr('method');
+        var data = $(this).serialize();
+        $.ajax({
+            url: url,
+            type: type,
+            data: data,
+            success: function (response) {
+                bootbox.alert(response);
+            }
+        });
+    });
 
 });
+
+
 
 // help modal function
 
@@ -462,72 +477,6 @@ function goTo(time) {
     }
 }
 
-// keyboard evnet media shortcuts
-/*document.addEventListener("keydown", function (e) {
- if (!isInRegionNoteRow) {
- // Enter key pressed
- if (isEditing && e.keyCode === 13) {
- actions['mark']();
- }
- // spacebar
- else if (e.keyCode === 32) {
- // don't play if we are editing text
- actions['play']();
- }
- // left arrow
- else if (e.keyCode === 37) {
- actions['backward']();
- }
- // right arrow
- else if (e.keyCode === 39) {
- actions['forward']();
- }
- }
- 
- }, false);*/
-
-/**
- * Highlight a row 
- * @param region wavesurfer.region 
- */
-/*
- function highlightRegionRow(region) {
- var row = getRegionRow(region.start + 0.1, region.end - 0.1);
- if (row) {
- $('.active-row').each(function () {
- $(this).removeClass('active-row');
- });
- $(row).find('div.text-left.note').addClass('active-row');
- }
- }*/
-
-/**
- * Get the wavesurfer region associatied row (ie DOM object)
- * @param start
- * @param end
- * @returns the row
- */
-/*
- function getRegionRow(start, end) {
- var row;
- $('.row.form-row.region').each(function () {
- var temp = $(this);
- var sinput = $(this).find("input.hidden-start");
- var einput = $(this).find("input.hidden-end");
- if (start && end && parseFloat(sinput.val()) <= parseFloat(start) && parseFloat(einput.val()) >= parseFloat(end)) {
- row = temp;
- }
- else if (!end && start && parseFloat(sinput.val()) === parseFloat(start)) {
- row = temp;
- }
- else if (!start && end && parseFloat(einput.val()) === parseFloat(end)) {
- row = temp;
- }
- });
- return row;
- }
- */
-
 /**
  * Crate and add a wavesurfer region
  * dataset is true only when we are creating a wavesurfer region from existing DOM rows
@@ -637,152 +586,4 @@ function deleteRegion(elem) {
 function configRegion(elem) {
 
     domUtils.openConfigRegionModal(elem);
-    /*
-     // find region config hidden inputs
-     //help-region-id -> problem is that the id might not exist (for newly created regions)
-     var helpRegionId = $(elem).closest('div.region').find('.hidden-config-help-region-id');
-     //loop elem
-     var loop = $(elem).closest('div.region').find('.hidden-config-loop');
-     //backward
-     var backward = $(elem).closest('div.region').find('.hidden-config-backward'); //$('input[name=backward]').is(':checked');
-     //rate
-     var rate = $(elem).closest('div.region').find('.hidden-config-rate');
-     //text
-     var text = $(elem).closest('div.region').find('.hidden-config-text');
-     
-     var html = '<div class="row">';
-     html += '<div class="col-md-12">';
-     html += '<div class="form-horizontal">';
-     html += '<div class="form-group">';
-     html += '<label class="col-md-4 control-label" for="has-loop">Autoriser la lecture en boucle</label>';
-     if (loop.val() === '1')
-     html += '<input type="checkbox" name="loop" class="checkbox" value="loop" checked>';
-     else
-     html += '<input type="checkbox" name="loop" class="checkbox" value="loop">';
-     html += '</div>';
-     html += '<div class="form-group">';
-     html += '<label class="col-md-4 control-label" for="has-backward">Autoriser la lecture en backward building</label>';
-     if (backward.val() === '1')
-     html += '<input type="checkbox" name="backward" class="checkbox" value="backward" checked>';
-     else
-     html += '<input type="checkbox" name="backward" class="checkbox" value="backward">';
-     html += '</div>';
-     html += '<div class="form-group">';
-     html += '<label class="col-md-4 control-label" for="has-rate">Autoriser le changement de la vitesse de lecture</label>';
-     if (rate.val() === '1')
-     html += '<input type="checkbox" name="rate" class="checkbox" value="rate" checked>';
-     else
-     html += '<input type="checkbox" name="rate" class="checkbox" value="rate">';
-     html += '</div>';
-     html += '<div class="form-group">';
-     html += '<label class="col-md-4 control-label" for="has-rate">Texte d\'aide:</label>';
-     html += '<input type="text" name="help-text" class="" value="' + text.val() + '">';
-     html += '</div>';
-     html += '</div>';
-     html += '</div>';
-     html += '</div>';
-     
-     bootbox.dialog({
-     title: "Configurer la région:",
-     message: html,
-     buttons: {
-     success: {
-     label: "Sauvegarder",
-     className: "btn-success",
-     callback: function () {
-     // get form values
-     var helpText = $('input[name=help-text]').val();
-     var hasLoop = $('input[name=loop]').is(':checked');
-     var hasBackward = $('input[name=backward]').is(':checked');
-     var hasRate = $('input[name=rate]').is(':checked');
-     // set proper hidden inputs values
-     text.val(helpText);
-     rate.val(hasRate ? '1' : '0');
-     backward.val(hasBackward ? '1' : '0');
-     loop.val(hasLoop ? '1' : '0');
-     }
-     }
-     }
-     });
-     */
 }
-
-/**
- * Add the region to the DOM at the right place
- * @param region wavesurfer.region 
- */
-/*
- function addRegionToDom(region) {
- var container = $('.regions-container');
- // HTML to append
- var html = '<div class="row form-row region">';
- // start input
- html += '<div class="col-xs-1">';
- html += '<div class="time-text start">' + wavesurferUtils.secondsToHms(region.start) + '</div>';
- html += '</div>';
- // end input
- html += '<div class="col-xs-1">';
- html += '<div class="time-text end">' + wavesurferUtils.secondsToHms(region.end) + '</div>';
- html += '</div>';
- // text input
- if (isEditing) {
- html += '<div class="col-xs-8">';
- html += '<div onclick="goTo(' + region.start + ');" contenteditable="true" class="text-left note">' + region.data.note + '</div>';
- }
- else {
- html += '<div class="col-xs-10">';
- html += '<div onclick="goTo(' + region.start + ');"  class="text-left note">' + region.data.note + '</div>';
- }
- //html += '<input type="text" name="note" class="form-control" value="' + region.data.note + '">';
- html += '</div>';
- if (isEditing) {
- // delete button
- html += '<div class="col-xs-2">';
- html += '<div class="btn-group" role="group">';
- html += '<button role="button" type="button" class="btn btn-default fa fa-cog" title="configurer la region." onclick="configRegion(this);"> </button>';
- html += '<button type="button" name="del-region-btn" class="btn btn-danger fa fa-trash-o ' + region.id + '" data-id="' + region.id + '" title="supprimer la region." onclick="deleteRegion(this)"></button>';
- html += '</div>';
- html += '</div>';
- html += '<input type="hidden" class="hidden-start" name="start[]" value="' + region.start + '" required="required">';
- html += '<input type="hidden" class="hidden-end" name="end[]" value="' + region.end + '" required="required">';
- html += '<input type="hidden" class="hidden-note" name="note[]" value="' + region.data.note + '">';
- html += '<input type="hidden" class="hidden-region-id" name="region-id[]" value="" >';
- 
- html += '<input type="hidden" class="hidden-config-help-region-id" name="help-region-id[]" value="" >';
- html += '<input type="hidden" class="hidden-config-loop" name="loop[]" value="0" >';
- html += '<input type="hidden" class="hidden-config-backward" name="backward[]" value="0" >';
- html += '<input type="hidden" class="hidden-config-rate" name="rate[]" value="0" >';
- html += '<input type="hidden" class="hidden-config-text" name="text[]" value="" >';
- //html += '</div>';
- }
- // find the previous row in order to happend the new one in the good place
- if (Object.keys(wavesurfer.regions.list).length > 1) {
- var previous = findPreviousRegionRow(region.start);
- if (previous) {
- $(html).insertAfter(previous);
- }
- else {
- console.log('previous not found');
- }
- }
- else {
- console.log('insert at end');
- $(container).append(html);
- }
- }
- */
-/**
- * Find the row after which we have to insert the new one
- * @param start 
- * @returns DOM Object the row
- */
-/*
- function findPreviousRegionRow(start) {
- var elem = null;
- $('.region').each(function () {
- if (parseFloat($(this).find('input.hidden-end').val()) === parseFloat(start)) {
- elem = $(this);
- }
- });
- return elem ? elem[0] : null;
- }*/

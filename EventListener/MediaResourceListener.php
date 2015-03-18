@@ -1,6 +1,6 @@
 <?php
 
-namespace Innova\MediaResourceBundle\Listener;
+namespace Innova\MediaResourceBundle\EventListener;
 
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\HttpKernelInterface;

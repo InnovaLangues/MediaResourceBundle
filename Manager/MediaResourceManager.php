@@ -90,17 +90,20 @@ class MediaResourceManager {
                 $audioMedia->setMediaResource($mr);
                 // TODO if needed delete original file
                 // $removed = $this->removeUpload($name);
+                
+                
             } else {
                 $removed = $this->removeUpload($name);
                 $message = $this->translator->trans("error_while_encoding", array(), "media_resource");
                 throw new \Exception($message);
             }
-
             $this->em->flush();
         } else {
             $message = $this->translator->trans("error_while_uploading", array(), "media_resource");
             throw new \Exception($message);
         }
+        
+        return $mr;
     }
 
     /**

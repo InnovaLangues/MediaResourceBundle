@@ -7,132 +7,86 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Innova\MediaResourceBundle\Entity\MediaResource;
-use Innova\MediaResourceBundle\Form\Type\MediaResourceType;
+use Claroline\CoreBundle\Entity\Workspace\Workspace;
 
 /**
  * Class MediaResourceController
+ * 
+ * @Route("workspaces/{workspaceId}")
+ * @ParamConverter("workspace", class="ClarolineCoreBundle:Workspace\Workspace", options={"mapping": {"workspaceId": "id"}})
  * 
  */
 class MediaResourceController extends Controller {
 
     /**
-     * Media resource Manager
-     * @var \Innova\MediaResourceBundle\Manager\MediaResourceManager
+     * display a media resource 
+     * @Route("/details/{id}", requirements={"id" = "\d+"}, name="innova_media_resource_open")
+     * @Method("GET")
+     * @ParamConverter("MediaResource", class="InnovaMediaResourceBundle:MediaResource")
      */
-    protected $mediaResourceManager;
+    public function openAction(Workspace $workspace, MediaResource $mr) {
 
-   
-    
-     /**
-	* Display a media resource
-	*
-	* 
-	* @Route(
-	* "/{mediaResourceId}",
-	* name="innova_media_resource_open",
-	* )
-	* @Method("GET")
-	*/
-     public function openAction() {
-       
+        // use of specific method to order regions correctly
+        $regions = $this->get('innova_media_resource.manager.media_resource_region')->findByAndOrder($mr);
+        if ($mr->getId()) {
+            return $this->render('InnovaMediaResourceBundle:MediaResource:details.html.twig', array('resource' => $mr, 'edit' => false, 'regions' => $regions, 'workspace' => $workspace));
+        } 
+        else{
+            $this->get('session')->getFlashBag()->set('error', "Aucun exercice trouvé.");
+            // TODO redirect to claro resource manager
+        }
     }
-    
-    /**
-	* Administrate a media resource
-	*
-	* 
-	* @Route(
-	* "/{mediaResourceId}",
-	* name="innova_media_resource_administrate",
-	* )
-	* @Method("GET")
-	*/
-     public function administrateAction() {
-       
-    }
-    
 
     /**
-     * http://localhost/patrick/ENPA/web/app_dev.php/innova_media_resource/
-     * @Route("/", name="media_resource_list")
+     * display a media resource as admin
+     * @Route("/details/{id}", requirements={"id" = "\d+"}, name="innova_media_resource_administrate")
+     * @Method("GET")
+     * @ParamConverter("MediaResource", class="InnovaMediaResourceBundle:MediaResource")
+     */
+    public function administrateAction(MediaResource $mr) {
+        // use of specific method to order regions correctly
+        $regions = $this->get('innova_media_resource.manager.media_resource_region')->findByAndOrder($mr);
+        if ($mr->getId()) {
+            return $this->render('InnovaMediaResourceBundle:MediaResource:details.html.twig', array('resource' => $mr, 'edit' => true, 'regions' => $regions));
+        } else {
+            $this->get('session')->getFlashBag()->set('error', "Aucun media trouvé.");
+            // return $this->redirect($this->generateUrl('media_resource_list'));
+            // TODO redirect to claro resource manager
+        }
+    }
+
+    /**
+     * 
+     * @Route("/list", name="media_resource_list")
      */
     public function listAction() {
         $manager = $this->get('innova_media_resource.manager.media_resource');
         $mediaResources = $manager->getAll();
         return $this->render('InnovaMediaResourceBundle:MediaResource:list.html.twig', array('resources' => $mediaResources));
     }
+    
 
     /**
-     * @Route("/add", name="media_resource_add")
-     * @Method({"GET", "POST"})
-     */
-    public function addAction() {
-
-        $mr = new MediaResource();
-        $form = $this->createForm(new MediaResourceType(), $mr);
-        if ($this->getRequest()->isMethod('POST')) {
-            $form->handleRequest($this->getRequest());
-            if ($form->isValid()) {
-                // get the main file
-                $mainUploadedFile = $this->getRequest()->files->get('file');
-                $manager = $this->get('innova_media_resource.manager.media_resource');
-                try {
-                    // this method also persist and flush the exercise
-                    $manager->handleMediaResourceMedia($mainUploadedFile, $mr);
-                    // flashbag
-                    $this->get('session')->getFlashBag()->set('success', "La ressource média a bien été créée.");
-                } catch (Exception $e) {
-                    $this->get('session')->getFlashBag()->set('error', $e->getMessage());
-                }
-
-                return $this->redirect($this->generateUrl('media_resource_list'));
-            }
-        }
-        return $this->render('InnovaMediaResourceBundle:MediaResource:add.html.twig', array(
-                    'form' => $form->createView(),
-        ));
-    }
-
-    /**
-     * @Route("/details/{id}/{edit}", requirements={"id" = "\d+"}, defaults={"edit" = false}, name="media_resource_details")
-     * @ParamConverter("MediaResource", class="InnovaMediaResourceBundle:MediaResource")
-     */
-    public function detailsAction(MediaResource $mr) {
-
-        $request = $this->container->get('request');
-        $editParam = $request->get('edit');
-        $edit = !$editParam ? false : true;
-
-        // use of specific method to order regions correctly
-        $regions = $this->get('innova_media_resource.manager.media_resource_region')->findByAndOrder($mr);
-        if ($mr->getId()) {
-            return $this->render('InnovaMediaResourceBundle:MediaResource:details.html.twig', array('resource' => $mr, 'edit' => $edit, 'regions' => $regions));
-        } else {
-            $this->get('session')->getFlashBag()->set('error', "Aucun media trouvé.");
-            return $this->redirect($this->generateUrl('media_resource_list'));
-        }
-    }
-
-    /**
+     * AJAX
+     * save after editing (adding and/or configuring regions) a media resource
      * @Route("/save/{id}", requirements={"id" = "\d+"}, name="media_resource_save")
      * @ParamConverter("MediaResource", class="InnovaMediaResourceBundle:MediaResource")
      *  @Method({"POST"})
      */
     public function saveAction(MediaResource $mr) {
         if ($this->getRequest()->isMethod('POST')) {
-            $request = $this->container->get('request');            
-            $data = $request->request->all();            
-            if(count($data) > 0){
+            $request = $this->container->get('request');
+            $data = $request->request->all();
+            if (count($data) > 0) {
                 $title = $data['title'];
                 $mr->setName($title);
                 // $this->get('innova_media_resource.manager.media_resource')->updateMediaResourceName($mr, $title);
-                
+
                 $regionManager = $this->get('innova_media_resource.manager.media_resource_region');
                 $mr = $regionManager->handleMediaResourceRegions($mr, $data);
-                if($mr){
+                if ($mr) {
                     return new \Symfony\Component\HttpFoundation\Response('La ressource a bien été mise à jour.', 200);
-                }
-                else{
+                } else {
                     return new \Symfony\Component\HttpFoundation\Response('Une erreur s\'est produite lors de la mise à jour de la ressource.', 500);
                 }
             }
@@ -145,30 +99,6 @@ class MediaResourceController extends Controller {
      */
     public function deleteAction(MediaResource $mr) {
         die('delete');
-    }
-
-    /**
-     * AJAX
-     * @Route("/region/add", name="region_add")
-     */
-    public function addRegionAction() {
-
-        // must return a json object with region id
-    }
-
-    /**
-     * AJAX
-     * @Route("/region/add", name="region_delete")
-     */
-    public function deleteRegionAction() {
-        
-    }
-
-    /**
-     *  @Route("/region/config", name="region_config")
-     */
-    public function configRegionAction() {
-        
     }
 
 }

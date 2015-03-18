@@ -16,6 +16,26 @@
     {% endstylesheets %}
 {% endblock %}
 
+{% block breadcrumb %}
+    {{
+        macros.breadcrumbs([
+            {
+                'icon': 'fa fa-book',
+                'name': 'workspaces'|trans({}, 'platform'),
+                'href': path('claro_workspace_list')
+            },
+            {
+                'name': workspace.name ~ ' - ' ~ workspace.code,
+                'href': path('claro_workspace_open', {'workspaceId': workspace.id, 'toolName': 'home'})
+            },
+            {
+                'name': 'innova_media_resource'|trans({}, 'media_resource'),
+                'href': path('claro_workspace_open_tool', {workspaceId: workspace.id, toolName: 'innova_media_resource'})
+            }
+        ])
+    }}
+{% endblock %}
+
 {% block content %}
     <div class="media-resource-content-container">
         {% block media_resource_content %}

@@ -1,0 +1,6 @@
+services:    
+    # Media resource type
+    innova_media_resource.form.type.media_resource:
+        class:  %innova_media_resource.form.type.media_resource.class%
+        tags:
+          - { name: form.type, alias: media_resource }

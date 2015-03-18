@@ -12,5 +12,9 @@ services:
         calls:
             - [setContainer, ["@service_container"]]
         tags:
-            - { name: kernel.event_listener, event: administrate_media_resource, method: onAdministrate }
-            - { name: kernel.event_listener, event: open_media_resource, method: onOpen }
+            - { name: kernel.event_listener, event: administrate_innova_media_resource, method: onAdministrate }
+            - { name: kernel.event_listener, event: create_innova_media_resource, method: onCreate }
+            - { name: kernel.event_listener, event: create_form_innova_media_resource, method: onCreateForm }
+            - { name: kernel.event_listener, event: open_innova_media_resource, method: onOpen }
+            - { name: kernel.event_listener, event: delete_innova_media_resource, method: onDelete }
+            - { name: kernel.event_listener, event: copy_innova_media_resource, method: onCopy }

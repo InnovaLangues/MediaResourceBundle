@@ -1,0 +1,6 @@
+services: 
+    # Path handler
+    innova_path.form.handler.path:
+        class: %innova_media_resource.form.handler.media_resource.class%
+        arguments:
+            mediaResourceManager: @innova_media_resource.manager.media_resource

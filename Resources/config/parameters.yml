@@ -6,4 +6,11 @@ parameters:
     innova_media_resource.manager.media_resource.class:     Innova\MediaResourceBundle\Manager\MediaResourceManager
     
     # Listeners
-    innova_media_resource.listener.media_resource.class:    Innova\MediaResourceBundle\Listener\Resource\MediaResourceListener
+    innova_media_resource.listener.media_resource.class:    Innova\MediaResourceBundle\EventListener\Resource\MediaResourceListener
+    
+    # Form Types
+    innova_media_resource.form.type.media_resource.class:   Innova\MediaResourceBundle\Form\Type\MediaResourceType
+    
+    
+    # Form Handlers
+    innova_media_resource.form.handler.media_resource.class:   Innova\MediaResourceBundle\Handler\Type\MediaResourceHandler

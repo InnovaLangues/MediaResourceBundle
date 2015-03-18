@@ -1,7 +1,6 @@
 {% extends  "InnovaMediaResourceBundle::layout.html.twig" %}
 
-{% block media_resource_content %}  
-
+{% block media_resource_content %} 
     <form role="form" enctype="multipart/form-data" id="media_resource_form"  method="post" {% if edit %} action="{{path('media_resource_save', {'id':resource.id})}}"  {% endif %} name="edit">
 
         <!-- toolbar : save exercise - show / hide text - show / hide media(s) - switch media display waveform - video -->
@@ -49,19 +48,19 @@
                 </button>
                 <button type="button" class="btn btn-default fa fa-step-forward" data-action="forward" title="Move forward">
                 </button>
-               
+
                 {% if edit %}
                     <button type="button" class="btn btn-danger fa fa-flag" data-action="mark">
                     </button> 
                 {% endif %}
-                 <button type="button" class="btn btn-default fa fa-question" data-action="help" title="Aide">
+                <button type="button" class="btn btn-default fa fa-question" data-action="help" title="Aide">
                 </button>
             </div>
         </div>
         <hr/>
         <!-- segments -->
         <div class="row">
-            <div class="col-md-12 text-center regions-container">               
+            <div class="col-md-12 text-center regions-container" {% if edit == false %} style="display:none;" {% endif %}>               
                 {% if regions | length > 0 %}
                     {% for region in regions %}
                         <div class="row form-row region">
@@ -105,21 +104,15 @@
         </div>
     </form>
 
-   
-
     <!-- hidden fields -->
     <input type="hidden" name="editing" value="{{edit ? 1:0}}">
-    <input type="hidden" name="type" value="audio">
+    <input type="hidden" name="type" value="audio">   
     <input type="hidden" name="audio-url" value="{{asset('bundles/innovamediaresource/uploads/')}}{{resource.medias[0].url}}">
+
     {% if edit %}
         <input type="hidden" name="update_url" value="{{path('media_resource_save', {'id':resource.id})}}" />
-        
-        <input type="hidden" name="region_add" value="{{path('region_add')}}" />
-        <input type="hidden" name="region_delete" value="{{path('region_delete')}}" />
-        <input type="hidden" name="region_config" value="{{path('region_config')}}" />
-        
     {% endif %}
-   
+
 
 {% endblock %}
 
