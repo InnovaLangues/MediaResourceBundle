@@ -103,19 +103,13 @@ var actions = {
             // ADD new region to DOM in the right place
             var toAdd = addRegion(time, savedEnd, '', false);
             //addRegionToDom(toAdd);
-            domUtils.addRegionToDom(wavesurfer, wavesurferUtils, toAdd);
+            var guid = StringUtils.createGuid(); 
+            domUtils.addRegionToDom(wavesurfer, wavesurferUtils, toAdd, guid);
         }
     },
     help: function () {
         // get current wavesurfer region
         helpCurrentWRegion = wavesurferUtils.getCurrentRegion(wavesurfer, wavesurfer.getCurrentTime() + 0.1);
-        var wNextRegion = wavesurferUtils.getNextRegion(wavesurfer, wavesurfer.getCurrentTime());
-        var wPrevRegion = wavesurferUtils.getPrevRegion(wavesurfer, wavesurfer.getCurrentTime());
-
-        // get current region row text
-
-
-        // get region config (hidden inputs)
 
         // open modal
         var hModal = domUtils.openRegionHelpModal(helpCurrentWRegion, audioUrl);
@@ -133,6 +127,13 @@ var actions = {
         });
 
         hModal.modal("show");
+    },
+    annotate: function (elem) {
+        var color = elem.data('color');
+        var text = javascriptUtils.getSelectedText();
+        if (text !== '') {
+            manualTextAnnotation(text, 'accent-' + color);
+        }
     }
 };
 
@@ -140,8 +141,10 @@ var actions = {
 $(document).ready(function () {
     // get some hidden inputs usefull values
     currentExerciseType = 'audio';
-    audioUrl = $('input[name="audio-url"]').val();   
+    audioUrl = $('input[name="audio-url"]').val();
     isEditing = parseInt($('input[name="editing"]').val()) === 1 ? true : false;
+
+
 
     // bind data-action events
     $("button[data-action]").click(function () {
@@ -150,6 +153,15 @@ $(document).ready(function () {
             actions[action]($(this));
         }
     });
+
+    /* SWITCHES INPUTS */
+   
+    var toggleAnnotationCheck = $("[name='toggle-annotation-checkbox']").bootstrapSwitch('state', true);
+    $(toggleAnnotationCheck).on('switchChange.bootstrapSwitch', function (event, state) {
+        $('.annotation-buttons-container').toggle(transitionType);
+        $(this).trigger('blur'); // remove focus to avoid spacebar interraction
+    });
+
 
     // CONTENT EDITABLE CHANGE EVENT MAPPING
     $('body').on('focus', '[contenteditable]', function () {
@@ -225,8 +237,9 @@ $(document).ready(function () {
             console.log('no region creating a new one');
             // if no region : add one by default
             var region = addRegion(0.0, wavesurfer.getDuration(), '', false);
+            var guid = StringUtils.createGuid(); 
             // addRegionToDom(region);
-            domUtils.addRegionToDom(wavesurfer, wavesurferUtils, region);
+            domUtils.addRegionToDom(wavesurfer, wavesurferUtils, region, guid);
         } else {
             // for each existing PHP Region entity ( = region row) create a wavesurfer region
             $(".row.form-row.region").each(function () {
@@ -240,7 +253,7 @@ $(document).ready(function () {
         }
     });
 
-    
+
     wavesurfer.on('seek', function () {
         /* if ('video' === currentExerciseType) {
          var currentTime = wavesurfer.getCurrentTime();
@@ -336,27 +349,11 @@ $(document).ready(function () {
             }
         });
     });
-    
-    $('#media_resource_form').on('submit', function (e) {
-        e.preventDefault();
-        var url = $(this).attr('action');
-        var type = $(this).attr('method');
-        var data = $(this).serialize();
-        $.ajax({
-            url: url,
-            type: type,
-            data: data,
-            success: function (response) {
-                bootbox.alert(response);
-            }
-        });
-    });
 
 });
 
 
-
-// help modal function
+// help modal functions
 
 function playHelp(start, end) {
     //$('#help-audio-player');
@@ -391,6 +388,7 @@ function playHelp(start, end) {
     }
 }
 
+
 function setPlaybackRate(elem, value) {
     helpPlaybackRate = value;
 
@@ -421,9 +419,10 @@ function toggleLoopPlayback(elem) {
     }
 }
 
+
+
 // will only work with chrome browser
 function playBackward() {
-    console.log("plop");
     if (helpIsPlaying && helpAudioPlayer) {
         helpAudioPlayer.pause();
         helpIsPlaying = false;
@@ -440,10 +439,8 @@ function playBackward() {
 }
 
 function sayIt(utterance, callback) {
-
     window.speechSynthesis.speak(utterance);
-    // utterance.text = reversed;
-    utterance.onend = function (event) {        
+    utterance.onend = function (event) {
         return  callback();
     };
 }
@@ -462,6 +459,15 @@ function handleUtterancePlayback(index, utterance, textArray) {
             handleUtterancePlayback(index, utterance, textArray);
         });
     }
+}
+
+// config region modal functions
+function onSelectedRegionChange(elem){
+    console.log('selection changed');
+     var idx=elem.selectedIndex;
+    var val=elem.options[idx].value;
+    var content=elem.options[idx].innerHTML;
+    console.log(val + " " + content);
 }
 
 /**
@@ -503,8 +509,6 @@ function addRegion(start, end, note, dataset) {
     // set data-id to del button
     if (dataset) {
         console.log('dataset');
-        //var regionRow = getRegionRow(start, end);
-
         var regionRow = domUtils.getRegionRow(start, end);
         var btn = $(regionRow).find('button.fa-trash-o');
         $(btn).addClass(region.id);
@@ -529,7 +533,16 @@ function deleteRegion(elem) {
 
         if (id) {
             var toRemove = wavesurfer.regions.list[id];
-            bootbox.confirm("êtes vous sur de vouloir supprimer la région?", function (result) {
+            var currentRow = $('button.' + id).closest(".region");
+            var regionUuid = $(currentRow).data('uuid');
+            console.log(regionUuid);
+            var usedInHelp = domUtils.getRegionsUsedInHelp(regionUuid);
+            var message = "<strong>Etes vous sur de vouloir supprimer la région?</strong>";
+            if(usedInHelp.length > 0){
+                message += '<hr/><div class="text-center"> Cette région est affectée à une ou plusieurs aides.<br/> Ces aides seront supprimées automatiquement.</div>';
+            }
+            
+            bootbox.confirm(message, function (result) {
                 if (result) {
                     var start = toRemove.start;
                     var end = toRemove.end;
@@ -542,8 +555,7 @@ function deleteRegion(elem) {
                             });
                             wavesurfer.regions.list[id].remove();
 
-                            // update time (DOM)
-                            var currentRow = $('button.' + id).closest(".row.form-row.region");
+                            // update time (DOM)                           
                             var hiddenInputToUpdate = currentRow.next().find("input.hidden-start");
                             hiddenInputToUpdate.val(start);
 
@@ -564,8 +576,7 @@ function deleteRegion(elem) {
                             });
                             wavesurfer.regions.list[id].remove();
 
-                            // update time (DOM)
-                            var currentRow = $('button.' + id).closest(".row.form-row.region");
+                            // update time (DOM)                           
                             var hiddenInputToUpdate = currentRow.prev().find("input.hidden-end");
                             hiddenInputToUpdate.val(end);
                             var divToUpdate = currentRow.prev().find(".time-text.end");
@@ -584,6 +595,17 @@ function deleteRegion(elem) {
 
 
 function configRegion(elem) {
-
     domUtils.openConfigRegionModal(elem);
 }
+
+
+
+function manualTextAnnotation(text, css) {
+    if (!css) {
+        document.execCommand('insertHTML', false, css);
+    } else {
+        document.execCommand('insertHTML', false, '<span class="' + css + '">' + text + '</span>');
+    }
+}
+
+

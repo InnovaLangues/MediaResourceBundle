@@ -91,14 +91,14 @@ class MediaResourceHandler
             $this->form->submit($this->request);
             
             if ($this->form->isValid()) {
-                // Form is valid => create or update the activity
+                // Form is valid => create or update the media resource
                 $this->data = $this->form->getData();
                 
                 if ($this->request->getMethod() == 'POST') {
-                    // Create activity
+                    // Create media resource
                     $success = $this->create();
                 } else {
-                    // Edit existing activity
+                    // Edit existing media resource
                     $success = $this->edit();
                 }
             }

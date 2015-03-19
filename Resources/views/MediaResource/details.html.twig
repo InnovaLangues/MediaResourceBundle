@@ -1,7 +1,7 @@
 {% extends  "InnovaMediaResourceBundle::layout.html.twig" %}
 
 {% block media_resource_content %} 
-    <form role="form" enctype="multipart/form-data" id="media_resource_form"  method="post" {% if edit %} action="{{path('media_resource_save', {'id':resource.id})}}"  {% endif %} name="edit">
+    <form role="form" enctype="multipart/form-data" id="media_resource_form"  method="post" {% if edit %} action="{{path('media_resource_save', {'workspaceId': workspace.id ,'id':resource.id})}}"  {% endif %} name="edit">
 
         <!-- toolbar : save exercise - show / hide text - show / hide media(s) - switch media display waveform - video -->
         <div class="row">
@@ -63,7 +63,7 @@
             <div class="col-md-12 text-center regions-container" {% if edit == false %} style="display:none;" {% endif %}>               
                 {% if regions | length > 0 %}
                     {% for region in regions %}
-                        <div class="row form-row region">
+                        <div class="row form-row region" data-uuid="{{region.uuid}}">
                             <div class="col-xs-1">                                    
                                 <div class="time-text start">{{ region.start | hmsTime }}</div>
                             </div>
@@ -91,8 +91,9 @@
                             <input type="hidden" class="hidden-end" name="end[]" value="{{ region.end }}" required="required">
                             <input type="hidden" class="hidden-note" name="note[]" value="{{ region.note }}">
                             <input type="hidden" class="hidden-region-id" name="region-id[]" value="{{ region.id }}">
+                            <input type="hidden" class="hidden-region-uuid" name="region-uuid[]" value="{{ region.uuid }}">
                             <!-- Region config  -->
-                            <input type="hidden" class="hidden-config-help-region-id" name="help-region-id[]" value="">
+                            <input type="hidden" class="hidden-config-help-region-uuid" name="help-region-uuid[]" value="{{ region.regionConfig.helpRegionUuid ? region.regionConfig.helpRegionUuid : '' }}">
                             <input type="hidden" class="hidden-config-loop" name="loop[]" value="{{ region.regionConfig.hasLoop ? '1' : '0' }}">
                             <input type="hidden" class="hidden-config-backward" name="backward[]" value="{{ region.regionConfig.hasBackward ? '1' : '0' }}">
                             <input type="hidden" class="hidden-config-rate" name="rate[]" value="{{ region.regionConfig.hasRate ? '1' : '0' }}">
@@ -104,13 +105,30 @@
         </div>
     </form>
 
+    {% if edit %}
+        <hr/>
+        <!-- annotation buttons -->
+        <div class="row">
+            <div class="col-md-12">
+                <input type="checkbox" name="toggle-annotation-checkbox" data-on-text="hide" data-off-text="show" data-off-color="warning" checked>
+                <hr/>
+                <div class="annotation-buttons-container text-center">
+                    <button type="button" class="btn annotation-button blue" title="Accent primaire" data-color="blue" data-action="annotate">&nbsp;</button>
+                    <button type="button" class="btn annotation-button red" title="Accent secondaire" data-color="red" data-action="annotate">&nbsp;</button>
+                    <button type="button" class="btn annotation-button orange" title="Voyelle faible" data-color="orange" data-action="annotate">&nbsp;</button>
+                    <button type="button" class="btn annotation-button black" title="Texte normale" data-color="black" data-action="annotate">&nbsp;</button>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
     <!-- hidden fields -->
     <input type="hidden" name="editing" value="{{edit ? 1:0}}">
     <input type="hidden" name="type" value="audio">   
     <input type="hidden" name="audio-url" value="{{asset('bundles/innovamediaresource/uploads/')}}{{resource.medias[0].url}}">
 
     {% if edit %}
-        <input type="hidden" name="update_url" value="{{path('media_resource_save', {'id':resource.id})}}" />
+        <input type="hidden" name="update_url" value="{{path('media_resource_save',  {'workspaceId': workspace.id ,'id':resource.id})}}" />
     {% endif %}
 
 
@@ -127,7 +145,6 @@
         '@InnovaMediaResourceBundle/Resources/public/js/wavesurfer/plugins/wavesurfer.regions.js'
         '@InnovaMediaResourceBundle/Resources/public/js/wavesurfer/plugins/wavesurfer.minimap.js'
         '@InnovaMediaResourceBundle/Resources/public/js/play.js'
-        '@InnovaMediaResourceBundle/Resources/public/js/DomUtils.js'
         
     %}
     <script src="{{ asset_url }}"></script>

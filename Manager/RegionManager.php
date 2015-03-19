@@ -46,6 +46,7 @@ class RegionManager {
     public function handleMediaResourceRegions(MediaResource $mr, $data) {
 
         $regions = $this->getRegionsFromData($data);
+       
         $this->deleteUnusedRegions($mr, $regions);
         // update or create
         foreach ($regions as $region) {
@@ -66,12 +67,14 @@ class RegionManager {
                 $entity->setStart($region['start']);
                 $entity->setEnd($region['end']);
                 $entity->setNote($region['note']);
+                $entity->setUuid($region['uuid']);
                 
                 $config = $entity -> getRegionConfig();
                 $config -> setHelpText($region['text']);
                 $config -> setHasLoop($region['loop']);
                 $config -> setHasRate($region['rate']);
                 $config -> setHasBackward($region['backward']);
+                $config -> setHelpRegionUuid($region['help-region-uuid']);
                 
                 
                 $this->save($entity);
@@ -86,8 +89,8 @@ class RegionManager {
         $ends = $data['end']; // array
         $notes = $data['note'];
         $ids = $data['region-id'];
-
-        $helpRegionIds = $data['help-region-id'];
+        $uuids = $data['region-uuid'];
+        $helpRegionIds = $data['help-region-uuid'];
         $loops = $data['loop'];
         $backwards = $data['backward'];
         $rates = $data['rate'];
@@ -97,11 +100,12 @@ class RegionManager {
 
         for ($i = 0; $i < $nbData; $i++) {
             $regions[] = array(
-                                'id' => $ids[$i], 
+                                'id' => $ids[$i],
+                                'uuid' => $uuids[$i], 
                                 'start' => $starts[$i], 
                                 'end' => $ends[$i], 
                                 'note' => $notes[$i], 
-                                'help-region-id' => $helpRegionIds[$i],
+                                'help-region-uuid' => $helpRegionIds[$i],
                                 'loop' => $loops[$i],
                                 'backward' => $backwards[$i],
                                 'rate'  => $rates[$i],

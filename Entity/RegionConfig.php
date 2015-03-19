@@ -58,13 +58,11 @@ class RegionConfig {
     private $region;
 
     /**
-     * @var regionHelp
+     * @var related region for help
      * User can be helped by another region content
-     * @ORM\OneToOne(targetEntity="Innova\MediaResourceBundle\Entity\Region")
-     * @ORM\JoinColumn(name="help_region_id", referencedColumnName="id", nullable=true)
+     * @ORM\Column(name="help_region_uuid", type="string", length=255)
      */
-    private $helpRegion;
-
+    private $helpRegionUuid;
     
     public function setId($id) {
         $this->id = $id;
@@ -132,6 +130,15 @@ class RegionConfig {
 
     public function getHelpRegion() {
         return $this->helpRegion;
+    }
+    
+    public function getHelpRegionUuid() {
+        return $this->helpRegionUuid;
+    }
+
+    public function setHelpRegionUuid($helpRegionUuid) {
+        $this->helpRegionUuid = $helpRegionUuid;
+        return $this;
     }
 
 }

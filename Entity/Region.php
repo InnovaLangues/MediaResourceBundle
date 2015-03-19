@@ -52,10 +52,17 @@ class Region {
     private $mediaResource;
 
     /**
-     * @var media resource
+     * @var region configuration
      * @ORM\OneToOne(targetEntity="Innova\MediaResourceBundle\Entity\RegionConfig", mappedBy="region", cascade={"persist", "remove"}) 
      */
     private $regionConfig;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="uuid", type="string", length=255)
+     */
+    private $uuid;    
 
     /**
      * Get id
@@ -145,6 +152,15 @@ class Region {
 
     public function getRegionConfig() {
         return $this->regionConfig;
+    }
+    
+    public function getUuid() {
+        return $this->uuid;
+    }
+
+    public function setUuid($uuid) {
+        $this->uuid = $uuid;
+        return $this;
     }
 
 }

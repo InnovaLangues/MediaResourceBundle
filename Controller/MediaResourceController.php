@@ -20,7 +20,7 @@ class MediaResourceController extends Controller {
 
     /**
      * display a media resource 
-     * @Route("/details/{id}", requirements={"id" = "\d+"}, name="innova_media_resource_open")
+     * @Route("/view/{id}", requirements={"id" = "\d+"}, name="innova_media_resource_open")
      * @Method("GET")
      * @ParamConverter("MediaResource", class="InnovaMediaResourceBundle:MediaResource")
      */
@@ -39,15 +39,15 @@ class MediaResourceController extends Controller {
 
     /**
      * display a media resource as admin
-     * @Route("/details/{id}", requirements={"id" = "\d+"}, name="innova_media_resource_administrate")
+     * @Route("/edit/{id}", requirements={"id" = "\d+"}, name="innova_media_resource_administrate")
      * @Method("GET")
      * @ParamConverter("MediaResource", class="InnovaMediaResourceBundle:MediaResource")
      */
-    public function administrateAction(MediaResource $mr) {
+    public function administrateAction(Workspace $workspace, MediaResource $mr) {
         // use of specific method to order regions correctly
         $regions = $this->get('innova_media_resource.manager.media_resource_region')->findByAndOrder($mr);
         if ($mr->getId()) {
-            return $this->render('InnovaMediaResourceBundle:MediaResource:details.html.twig', array('resource' => $mr, 'edit' => true, 'regions' => $regions));
+            return $this->render('InnovaMediaResourceBundle:MediaResource:details.html.twig', array('resource' => $mr, 'edit' => true, 'regions' => $regions, 'workspace' => $workspace));
         } else {
             $this->get('session')->getFlashBag()->set('error', "Aucun media trouvé.");
             // return $this->redirect($this->generateUrl('media_resource_list'));
@@ -94,7 +94,7 @@ class MediaResourceController extends Controller {
     }
 
     /**
-     * @Route("/edit/{id}", requirements={"id" = "\d+"}, name="media_resource_delete")
+     * @Route("/delete/{id}", requirements={"id" = "\d+"}, name="media_resource_delete")
      * @ParamConverter("MediaResource", class="InnovaMediaResourceBundle:MediaResource")
      */
     public function deleteAction(MediaResource $mr) {

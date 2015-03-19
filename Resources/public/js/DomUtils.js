@@ -2,10 +2,6 @@
 
 var DomUtils = {
     openRegionHelpModal: function (current, audioUrl) {
-        // console.log('open region help dude!');
-        // bootbox.alert('open region help dude!');
-        
-
         var domRow = this.getRegionRow(current.start + 0.1, current.end - 0.1);
         // loop available ?
         var loop = $(domRow).find('.hidden-config-loop').val() === '1' ? true : false;
@@ -18,16 +14,14 @@ var DomUtils = {
 
         var html = '<div class="row">';
         html += '<div class="col-md-12 text-center">';
-        //0,5.85376690976691
-        //html +=             '<audio src="' + audioUrl + '#t=' + current.start + ',' + current.end + '" controls>';
         html += '<audio id="help-audio-player" src="' + audioUrl + '">'; // will not show as no controls defined
         html += '</audio>';
-    
+
         html += '<button class="btn btn-default" onclick="playHelp(' + current.start + ', ' + current.end + ')" style="margin:5px;">';
         html += ' <i class="fa fa-play"></i> ';
         html += ' / ';
         html += '<i class="fa fa-pause"></i>';
-        html += '</button>';        
+        html += '</button>';
         if (backward) {
             html += '<button class="btn btn-default" onclick="playBackward();" style="margin:5px;">';
             html += '<i class="fa fa-exchange"></i> ';
@@ -66,54 +60,53 @@ var DomUtils = {
                     }
                 }
             }
-        });       
-
+        });
         return modal;
-
-
-
     },
     /**
      * Add the region to the DOM at the right place
      * @param region wavesurfer.region 
      */
-    addRegionToDom: function (wavesurfer, wavesurferUtils, region) {
+    addRegionToDom: function (wavesurfer, wavesurferUtils, region, uuid) {
         var my = this;
+        //console.log(uuid);
         var container = $('.regions-container');
         // HTML to append
-        var html = '<div class="row form-row region">';
+        var html = '';
+        html += '<div class="row form-row region" data-uuid="' + uuid + '">';
         // start input
-        html += '<div class="col-xs-1">';
-        html += '<div class="time-text start">' + wavesurferUtils.secondsToHms(region.start) + '</div>';
-        html += '</div>';
+        html += '       <div class="col-xs-1">';
+        html += '           <div class="time-text start">' + wavesurferUtils.secondsToHms(region.start) + '</div>';
+        html += '       </div>';
         // end input
-        html += '<div class="col-xs-1">';
-        html += '<div class="time-text end">' + wavesurferUtils.secondsToHms(region.end) + '</div>';
-        html += '</div>';
+        html += '       <div class="col-xs-1">';
+        html += '           <div class="time-text end">' + wavesurferUtils.secondsToHms(region.end) + '</div>';
+        html += '       </div>';
         // text input
 
-        html += '<div class="col-xs-8">';
-        html += '<div onclick="goTo(' + region.start + ');" contenteditable="true" class="text-left note">' + region.data.note + '</div>';
-        html += '</div>';
+        html += '       <div class="col-xs-8">';
+        html += '           <div onclick="goTo(' + region.start + ');" contenteditable="true" class="text-left note">' + region.data.note + '</div>';
+        html += '       </div>';
 
         // delete button
-        html += '<div class="col-xs-2">';
-        html += '<div class="btn-group" role="group">';
-        html += '<button role="button" type="button" class="btn btn-default fa fa-cog" title="configurer la region." onclick="configRegion(this);"> </button>';
-        html += '<button type="button" name="del-region-btn" class="btn btn-danger fa fa-trash-o ' + region.id + '" data-id="' + region.id + '" title="supprimer la region." onclick="deleteRegion(this)"></button>';
-        html += '</div>';
-        html += '</div>';
-        html += '<input type="hidden" class="hidden-start" name="start[]" value="' + region.start + '" required="required">';
-        html += '<input type="hidden" class="hidden-end" name="end[]" value="' + region.end + '" required="required">';
-        html += '<input type="hidden" class="hidden-note" name="note[]" value="' + region.data.note + '">';
-        html += '<input type="hidden" class="hidden-region-id" name="region-id[]" value="" >';
+        html += '       <div class="col-xs-2">';
+        html += '           <div class="btn-group" role="group">';
+        html += '               <button role="button" type="button" class="btn btn-default fa fa-cog" title="configurer la region." onclick="configRegion(this);"> </button>';
+        html += '               <button type="button" name="del-region-btn" class="btn btn-danger fa fa-trash-o ' + region.id + '" data-id="' + region.id + '" title="supprimer la region." onclick="deleteRegion(this)"></button>';
+        html += '           </div>';
+        html += '       </div>';
+        html += '       <input type="hidden" class="hidden-start" name="start[]" value="' + region.start + '" required="required">';
+        html += '       <input type="hidden" class="hidden-end" name="end[]" value="' + region.end + '" required="required">';
+        html += '       <input type="hidden" class="hidden-note" name="note[]" value="' + region.data.note + '">';
+        html += '       <input type="hidden" class="hidden-region-id" name="region-id[]" value="" >';
+        html += '       <input type="hidden" class="hidden-region-uuid" name="region-uuid[]" value="' + uuid + '" >';
 
-        html += '<input type="hidden" class="hidden-config-help-region-id" name="help-region-id[]" value="" >';
-        html += '<input type="hidden" class="hidden-config-loop" name="loop[]" value="0" >';
-        html += '<input type="hidden" class="hidden-config-backward" name="backward[]" value="0" >';
-        html += '<input type="hidden" class="hidden-config-rate" name="rate[]" value="0" >';
-        html += '<input type="hidden" class="hidden-config-text" name="text[]" value="" >';
-        //html += '</div>';
+        html += '       <input type="hidden" class="hidden-config-help-region-uuid" name="help-region-uuid[]" value="" >';
+        html += '       <input type="hidden" class="hidden-config-loop" name="loop[]" value="0" >';
+        html += '       <input type="hidden" class="hidden-config-backward" name="backward[]" value="0" >';
+        html += '       <input type="hidden" class="hidden-config-rate" name="rate[]" value="0" >';
+        html += '       <input type="hidden" class="hidden-config-text" name="text[]" value="" >';
+        html += '</div>';
 
         // find the previous row in order to happend the new one in the good place
         if (Object.keys(wavesurfer.regions.list).length > 1) {
@@ -135,10 +128,29 @@ var DomUtils = {
      * @param {type} elem current clicked config button
      */
     openConfigRegionModal: function (elem) {
+        // get wavesurfer regions
+        // console.log(wavesurfer.regions.list);
+        var rRows = [];
+        $('.region').each(function () {
+            var row = {};
+            var time = parseFloat($(this).find('input.hidden-start').val());
+            var wregion = wavesurferUtils.getCurrentRegion(wavesurfer, time + 0.1);
+            row = {
+                uid: $(this).data('uuid'),
+                hstart: $(this).find('.time-text.start').text(),
+                hend: $(this).find('.time-text.end').text(),
+                start: $(this).find('input.hidden-start').val(),
+                end: $(this).find('input.hidden-end').val(),
+                wregion: wregion
+            };
+            rRows.push(row);
 
+        });
+        // get current region row start text
+        var currentStart = $(elem).closest('div.region').find('.time-text.start').text();
         // find region config hidden inputs
         //help-region-id -> problem is that the id might not exist (for newly created regions) -> need to select a region by time ?
-        var helpRegionId = $(elem).closest('div.region').find('.hidden-config-help-region-id');
+        var helpRegionId = $(elem).closest('div.region').find('.hidden-config-help-region-uuid');
         //loop elem
         var loop = $(elem).closest('div.region').find('.hidden-config-loop');
         //backward
@@ -148,37 +160,54 @@ var DomUtils = {
         //text
         var text = $(elem).closest('div.region').find('.hidden-config-text');
 
-        var html = '<div class="row">';
-        html += '<div class="col-md-12">';
-        html += '<div class="form-horizontal">';
-        html += '<div class="form-group">';
-        html += '<label class="col-md-4 control-label" for="has-loop">Autoriser la lecture en boucle</label>';
+        var html = '';
+        html += '<div class="row">';
+        html += '   <div class="col-md-12">';
+        html += '       <div class="form form-horizontal">';
+        html += '           <div class="form-group">';
+        html += '               <label class="col-md-4 control-label" for="has-loop">Autoriser la lecture en boucle</label>';
         if (loop.val() === '1')
-            html += '<input type="checkbox" name="loop" class="checkbox" value="loop" checked>';
+            html += '           <input type="checkbox" name="loop" class="checkbox" value="loop" checked>';
         else
-            html += '<input type="checkbox" name="loop" class="checkbox" value="loop">';
-        html += '</div>';
-        html += '<div class="form-group">';
-        html += '<label class="col-md-4 control-label" for="has-backward">Autoriser la lecture en backward building</label>';
+            html += '           <input type="checkbox" name="loop" class="checkbox" value="loop">';
+        html += '           </div>';
+        html += '           <div class="form-group">';
+        html += '               <label class="col-md-4 control-label" for="has-backward">Autoriser la lecture en backward building</label>';
         if (backward.val() === '1')
-            html += '<input type="checkbox" name="backward" class="checkbox" value="backward" checked>';
+            html += '           <input type="checkbox" name="backward" class="checkbox" value="backward" checked>';
         else
-            html += '<input type="checkbox" name="backward" class="checkbox" value="backward">';
-        html += '</div>';
-        html += '<div class="form-group">';
-        html += '<label class="col-md-4 control-label" for="has-rate">Autoriser le changement de la vitesse de lecture</label>';
+            html += '           <input type="checkbox" name="backward" class="checkbox" value="backward">';
+        html += '           </div>';
+        html += '           <div class="form-group">';
+        html += '               <label class="col-md-4 control-label" for="has-rate">Autoriser le changement de la vitesse de lecture</label>';
         if (rate.val() === '1')
-            html += '<input type="checkbox" name="rate" class="checkbox" value="rate" checked>';
+            html += '           <input type="checkbox" name="rate" class="checkbox" value="rate" checked>';
         else
-            html += '<input type="checkbox" name="rate" class="checkbox" value="rate">';
-        html += '</div>';
-        html += '<div class="form-group">';
-        html += '<label class="col-md-4 control-label" for="has-rate">Texte d\'aide:</label>';
-        html += '<input type="text" name="help-text" class="" value="' + text.val() + '">';
-        html += '</div>';
-        html += '</div>';
-        html += '</div>';
-        html += '</div>';
+            html += '           <input type="checkbox" name="rate" class="checkbox" value="rate">';
+        html += '           </div>';
+        html += '           <div class="form-group">';
+        html += '               <label class="col-md-4 control-label" for="has-rate">Texte d\'aide:</label>';
+        html += '               <input type="text" name="help-text" class="form-control" value="' + text.val() + '">';
+        html += '           </div>';
+        // region dropdown
+        html += '           <div class="form-group">';
+        html += '               <label class="col-md-4 control-label" for="has-rate">Région:</label>';
+        html += '               <select id="region-select" name="region" onchange="onSelectedRegionChange(this);">';
+        html += '                   <option value="-1">Aucune</option>';
+        // loop
+        for (var i = 0; i < rRows.length; i++) {
+            if (currentStart !== rRows[i].hstart) {
+                console.log(helpRegionId.val() + ' ' + rRows[i].uid);
+                var selected = helpRegionId.val() === rRows[i].uid ? 'selected' : '';
+                
+                html += '           <option value="' + rRows[i].uid + '" ' + selected + '>' + rRows[i].hstart + ' - ' + rRows[i].hend + '</option>';
+            }
+        }
+        html += '               </select>';
+        html += '           </div>';
+        html += '       </div>'; // end form
+        html += '   </div>'; // end col
+        html += '</div>'; // end row
 
         bootbox.dialog({
             title: "Configurer la région:",
@@ -192,16 +221,37 @@ var DomUtils = {
                         var helpText = $('input[name=help-text]').val();
                         var hasLoop = $('input[name=loop]').is(':checked');
                         var hasBackward = $('input[name=backward]').is(':checked');
-                        var hasRate = $('input[name=rate]').is(':checked');
+                        var hasRate = $('input[name=rate]').is(':checked');                      
+                        var helpId = $("#region-select").val();
                         // set proper hidden inputs values
                         text.val(helpText);
                         rate.val(hasRate ? '1' : '0');
                         backward.val(hasBackward ? '1' : '0');
                         loop.val(hasLoop ? '1' : '0');
+                        if(helpId != -1)
+                            helpRegionId.val(helpId);
                     }
                 }
             }
         });
+    },
+    getRegionsUsedInHelp: function (regionUuid) {
+        var result = [];
+        $('.region').each(function () {
+            var current_help_id = $(this).find('input.hidden-region-uuid').val();
+            if (current_help_id == regionUuid) {
+                var row = {};
+                row = {
+                    uid: $(this).data('uuid'),
+                    hstart: $(this).find('.time-text.start').text(),
+                    hend: $(this).find('.time-text.end').text(),
+                    start: $(this).find('input.hidden-start').val(),
+                    end: $(this).find('input.hidden-end').val()
+                };
+                result.push(row);
+            }
+        });
+        return result;
     },
     /**
      * Find the row after which we have to insert the new one

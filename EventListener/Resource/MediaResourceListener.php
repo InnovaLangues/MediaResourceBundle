@@ -11,7 +11,6 @@ use Claroline\CoreBundle\Event\CreateResourceEvent;
 use Claroline\CoreBundle\Event\CopyResourceEvent;
 use Claroline\CoreBundle\Event\CustomActionResourceEvent;
 use Innova\MediaResourceBundle\Entity\MediaResource;
-use Claroline\CoreBundle\Entity\Resource\ResourceNode;
 
 /**
  * Media Resource Event Listener
@@ -21,14 +20,14 @@ class MediaResourceListener extends ContainerAware {
 
     /**
      * Fired when a new ResourceNode of type Path is opened
-     * @param  \Claroline\CoreBundle\Event\OpenResourceEvent $event
+     * @param  \Claroline\CoreBundle\Event\CustomActionResourceEvent $event
      * @throws \Exception
      */
     public function onAdministrate(CustomActionResourceEvent $event) {
         $mediaResource = $event->getResource();
         $route = $this->container
                 ->get('router')
-                ->generate('innova_media_resource_administrate', array('id' => $mediaResource->getId())
+                ->generate('innova_media_resource_administrate', array('id' => $mediaResource->getId(), 'workspaceId' => $mediaResource->getWorkspace()->getId())
         );
         $event->setResponse(new RedirectResponse($route));
         $event->stopPropagation();

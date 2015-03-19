@@ -41,7 +41,7 @@ class Media {
      * media resource owner
      * 
      * @ORM\ManyToOne(targetEntity="Innova\MediaResourceBundle\Entity\MediaResource", inversedBy="medias")
-     * @ORM\JoinColumn(name="media_resource_id", nullable=true)
+     * @ORM\JoinColumn(name="media_resource_id", nullable=false)
      */
     private $mediaResource;    
     
