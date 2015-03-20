@@ -3,6 +3,7 @@
 namespace Innova\MediaResourceBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -29,10 +30,11 @@ class MediaResourceController extends Controller {
         // use of specific method to order regions correctly
         $regions = $this->get('innova_media_resource.manager.media_resource_region')->findByAndOrder($mr);
         if ($mr->getId()) {
-            return $this->render('InnovaMediaResourceBundle:MediaResource:details.html.twig', array('resource' => $mr, 'edit' => false, 'regions' => $regions, 'workspace' => $workspace));
+            return $this->render('InnovaMediaResourceBundle:MediaResource:details.html.twig', array('_resource' => $mr, 'edit' => false, 'regions' => $regions, 'workspace' => $workspace));
         } 
         else{
-            $this->get('session')->getFlashBag()->set('error', "Aucun exercice trouvé.");
+            $msg = $this->get('translator')->trans('no_media_resource', array(), 'media_resource');
+            $this->get('session')->getFlashBag()->set('error', $msg);
             // TODO redirect to claro resource manager
         }
     }
@@ -47,24 +49,14 @@ class MediaResourceController extends Controller {
         // use of specific method to order regions correctly
         $regions = $this->get('innova_media_resource.manager.media_resource_region')->findByAndOrder($mr);
         if ($mr->getId()) {
-            return $this->render('InnovaMediaResourceBundle:MediaResource:details.html.twig', array('resource' => $mr, 'edit' => true, 'regions' => $regions, 'workspace' => $workspace));
+            return $this->render('InnovaMediaResourceBundle:MediaResource:details.html.twig', array('_resource' => $mr, 'edit' => true, 'regions' => $regions, 'workspace' => $workspace));
         } else {
-            $this->get('session')->getFlashBag()->set('error', "Aucun media trouvé.");
+            $msg = $this->get('translator')->trans('no_media_resource', array(), 'media_resource');
+            $this->get('session')->getFlashBag()->set('error', $msg);
             // return $this->redirect($this->generateUrl('media_resource_list'));
             // TODO redirect to claro resource manager
         }
     }
-
-    /**
-     * 
-     * @Route("/list", name="media_resource_list")
-     */
-    public function listAction() {
-        $manager = $this->get('innova_media_resource.manager.media_resource');
-        $mediaResources = $manager->getAll();
-        return $this->render('InnovaMediaResourceBundle:MediaResource:list.html.twig', array('resources' => $mediaResources));
-    }
-    
 
     /**
      * AJAX
@@ -85,20 +77,14 @@ class MediaResourceController extends Controller {
                 $regionManager = $this->get('innova_media_resource.manager.media_resource_region');
                 $mr = $regionManager->handleMediaResourceRegions($mr, $data);
                 if ($mr) {
-                    return new \Symfony\Component\HttpFoundation\Response('La ressource a bien été mise à jour.', 200);
+                    $msg = $this->get('translator')->trans('resource_update_success', array(), 'media_resource');
+                    return new \Symfony\Component\HttpFoundation\Response($msg, 200);
                 } else {
-                    return new \Symfony\Component\HttpFoundation\Response('Une erreur s\'est produite lors de la mise à jour de la ressource.', 500);
+                    $msg = $this->get('translator')->trans('resource_update_error', array(), 'media_resource');
+                    return new \Symfony\Component\HttpFoundation\Response($msg, 500);
                 }
             }
         }
-    }
-
-    /**
-     * @Route("/delete/{id}", requirements={"id" = "\d+"}, name="media_resource_delete")
-     * @ParamConverter("MediaResource", class="InnovaMediaResourceBundle:MediaResource")
-     */
-    public function deleteAction(MediaResource $mr) {
-        die('delete');
-    }
+    }   
 
 }

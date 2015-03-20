@@ -48,13 +48,13 @@ var DomUtils = {
         html += '</div>';
 
         var modal = bootbox.dialog({
-            title: "Aide sur la région:",
+            title: Translator.trans('region_help', {}, 'media_resource'),//"Aide sur la région:",
             message: html,
             show: false,
             buttons: {
                 success: {
-                    label: "Fermer",
-                    className: "btn-success",
+                    label: Translator.trans('close', {}, 'media_resource'),
+                    className: "btn-default",
                     callback: function () {
 
                     }
@@ -85,14 +85,14 @@ var DomUtils = {
         // text input
 
         html += '       <div class="col-xs-8">';
-        html += '           <div onclick="goTo(' + region.start + ');" contenteditable="true" class="text-left note">' + region.data.note + '</div>';
+        html += '           <div contenteditable="true" class="text-left note">' + region.data.note + '</div>';
         html += '       </div>';
 
         // delete button
         html += '       <div class="col-xs-2">';
         html += '           <div class="btn-group" role="group">';
-        html += '               <button role="button" type="button" class="btn btn-default fa fa-cog" title="configurer la region." onclick="configRegion(this);"> </button>';
-        html += '               <button type="button" name="del-region-btn" class="btn btn-danger fa fa-trash-o ' + region.id + '" data-id="' + region.id + '" title="supprimer la region." onclick="deleteRegion(this)"></button>';
+        html += '               <button role="button" type="button" class="btn btn-default fa fa-cog" title="' + Translator.trans('region_config' , {}, 'media_resource') + '" onclick="configRegion(this);"> </button>';
+        html += '               <button type="button" name="del-region-btn" class="btn btn-danger fa fa-trash-o ' + region.id + '" data-id="' + region.id + '" title="' + Translator.trans('region_delete' , {}, 'media_resource') + '" onclick="deleteRegion(this)"></button>';
         html += '           </div>';
         html += '       </div>';
         html += '       <input type="hidden" class="hidden-start" name="start[]" value="' + region.start + '" required="required">';
@@ -119,7 +119,6 @@ var DomUtils = {
             }
         }
         else {
-            console.log('insert at end');
             $(container).append(html);
         }
     },
@@ -127,7 +126,7 @@ var DomUtils = {
      * Allow author to set witch help will be available for the region
      * @param {type} elem current clicked config button
      */
-    openConfigRegionModal: function (elem) {
+    openConfigRegionModal: function (elem, w, wutils) {
         // get wavesurfer regions
         // console.log(wavesurfer.regions.list);
         var rRows = [];
@@ -166,56 +165,69 @@ var DomUtils = {
         if (loop.val() === '1')
             html += '               <input type="checkbox" name="loop"  value="loop" checked>';
         else
-            html += '               <input type="checkbox" name="loop" class="checkbox" value="loop">';
-        html += '               Autoriser la lecture en boucle';
+            html += '               <input type="checkbox" name="loop" value="loop">';
+        html +=                     Translator.trans('region_config_allow_loop', {}, 'media_resource');//'               Autoriser la lecture en boucle';
         html += '               </label>';
         html += '           </div>';
         html += '           <div class="checkbox">';
-        html += '               <label>Autoriser la lecture en backward building</label>';
+        html += '               <label>';
         if (backward.val() === '1')
-            html += '               <input type="checkbox" name="backward" class="checkbox" value="backward" checked>';
+            html += '               <input type="checkbox" name="backward" value="backward" checked>';
         else
-            html += '               <input type="checkbox" name="backward" class="checkbox" value="backward">';
-        html += '               Autoriser la lecture en backward building';
+            html += '               <input type="checkbox" name="backward" value="backward">';
+        html +=                     Translator.trans('region_config_allow_bwb', {}, 'media_resource'); //'               Autoriser la lecture en backward building';
         html += '               </label>';
         html += '           </div>';
-        html += '           <div class="form-group">';
-        html += '               <label class="col-md-4 control-label" for="has-rate">Autoriser le changement de la vitesse de lecture</label>';
+        html += '           <div class="checkbox">';
+        html += '               <label>';
         if (rate.val() === '1')
-            html += '           <input type="checkbox" name="rate" class="checkbox" value="rate" checked>';
+            html += '               <input type="checkbox" name="rate" value="rate" checked>';
         else
-            html += '           <input type="checkbox" name="rate" class="checkbox" value="rate">';
+            html += '               <input type="checkbox" name="rate" value="rate">';
+        html +=                     Translator.trans('region_config_allow_rate', {}, 'media_resource');//'               Autoriser le changement de la vitesse de lecture';
+        html += '               </label>';
         html += '           </div>';
+        html += '           <hr/>';
+        // help text
         html += '           <div class="form-group">';
-        html += '               <label class="col-md-4 control-label" for="has-rate">Texte d\'aide:</label>';
-        html += '               <input type="text" name="help-text" class="form-control" value="' + text.val() + '">';
+        html += '               <label class="col-md-4 control-label" for="has-rate">' + Translator.trans('region_config_help_text', {}, 'media_resource') + '</label>';
+        html += '               <input type="text" name="help-text" style="max-width:225px;" class="form-control" value="' + text.val() + '">';
         html += '           </div>';
+        html += '           <hr/>';
         // region dropdown
         html += '           <div class="form-group">';
-        html += '               <label class="col-md-4 control-label" for="has-rate">Région:</label>';
+        html += '               <label class="col-md-4 control-label" for="has-rate">' + Translator.trans('region_config_help_region_title', {}, 'media_resource') + '</label>';
         html += '               <select id="region-select" name="region" onchange="onSelectedRegionChange(this);">';
-        html += '                   <option value="-1">Aucune</option>';
+        html += '                   <option value="-1">' + Translator.trans('none', {}, 'media_resource') + '</option>';
         // loop
         for (var i = 0; i < rRows.length; i++) {
             if (currentStart !== rRows[i].hstart) {
-                var selected = helpRegionId.val() === rRows[i].uid ? 'selected' : '';
+                // wavesurfer.regions.list
+                var selected = '';
+                if(helpRegionId.val() === rRows[i].uid ){
+                    selected =  'selected';
+                   
+                     var time = parseFloat(rRows[i].start + 0.1);
+                     currentHelpRelatedRegion = wutils.getCurrentRegion(w, time + 0.1);
+                }
                 
                 html += '           <option value="' + rRows[i].uid + '" ' + selected + '>' + rRows[i].hstart + ' - ' + rRows[i].hend + '</option>';
             }
         }
         html += '               </select>';
+        html += '               <button class="btn btn-default fa fa-play" onclick="playHelpRelatedRegion();"></button>';
         html += '           </div>';
         html += '       </div>'; // end form
         html += '   </div>'; // end col
         html += '</div>'; // end row
 
         var modal = bootbox.dialog({
-            title: "Configurer la région:",
+            title: Translator.trans('dialog_region_configure', {}, 'media_resource'),
             message: html,
             buttons: {
                 success: {
-                    label: "Fermer",
-                    className: "btn-success",
+                    label: Translator.trans('close', {}, 'media_resource'),
+                    className: "btn-default",
                     show: false,
                     callback: function () {
                         // get form values
@@ -231,6 +243,9 @@ var DomUtils = {
                         loop.val(hasLoop ? '1' : '0');
                         if(helpId != -1)
                             helpRegionId.val(helpId);
+                        else{
+                            helpRegionId.val('');
+                        }
                     }
                 }
             }

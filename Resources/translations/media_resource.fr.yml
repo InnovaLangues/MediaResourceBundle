@@ -1,14 +1,21 @@
 # a
 add: Ajouter
+add_marker: Ajouter un marqueur
+accent_primary: Accent primaire
+accent_secondary: Accent secondaire
+accent_weak_vowel: Voyelle faible
+accent_no_accent: Texte normal
 
 # b
 back: Quitter
 
 # c
-
+close: Fermer
 
 # d
 delete_media_resource: Supprimer la ressource
+dialog_region_configure: Configurer le segment
+
 
 # e
 error_while_uploading: Erreur lors de l'upload du fichier.
@@ -16,5 +23,33 @@ error_while_encoding: Erreur lors de la conversion du fichier.
 
 # i
 innova_media_resource: Ressource média
+
+#m
+move_backward: Aller au marqueur précédent
+move_forward: Aller au marqueur suivant
+
+#n
+none: Aucune
+no_media_resource: Aucune resource trouvée.
+
+#p
+play_pause: PLay / Pause
+
+#r
+region_help: Aide sur un segment
+region_config: Configurer le segment
+region_delete: Supprimer le segment
+region_config_allow_rate: Autoriser le changement de vitesse de lecture
+region_config_allow_bwb: Autoriser la lecture en backward building
+region_config_allow_loop: Autoriser la lecture en boucle
+region_config_help_text: Texte d'aide
+region_config_help_region_title: Segment d'aide
+region_delete_confirm_base: Etes vous sur de vouloir supprimer le segment?
+region_delete_confirm_sub: Cette région est affectée à une ou plusieurs aides.<br/> Ces aides seront supprimées automatiquement.
+resource_update_success: La ressource à bien été mise à jour.
+resource_update_error: Une erreur est survenue lors de la mise à jour de la ressource.
+
+#s
+save: Sauvegarder
 
 

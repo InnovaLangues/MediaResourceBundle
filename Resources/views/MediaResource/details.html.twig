@@ -1,22 +1,25 @@
 {% extends  "InnovaMediaResourceBundle::layout.html.twig" %}
+{% block breadcrumb %}
+    {{ parent() }}
+{% endblock %}
 
 {% block media_resource_content %} 
-    <form role="form" enctype="multipart/form-data" id="media_resource_form"  method="post" {% if edit %} action="{{path('media_resource_save', {'workspaceId': workspace.id ,'id':resource.id})}}"  {% endif %} name="edit">
+    <form role="form" enctype="multipart/form-data" id="media_resource_form"  method="post" {% if edit %} action="{{path('media_resource_save', {'workspaceId': workspace.id ,'id':_resource.id})}}"  {% endif %} name="edit">
 
         <!-- toolbar : save exercise - show / hide text - show / hide media(s) - switch media display waveform - video -->
         <div class="row">
             <div class="col-md-6">
                 {% if edit %}
-                    <div contenteditable="true" class="exercise-title">{{resource.name}}</div>
-                    <input type="hidden" name="title" value="{{resource.name}}" />
+                    <div contenteditable="true" class="exercise-title">{{_resource.name}}</div>
+                    <input type="hidden" name="title" value="{{_resource.name}}" />
                 {% else %}
-                    <div class="exercise-title">{{resource.name}}</div>
+                    <div class="exercise-title">{{_resource.name}}</div>
                 {% endif %} 
             </div>
             <div class="col-md-6 text-right">
                 <div class="btn-group">
                     {% if edit %}
-                        <button type="submit" class="btn btn-default fa fa-floppy-o" title="Save"></button>  
+                        <button type="submit" class="btn btn-default fa fa-floppy-o" title="{{'save' | trans({}, 'media_resource')}}"></button>  
                     {% endif %}                    
                 </div>
             </div>
@@ -39,21 +42,21 @@
         <!-- media controls -->
         <div class="row">
             <div class="col-md-12 text-center">
-                <button type="button" role="button" class="btn btn-default fa fa-step-backward" data-action="backward" title="Move backward">
+                <button type="button" role="button" class="btn btn-default fa fa-step-backward" data-action="backward" title="{{'move_backward' | trans({}, 'media_resource')}}">
                 </button>
-                <button type="button" class="btn btn-default" data-action="play" title="Play / Pause">
+                <button type="button" class="btn btn-default" data-action="play" title="{{'play_pause' | trans({}, 'media_resource')}}">
                     <i class="fa fa-play"></i>
                     /
                     <i class="fa fa-pause"></i>
                 </button>
-                <button type="button" class="btn btn-default fa fa-step-forward" data-action="forward" title="Move forward">
+                <button type="button" class="btn btn-default fa fa-step-forward" data-action="forward" title="{{'move_forward' | trans({}, 'media_resource')}}">
                 </button>
 
                 {% if edit %}
-                    <button type="button" class="btn btn-danger fa fa-flag" data-action="mark">
+                    <button type="button" class="btn btn-danger fa fa-flag" title="{{'add_marker' | trans({}, 'media_resource')}}" data-action="mark">
                     </button> 
                 {% endif %}
-                <button type="button" class="btn btn-default fa fa-question" data-action="help" title="Aide">
+                <button type="button" class="btn btn-default fa fa-question" data-action="help" title="{{'region_help' | trans({}, 'media_resource')}}">
                 </button>
             </div>
         </div>
@@ -72,18 +75,18 @@
                             </div>
                             {% if edit %}
                                 <div class="col-xs-8">
-                                    <div onclick="goTo( {{ region.start}} );" contenteditable="true" class="text-left note">{{ region.note | raw }}</div>
+                                    <div contenteditable="true" class="text-left note">{{ region.note | raw }}</div>
                                 </div>
                             {% else %}
                                 <div class="col-xs-10">
-                                    <div onclick="goTo( {{ region.start}} );" class="text-left note">{{ region.note | raw }}</div>
+                                    <div class="text-left note">{{ region.note | raw }}</div>
                                 </div>
                             {% endif %}
                             {% if edit %}
                                 <div class="col-xs-2">
                                     <div class="btn-group" role="group">
-                                        <button role="button" type="button" class="btn btn-default fa fa-cog" title="configurer la region." onclick="configRegion(this);"> </button>
-                                        <button role="button" type="button" class="btn btn-danger fa fa-trash-o" title="supprimer la region." onclick="deleteRegion(this);"></button>
+                                        <button role="button" type="button" class="btn btn-default fa fa-cog" title="{{'region_config' | trans({}, 'media_resource')}}" onclick="configRegion(this);"> </button>
+                                        <button role="button" type="button" class="btn btn-danger fa fa-trash-o" title="{{'region_delete' | trans({}, 'media_resource')}}" onclick="deleteRegion(this);"></button>
                                     </div>
                                 </div>
                             {% endif %}                            
@@ -116,7 +119,7 @@
                     <button type="button" class="btn annotation-button blue" title="Accent primaire" data-color="blue" data-action="annotate">&nbsp;</button>
                     <button type="button" class="btn annotation-button red" title="Accent secondaire" data-color="red" data-action="annotate">&nbsp;</button>
                     <button type="button" class="btn annotation-button orange" title="Voyelle faible" data-color="orange" data-action="annotate">&nbsp;</button>
-                    <button type="button" class="btn annotation-button black" title="Texte normale" data-color="black" data-action="annotate">&nbsp;</button>
+                    <button type="button" class="btn annotation-button black" title="Texte normal" data-color="black" data-action="annotate">&nbsp;</button>
                 </div>
             </div>
         </div>
@@ -125,10 +128,10 @@
     <!-- hidden fields -->
     <input type="hidden" name="editing" value="{{edit ? 1:0}}">
     <input type="hidden" name="type" value="audio">   
-    <input type="hidden" name="audio-url" value="{{asset('bundles/innovamediaresource/uploads/')}}{{resource.medias[0].url}}">
+    <input type="hidden" name="audio-url" value="{{asset('bundles/innovamediaresource/uploads/')}}{{_resource.medias[0].url}}">
 
     {% if edit %}
-        <input type="hidden" name="update_url" value="{{path('media_resource_save',  {'workspaceId': workspace.id ,'id':resource.id})}}" />
+        <input type="hidden" name="update_url" value="{{path('media_resource_save',  {'workspaceId': workspace.id ,'id':_resource.id})}}" />
     {% endif %}
 
 

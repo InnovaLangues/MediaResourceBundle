@@ -1,14 +1,21 @@
 # a
 add: Ajouter
+add_marker: Add a marker
+accent_primary: Primary accent
+accent_secondary: Secondary accent
+accent_weak_vowel: Weak vowel
+accent_no_accent: Normal text
 
 # b
-back: Quitter
+back: Quit
 
 # c
+close: Close
 
 
 # d
-delete_media_resource: Supprimer la ressource
+delete_media_resource: Delete Resource
+dialog_region_configure: Configure segment
 
 # e
 error_while_uploading: Erreur lors de l'upload du fichier.
@@ -16,3 +23,31 @@ error_while_encoding: Erreur lors de la conversion du fichier.
 
 # i
 innova_media_resource: Media Resource
+
+#m
+move_backward: Go to previous marker
+move_forward: Go to next marker
+
+#n
+none: None
+no_media_resource: None found.
+
+#p
+play_pause: PLay / Pause
+
+#r
+region_help: Segment help
+region_config: Configure segment
+region_delete: Delete segment
+region_config_allow_rate: Allow playback rate change
+region_config_allow_bwb: Allow backward building playback
+region_config_allow_loop: Allow loop playback
+region_config_help_text: Help text
+region_config_help_region_title: Help segment
+region_delete_confirm_base: Are you sure you want to delete this segment?
+region_delete_confirm_sub: This segment is related to one or more helps.<br/> Those helps will be automatically deleted.
+resource_update_success: Resource update successfull.
+resource_update_error: An error occured while updating the resource.
+
+#s
+save: Save

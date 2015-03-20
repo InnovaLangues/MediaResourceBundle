@@ -429,8 +429,15 @@ function playBackward() {
     if (window.SpeechSynthesisUtterance === undefined) {
         console.log('not supported!');
     } else {
+        // TODO find a way to avoid multiple TTS playback @ the same time...
+        if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
+            window.speechSynthesis.pause();
+            window.speechSynthesis.cancel();
+        }
         var utterance = new SpeechSynthesisUtterance();
-        var text = strUtils.removeHtml(helpCurrentWRegion.data.note);
+
+        var row = domUtils.getRegionRow(helpCurrentWRegion.start + 0.1, helpCurrentWRegion.end - 0.1);
+        var text = strUtils.removeHtml($(row).find('input.hidden-note').val());
         var array = text.split(' ');
         var start = array.length - 1;
         handleUtterancePlayback(start, utterance, array);
@@ -438,7 +445,14 @@ function playBackward() {
 }
 
 function sayIt(utterance, callback) {
-    window.speechSynthesis.speak(utterance);
+
+    if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume(utterance);
+    }
+    else {
+        window.speechSynthesis.speak(utterance);
+    }
+    //window.speechSynthesis.speak(utterance);
     utterance.onend = function (event) {
         return  callback();
     };
@@ -462,7 +476,12 @@ function handleUtterancePlayback(index, utterance, textArray) {
 
 // config region modal functions
 function configRegion(elem) {
-    var configModal = domUtils.openConfigRegionModal(elem);
+    var configModal = domUtils.openConfigRegionModal(elem, wavesurfer, wavesurferUtils);
+
+    if (playing) {
+        wavesurfer.pause();
+        playing = false;
+    }
 
     configModal.on('shown.bs.modal', function () {
         console.log('config modal open');
@@ -484,19 +503,25 @@ function onSelectedRegionChange(elem) {
     console.log('selection changed');
     var idx = elem.selectedIndex;
     var val = elem.options[idx].value;
-    var content = elem.options[idx].innerHTML;
-    console.log(val + " " + content);
     var wRegionId = $('#' + val).find('button.btn-danger').data('id');
     currentHelpRelatedRegion = wavesurfer.regions.list[wRegionId];
-}
-
-function playHelpRelatedRegion() {
     if (playing) {
         wavesurfer.pause();
         playing = false;
     }
-    currentHelpRelatedRegion.play();
-    playing = true;
+}
+
+function playHelpRelatedRegion() {
+    if (currentHelpRelatedRegion) {
+        // region.play() does not work great
+        wavesurfer.play(currentHelpRelatedRegion.start, currentHelpRelatedRegion.end);
+        playing = true;
+        currentHelpRelatedRegion.once('out', function () {
+            // force pause
+            wavesurfer.pause();
+            playing = false;
+        });
+    }
 }
 
 
@@ -566,11 +591,10 @@ function deleteRegion(elem) {
             var toRemove = wavesurfer.regions.list[id];
             var currentRow = $('button.' + id).closest(".region");
             var regionUuid = $(currentRow).attr('id');
-            console.log(regionUuid);
             var usedInHelp = domUtils.getRegionsUsedInHelp(regionUuid);
-            var message = "<strong>Etes vous sur de vouloir supprimer la région?</strong>";
+            var message = "<strong>" + Translator.trans('region_delete_confirm_base', {}, 'media_resource') + "</strong>";
             if (usedInHelp.length > 0) {
-                message += '<hr/><div class="text-center"> Cette région est affectée à une ou plusieurs aides.<br/> Ces aides seront supprimées automatiquement.</div>';
+                message += '<hr/><div class="text-center"> ' + Translator.trans('region_delete_confirm_sub', {}, 'media_resource') + '</div>';
             }
 
             bootbox.confirm(message, function (result) {
