@@ -73,7 +73,7 @@ var DomUtils = {
         var container = $('.regions-container');
         // HTML to append
         var html = '';
-        html += '<div class="row form-row region" data-uuid="' + uuid + '">';
+        html += '<div class="row form-row region" id="' + uuid + '" data-uuid="' + uuid + '">';
         // start input
         html += '       <div class="col-xs-1">';
         html += '           <div class="time-text start">' + wavesurferUtils.secondsToHms(region.start) + '</div>';
@@ -133,15 +133,12 @@ var DomUtils = {
         var rRows = [];
         $('.region').each(function () {
             var row = {};
-            var time = parseFloat($(this).find('input.hidden-start').val());
-            var wregion = wavesurferUtils.getCurrentRegion(wavesurfer, time + 0.1);
             row = {
                 uid: $(this).data('uuid'),
                 hstart: $(this).find('.time-text.start').text(),
                 hend: $(this).find('.time-text.end').text(),
                 start: $(this).find('input.hidden-start').val(),
-                end: $(this).find('input.hidden-end').val(),
-                wregion: wregion
+                end: $(this).find('input.hidden-end').val()
             };
             rRows.push(row);
 
@@ -163,20 +160,24 @@ var DomUtils = {
         var html = '';
         html += '<div class="row">';
         html += '   <div class="col-md-12">';
-        html += '       <div class="form form-horizontal">';
-        html += '           <div class="form-group">';
-        html += '               <label class="col-md-4 control-label" for="has-loop">Autoriser la lecture en boucle</label>';
+        html += '       <div class="form">';
+        html += '           <div class="checkbox">';
+        html += '               <label>';
         if (loop.val() === '1')
-            html += '           <input type="checkbox" name="loop" class="checkbox" value="loop" checked>';
+            html += '               <input type="checkbox" name="loop"  value="loop" checked>';
         else
-            html += '           <input type="checkbox" name="loop" class="checkbox" value="loop">';
+            html += '               <input type="checkbox" name="loop" class="checkbox" value="loop">';
+        html += '               Autoriser la lecture en boucle';
+        html += '               </label>';
         html += '           </div>';
-        html += '           <div class="form-group">';
-        html += '               <label class="col-md-4 control-label" for="has-backward">Autoriser la lecture en backward building</label>';
+        html += '           <div class="checkbox">';
+        html += '               <label>Autoriser la lecture en backward building</label>';
         if (backward.val() === '1')
-            html += '           <input type="checkbox" name="backward" class="checkbox" value="backward" checked>';
+            html += '               <input type="checkbox" name="backward" class="checkbox" value="backward" checked>';
         else
-            html += '           <input type="checkbox" name="backward" class="checkbox" value="backward">';
+            html += '               <input type="checkbox" name="backward" class="checkbox" value="backward">';
+        html += '               Autoriser la lecture en backward building';
+        html += '               </label>';
         html += '           </div>';
         html += '           <div class="form-group">';
         html += '               <label class="col-md-4 control-label" for="has-rate">Autoriser le changement de la vitesse de lecture</label>';
@@ -197,7 +198,6 @@ var DomUtils = {
         // loop
         for (var i = 0; i < rRows.length; i++) {
             if (currentStart !== rRows[i].hstart) {
-                console.log(helpRegionId.val() + ' ' + rRows[i].uid);
                 var selected = helpRegionId.val() === rRows[i].uid ? 'selected' : '';
                 
                 html += '           <option value="' + rRows[i].uid + '" ' + selected + '>' + rRows[i].hstart + ' - ' + rRows[i].hend + '</option>';
@@ -209,13 +209,14 @@ var DomUtils = {
         html += '   </div>'; // end col
         html += '</div>'; // end row
 
-        bootbox.dialog({
+        var modal = bootbox.dialog({
             title: "Configurer la région:",
             message: html,
             buttons: {
                 success: {
                     label: "Fermer",
                     className: "btn-success",
+                    show: false,
                     callback: function () {
                         // get form values
                         var helpText = $('input[name=help-text]').val();
@@ -234,21 +235,23 @@ var DomUtils = {
                 }
             }
         });
+        return modal;
     },
+    /**
+     * get regions that are using the given regionUuid as help region
+     * @param {type} regionUuid the deleted region uuid
+     * @returns {Array| jQuery hidden input concerned objects}
+     */
     getRegionsUsedInHelp: function (regionUuid) {
         var result = [];
+        // for each region row
         $('.region').each(function () {
-            var current_help_id = $(this).find('input.hidden-region-uuid').val();
+            // if one or more region have the hidden input setted the deleted region is used in help
+            var elem = $(this).find('input.hidden-config-help-region-uuid');
+            var current_help_id = $(elem).val();
             if (current_help_id == regionUuid) {
-                var row = {};
-                row = {
-                    uid: $(this).data('uuid'),
-                    hstart: $(this).find('.time-text.start').text(),
-                    hend: $(this).find('.time-text.end').text(),
-                    start: $(this).find('input.hidden-start').val(),
-                    end: $(this).find('input.hidden-end').val()
-                };
-                result.push(row);
+                // push the input in result array
+                result.push($(elem));
             }
         });
         return result;

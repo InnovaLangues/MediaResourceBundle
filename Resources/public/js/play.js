@@ -27,7 +27,8 @@ var helpPlaybackRate = 1;
 var helpPlaybackBackward = false;
 var helpIsPlaying = false;
 var helpAudioPlayer;
-var helpCurrentWRegion;
+var helpCurrentWRegion; // the region where we are when asking help
+var currentHelpRelatedRegion; // the related region for help; 
 
 var wavesurferOptions = {
     container: '#waveform',
@@ -103,7 +104,7 @@ var actions = {
             // ADD new region to DOM in the right place
             var toAdd = addRegion(time, savedEnd, '', false);
             //addRegionToDom(toAdd);
-            var guid = StringUtils.createGuid(); 
+            var guid = StringUtils.createGuid();
             domUtils.addRegionToDom(wavesurfer, wavesurferUtils, toAdd, guid);
         }
     },
@@ -115,11 +116,11 @@ var actions = {
         var hModal = domUtils.openRegionHelpModal(helpCurrentWRegion, audioUrl);
 
         hModal.on('shown.bs.modal', function () {
-            console.log('modal open');
+            console.log('help modal open');
         });
 
         hModal.on('hidden.bs.modal', function () {
-            console.log('modal close');
+            console.log('help modal close');
             helpPlaybackLoop = false;
             helpPlaybackRate = 1;
             helpPlaybackBackward = false;
@@ -155,7 +156,7 @@ $(document).ready(function () {
     });
 
     /* SWITCHES INPUTS */
-   
+
     var toggleAnnotationCheck = $("[name='toggle-annotation-checkbox']").bootstrapSwitch('state', true);
     $(toggleAnnotationCheck).on('switchChange.bootstrapSwitch', function (event, state) {
         $('.annotation-buttons-container').toggle(transitionType);
@@ -237,7 +238,7 @@ $(document).ready(function () {
             console.log('no region creating a new one');
             // if no region : add one by default
             var region = addRegion(0.0, wavesurfer.getDuration(), '', false);
-            var guid = StringUtils.createGuid(); 
+            var guid = StringUtils.createGuid();
             // addRegionToDom(region);
             domUtils.addRegionToDom(wavesurfer, wavesurferUtils, region, guid);
         } else {
@@ -405,8 +406,6 @@ function setPlaybackRate(elem, value) {
 
 function toggleLoopPlayback(elem) {
     helpPlaybackLoop = !helpPlaybackLoop;
-    console.log(helpPlaybackLoop);
-
     if (helpPlaybackLoop) {
         $(elem).addClass('active');
     }
@@ -462,13 +461,45 @@ function handleUtterancePlayback(index, utterance, textArray) {
 }
 
 // config region modal functions
-function onSelectedRegionChange(elem){
-    console.log('selection changed');
-     var idx=elem.selectedIndex;
-    var val=elem.options[idx].value;
-    var content=elem.options[idx].innerHTML;
-    console.log(val + " " + content);
+function configRegion(elem) {
+    var configModal = domUtils.openConfigRegionModal(elem);
+
+    configModal.on('shown.bs.modal', function () {
+        console.log('config modal open');
+    });
+
+    configModal.on('hidden.bs.modal', function () {
+        console.log('config modal close');
+        currentHelpRelatedRegion = null;
+        if (playing) {
+            wavesurfer.pause();
+            playing = false;
+        }
+    });
+
+    configModal.modal("show");
 }
+
+function onSelectedRegionChange(elem) {
+    console.log('selection changed');
+    var idx = elem.selectedIndex;
+    var val = elem.options[idx].value;
+    var content = elem.options[idx].innerHTML;
+    console.log(val + " " + content);
+    var wRegionId = $('#' + val).find('button.btn-danger').data('id');
+    currentHelpRelatedRegion = wavesurfer.regions.list[wRegionId];
+}
+
+function playHelpRelatedRegion() {
+    if (playing) {
+        wavesurfer.pause();
+        playing = false;
+    }
+    currentHelpRelatedRegion.play();
+    playing = true;
+}
+
+
 
 /**
  * put the wavesurfer play cursor at the given time and pause playback
@@ -534,16 +565,25 @@ function deleteRegion(elem) {
         if (id) {
             var toRemove = wavesurfer.regions.list[id];
             var currentRow = $('button.' + id).closest(".region");
-            var regionUuid = $(currentRow).data('uuid');
+            var regionUuid = $(currentRow).attr('id');
             console.log(regionUuid);
             var usedInHelp = domUtils.getRegionsUsedInHelp(regionUuid);
             var message = "<strong>Etes vous sur de vouloir supprimer la région?</strong>";
-            if(usedInHelp.length > 0){
+            if (usedInHelp.length > 0) {
                 message += '<hr/><div class="text-center"> Cette région est affectée à une ou plusieurs aides.<br/> Ces aides seront supprimées automatiquement.</div>';
             }
-            
+
             bootbox.confirm(message, function (result) {
                 if (result) {
+                    // remove help reference(s) if needed
+                    if (usedInHelp.length > 0) {
+                        for (var index = 0; index < usedInHelp.length; index++) {
+                            var elem = usedInHelp[index];
+                            // reset element value
+                            $(elem).val('');
+                        }
+                    }
+
                     var start = toRemove.start;
                     var end = toRemove.end;
                     // if we are deleting the first region
@@ -593,13 +633,6 @@ function deleteRegion(elem) {
     }
 }
 
-
-function configRegion(elem) {
-    domUtils.openConfigRegionModal(elem);
-}
-
-
-
 function manualTextAnnotation(text, css) {
     if (!css) {
         document.execCommand('insertHTML', false, css);
@@ -607,5 +640,3 @@ function manualTextAnnotation(text, css) {
         document.execCommand('insertHTML', false, '<span class="' + css + '">' + text + '</span>');
     }
 }
-
-

@@ -63,7 +63,7 @@
             <div class="col-md-12 text-center regions-container" {% if edit == false %} style="display:none;" {% endif %}>               
                 {% if regions | length > 0 %}
                     {% for region in regions %}
-                        <div class="row form-row region" data-uuid="{{region.uuid}}">
+                        <div class="row form-row region" id="{{region.uuid}}" data-uuid="{{region.uuid}}">
                             <div class="col-xs-1">                                    
                                 <div class="time-text start">{{ region.start | hmsTime }}</div>
                             </div>

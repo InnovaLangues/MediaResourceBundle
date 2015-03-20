@@ -39,9 +39,9 @@ class RegionManager {
     }
 
     /**
-     * Update an exercise (title)
+     * Create/Update MediaResource region (title)
      * @param MediaResource $mr
-     * @param Array of stdClass $region 
+     * @param Array of data
      */
     public function handleMediaResourceRegions(MediaResource $mr, $data) {
 
@@ -74,8 +74,7 @@ class RegionManager {
                 $config -> setHasLoop($region['loop']);
                 $config -> setHasRate($region['rate']);
                 $config -> setHasBackward($region['backward']);
-                $config -> setHelpRegionUuid($region['help-region-uuid']);
-                
+                $config -> setHelpRegionUuid($region['help-region-uuid']);               
                 
                 $this->save($entity);
             }
@@ -83,6 +82,11 @@ class RegionManager {
         return $mr;
     }
 
+    /**
+     * tranform an array of separated data to an array of region / region config data
+     * @param array $data
+     * @return an array of region and region config
+     */
     private function getRegionsFromData($data) {
         $regions = array();
         $starts = $data['start'];
@@ -116,6 +120,11 @@ class RegionManager {
         return $regions;
     }
 
+    /**
+     * Delete unused regions
+     * @param MediaResource $mr
+     * @param array of regions to check
+     */
     private function deleteUnusedRegions(MediaResource $mr, $toCheck) {
         // get existing regions in database
         $existing = $this->getRepository()->findBy(array('mediaResource' => $mr));
@@ -140,7 +149,6 @@ class RegionManager {
                     break;
                 }
             }
-
             // if not found, this is an unused region
             if (!$found) {
                 $toDelete[] = $region;
