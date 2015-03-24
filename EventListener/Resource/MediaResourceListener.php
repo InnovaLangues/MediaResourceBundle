@@ -27,7 +27,10 @@ class MediaResourceListener extends ContainerAware {
         $mediaResource = $event->getResource();
         $route = $this->container
                 ->get('router')
-                ->generate('innova_media_resource_administrate', array('id' => $mediaResource->getId(), 'workspaceId' => $mediaResource->getWorkspace()->getId())
+                ->generate('innova_media_resource_administrate', array( 
+                        'id' => $mediaResource->getId(), 
+                        'workspaceId' => $mediaResource->getWorkspace()->getId()
+                )
         );
         $event->setResponse(new RedirectResponse($route));
         $event->stopPropagation();
@@ -42,7 +45,10 @@ class MediaResourceListener extends ContainerAware {
         $mediaResource = $event->getResource();
         $route = $this->container
                 ->get('router')
-                ->generate('innova_media_resource_open', array('id' => $mediaResource->getId(), 'workspaceId' => $mediaResource->getWorkspace()->getId())
+                ->generate('innova_media_resource_open', array(
+                                    'id' => $mediaResource->getId(), 
+                                    'workspaceId' => $mediaResource->getWorkspace()->getId()
+                    )
         );
         $event->setResponse(new RedirectResponse($route));
         $event->stopPropagation();
@@ -58,14 +64,15 @@ class MediaResourceListener extends ContainerAware {
         $form = $this->container->get('form.factory')->create('media_resource', new MediaResource());
         // Try to process form
         $request = $this->container->get('request');
-        $form->handleRequest($request);
+        $form->submit($request);
         if ($form->isValid()) {
-
             $mediaResource = $form->getData();
+            // check access
+            if (false === $this->container->get('security.context')->isGranted('CREATE', $mediaResource->getResourceNode())) {
+                throw new AccessDeniedException();
+            }          
             $file = $form['file']->getData();
-
-            $manager = $this->container->get('innova_media_resource.manager.media_resource');
-            $manager->handleMediaResourceMedia($file, $mediaResource);            
+            $this->container->get('innova_media_resource.manager.media_resource')->handleMediaResourceMedia($file, $mediaResource);
 
             // Send new path to dispatcher through event object
             $event->setResources(array($mediaResource));
@@ -97,9 +104,12 @@ class MediaResourceListener extends ContainerAware {
         $event->stopPropagation();
     }
 
-    
-    
     public function onDelete(DeleteResourceEvent $event) {
+
+        $mediaResource = $event->getResource();
+        $manager = $this->container->get('innova_media_resource.manager.media_resource');
+        $manager->delete($mediaResource);
+
         $event->stopPropagation();
     }
 

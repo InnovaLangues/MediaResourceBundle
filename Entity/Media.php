@@ -43,10 +43,8 @@ class Media {
      * @ORM\ManyToOne(targetEntity="Innova\MediaResourceBundle\Entity\MediaResource", inversedBy="medias")
      * @ORM\JoinColumn(name="media_resource_id", nullable=false)
      */
-    private $mediaResource;    
-    
-    public $file;
-    
+    private $mediaResource; 
+     
     
     public function setMediaResource(MediaResource $mr){
         $this->mediaResource = $mr;

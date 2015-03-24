@@ -9,12 +9,7 @@
         <!-- toolbar : save exercise - show / hide text - show / hide media(s) - switch media display waveform - video -->
         <div class="row">
             <div class="col-md-6">
-                {% if edit %}
-                    <div contenteditable="true" class="exercise-title">{{_resource.name}}</div>
-                    <input type="hidden" name="title" value="{{_resource.name}}" />
-                {% else %}
-                    <div class="exercise-title">{{_resource.name}}</div>
-                {% endif %} 
+                <div class="media-resource-title">{{_resource.resourceNode.name}}</div>
             </div>
             <div class="col-md-6 text-right">
                 <div class="btn-group">

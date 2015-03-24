@@ -3,7 +3,7 @@
 namespace Innova\MediaResourceBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-
+use Symfony\Component\Finder\Exception\AccessDeniedException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -26,13 +26,15 @@ class MediaResourceController extends Controller {
      * @ParamConverter("MediaResource", class="InnovaMediaResourceBundle:MediaResource")
      */
     public function openAction(Workspace $workspace, MediaResource $mr) {
+        if (false === $this->container->get('security.context')->isGranted('OPEN', $mr->getResourceNode())) {
+            throw new AccessDeniedException();
+        }
 
         // use of specific method to order regions correctly
         $regions = $this->get('innova_media_resource.manager.media_resource_region')->findByAndOrder($mr);
         if ($mr->getId()) {
             return $this->render('InnovaMediaResourceBundle:MediaResource:details.html.twig', array('_resource' => $mr, 'edit' => false, 'regions' => $regions, 'workspace' => $workspace));
-        } 
-        else{
+        } else {
             $msg = $this->get('translator')->trans('no_media_resource', array(), 'media_resource');
             $this->get('session')->getFlashBag()->set('error', $msg);
             // TODO redirect to claro resource manager
@@ -46,6 +48,10 @@ class MediaResourceController extends Controller {
      * @ParamConverter("MediaResource", class="InnovaMediaResourceBundle:MediaResource")
      */
     public function administrateAction(Workspace $workspace, MediaResource $mr) {
+
+        if (false === $this->container->get('security.context')->isGranted('ADMINISTRATE', $mr->getResourceNode())) {
+            throw new AccessDeniedException();
+        }
         // use of specific method to order regions correctly
         $regions = $this->get('innova_media_resource.manager.media_resource_region')->findByAndOrder($mr);
         if ($mr->getId()) {
@@ -69,14 +75,10 @@ class MediaResourceController extends Controller {
         if ($this->getRequest()->isMethod('POST')) {
             $request = $this->container->get('request');
             $data = $request->request->all();
-            if (count($data) > 0) {
-                $title = $data['title'];
-                $mr->setName($title);
-                // $this->get('innova_media_resource.manager.media_resource')->updateMediaResourceName($mr, $title);
-
+            if (count($data) > 0) {               
                 $regionManager = $this->get('innova_media_resource.manager.media_resource_region');
-                $mr = $regionManager->handleMediaResourceRegions($mr, $data);
-                if ($mr) {
+                $mediaResource = $regionManager->handleMediaResourceRegions($mr, $data);
+                if ($mediaResource) {
                     $msg = $this->get('translator')->trans('resource_update_success', array(), 'media_resource');
                     return new \Symfony\Component\HttpFoundation\Response($msg, 200);
                 } else {
@@ -85,6 +87,5 @@ class MediaResourceController extends Controller {
                 }
             }
         }
-    }   
-
+    }
 }

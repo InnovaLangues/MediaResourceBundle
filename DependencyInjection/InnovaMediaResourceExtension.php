@@ -24,8 +24,6 @@ class InnovaMediaResourceExtension extends Extension {
         $loader->load('managers.yml');
         $loader->load('twig.yml');
         $loader->load('form_types.yml');
-        $loader->load('form_handlers.yml');
-        // $loader->load('controllers.yml');
 
         return $this;
     }

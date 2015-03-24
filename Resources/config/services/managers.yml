@@ -2,16 +2,16 @@ services:
     innova_media_resource.manager.media_resource:
         class: Innova\MediaResourceBundle\Manager\MediaResourceManager 
         arguments:
-            entityManager: @doctrine.orm.entity_manager
-            kernelRoot: %kernel.root_dir%
-            translator: @translator
+            entityManager:  @doctrine.orm.entity_manager
+            kernelRoot:     %kernel.root_dir%
+            translator:     @translator
     innova_media_resource.manager.media_resource_region:
         class: Innova\MediaResourceBundle\Manager\RegionManager 
         arguments:
-            entityManager: @doctrine.orm.entity_manager
-            translator: @translator
+            entityManager:  @doctrine.orm.entity_manager
+            translator:     @translator
     innova_media_resource.manager.media_resource_region_config:
         class: Innova\MediaResourceBundle\Manager\RegionConfigManager 
         arguments:
-            entityManager: @doctrine.orm.entity_manager
-            translator: @translator
+            entityManager:  @doctrine.orm.entity_manager
+            translator:     @translator

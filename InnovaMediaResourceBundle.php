@@ -24,7 +24,4 @@ class InnovaMediaResourceBundle extends PluginBundle implements AutoConfigurable
         $config = new ConfigurationBuilder();
         return $config->addRoutingResource(__DIR__ . '/Resources/config/routing.yml', null, 'innova_media_resource');
     }
-
-   
-    
 }

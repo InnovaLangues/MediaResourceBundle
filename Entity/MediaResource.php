@@ -5,6 +5,8 @@ namespace Innova\MediaResourceBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Claroline\CoreBundle\Entity\Resource\AbstractResource;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Validator\Constraints as Assert;
 
 use Innova\MediaResourceBundle\Entity\Media;
 use Innova\MediaResourceBundle\Entity\Region;
@@ -30,6 +32,7 @@ class MediaResource extends AbstractResource {
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
+     * @Assert\NotBlank
      */
     protected $name;
 
@@ -77,6 +80,11 @@ class MediaResource extends AbstractResource {
 
     public function getFile() {
         return $this->file;
+    }
+    
+     public function setFile(UploadedFile $file) {
+        $this->file = $file;
+        return $this;
     }
 
     /**

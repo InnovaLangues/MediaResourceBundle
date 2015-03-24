@@ -10,7 +10,3 @@ parameters:
     
     # Form Types
     innova_media_resource.form.type.media_resource.class:   Innova\MediaResourceBundle\Form\Type\MediaResourceType
-    
-    
-    # Form Handlers
-    innova_media_resource.form.handler.media_resource.class:   Innova\MediaResourceBundle\Handler\Type\MediaResourceHandler

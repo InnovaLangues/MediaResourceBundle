@@ -5,7 +5,8 @@ namespace Innova\MediaResourceBundle\Form\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-
+use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\NotBlank;
 /**
  * Description of MediaResourceType
  *
@@ -13,8 +14,11 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 class MediaResourceType extends AbstractType {
 
     public function buildForm(FormBuilderInterface $builder, array $options) {
-        $builder->add('name', 'text')
-                ->add('file', 'file');
+        $builder->add('name', 'text', array('required' => true))
+                ->add('file', 'file', array('required' => true, 'mapped' => false, 'constraints' => array(
+                    new NotBlank(),
+                    new File()
+                )));
     }
 
     public function getDefaultOptions() {
