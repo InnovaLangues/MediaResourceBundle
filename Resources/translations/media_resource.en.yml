@@ -5,6 +5,7 @@ accent_primary: Primary accent
 accent_secondary: Secondary accent
 accent_weak_vowel: Weak vowel
 accent_no_accent: Normal text
+alert_only_one_region_left: Il n'y a qu'un seul segment. Impossible de supprimer!
 
 # b
 back: Quit

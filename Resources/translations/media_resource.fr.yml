@@ -5,6 +5,7 @@ accent_primary: Accent primaire
 accent_secondary: Accent secondaire
 accent_weak_vowel: Voyelle faible
 accent_no_accent: Texte normal
+alert_only_one_region_left: Just one region. Can not delete!
 
 # b
 back: Quitter
