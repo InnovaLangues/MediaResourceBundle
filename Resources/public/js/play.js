@@ -30,6 +30,8 @@ var helpAudioPlayer;
 var helpCurrentWRegion; // the region where we are when asking help
 var currentHelpRelatedRegion; // the related region for help; 
 
+var utterance; // global SpeechSynthesisUtterance instance;
+
 var wavesurferOptions = {
     container: '#waveform',
     waveColor: '#172B32',
@@ -125,6 +127,7 @@ var actions = {
             helpPlaybackRate = 1;
             helpPlaybackBackward = false;
             helpIsPlaying = false;
+            utterance = null;
         });
 
         hModal.modal("show");
@@ -419,42 +422,40 @@ function toggleLoopPlayback(elem) {
 }
 
 
-
+/**
+ * Called by HelpModal play backward button
+ * 
+ */
 // will only work with chrome browser
 function playBackward() {
+    // is playing for real audio (ie not for TTS)
     if (helpIsPlaying && helpAudioPlayer) {
+        // stop audio playback before playing TTS
         helpAudioPlayer.pause();
         helpIsPlaying = false;
     }
     if (window.SpeechSynthesisUtterance === undefined) {
         console.log('not supported!');
     } else {
-        // TODO find a way to avoid multiple TTS playback @ the same time...
-        if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
-            window.speechSynthesis.pause();
-            window.speechSynthesis.cancel();
+        // create an instance only if needed!
+        if (!utterance) {
+            utterance = new SpeechSynthesisUtterance();
         }
-        var utterance = new SpeechSynthesisUtterance();
-
         var row = domUtils.getRegionRow(helpCurrentWRegion.start + 0.1, helpCurrentWRegion.end - 0.1);
         var text = strUtils.removeHtml($(row).find('input.hidden-note').val());
         var array = text.split(' ');
         var start = array.length - 1;
-        handleUtterancePlayback(start, utterance, array);
+        // check if utterance is already speaking before playing (pultiple click on backward button)
+        if (!window.speechSynthesis.speaking) { 
+            handleUtterancePlayback(start, utterance, array);
+        }
     }
 }
 
 function sayIt(utterance, callback) {
-
-    if (window.speechSynthesis.paused) {
-        window.speechSynthesis.resume(utterance);
-    }
-    else {
-        window.speechSynthesis.speak(utterance);
-    }
-    //window.speechSynthesis.speak(utterance);
+    window.speechSynthesis.speak(utterance);
     utterance.onend = function (event) {
-        return  callback();
+        return callback();
     };
 }
 
@@ -484,11 +485,10 @@ function configRegion(elem) {
     }
 
     configModal.on('shown.bs.modal', function () {
-        console.log('config modal open');
+
     });
 
     configModal.on('hidden.bs.modal', function () {
-        console.log('config modal close');
         currentHelpRelatedRegion = null;
         if (playing) {
             wavesurfer.pause();
@@ -500,7 +500,6 @@ function configRegion(elem) {
 }
 
 function onSelectedRegionChange(elem) {
-    console.log('selection changed');
     var idx = elem.selectedIndex;
     var val = elem.options[idx].value;
     var wRegionId = $('#' + val).find('button.btn-danger').data('id');
@@ -523,8 +522,6 @@ function playHelpRelatedRegion() {
         });
     }
 }
-
-
 
 /**
  * put the wavesurfer play cursor at the given time and pause playback
@@ -581,7 +578,7 @@ function deleteRegion(elem) {
 
     // can not delete region if just one ( = the default one)
     if (!jQuery.isEmptyObject(wavesurfer.regions.list) && Object.keys(wavesurfer.regions.list).length === 1) {
-        bootbox.alert('just one default region can not delete');
+        bootbox.alert(Translator.trans('alert_only_one_region_left', {}, 'media_resource'));
     }
     else {
         // remove from wavesurfer regions list
