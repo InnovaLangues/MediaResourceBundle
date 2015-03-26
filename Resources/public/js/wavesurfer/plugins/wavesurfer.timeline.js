@@ -96,7 +96,8 @@
         },
 
         updateCanvasStyle: function () {
-            var width = Math.round(this.drawer.wrapper.scrollWidth / this.wavesurfer.params.pixelRatio);
+            // var width = Math.round(this.drawer.wrapper.scrollWidth / this.wavesurfer.params.pixelRatio);
+            var width = Math.round(this.drawer.wrapper.scrollWidth / this.wavesurfer.params.pixelRatio) * window.devicePixelRatio;
             this.canvas.width = width;
             this.canvas.height = this.height;
             this.canvas.style.width = width + 'px';
