@@ -3,8 +3,13 @@ services:
         class: Innova\MediaResourceBundle\Manager\MediaResourceManager 
         arguments:
             entityManager:  @doctrine.orm.entity_manager
-            kernelRoot:     %kernel.root_dir%
             translator:     @translator
+            fileDir:        %innova_media_resource.param.files_directory%
+    innova_media_resource.manager.media_resource_media:
+        class: Innova\MediaResourceBundle\Manager\MediaManager 
+        arguments:
+            entityManager:  @doctrine.orm.entity_manager
+            fileDirName:    %innova_media_resource.param.files_directory_name%
     innova_media_resource.manager.media_resource_region:
         class: Innova\MediaResourceBundle\Manager\RegionManager 
         arguments:

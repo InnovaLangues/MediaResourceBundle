@@ -29,16 +29,17 @@ class MediaResourceController extends Controller {
         if (false === $this->container->get('security.context')->isGranted('OPEN', $mr->getResourceNode())) {
             throw new AccessDeniedException();
         }
-
+        $audioPath = $this->get('innova_media_resource.manager.media_resource_media')->getAudioMediaUrl($mr);
         // use of specific method to order regions correctly
         $regions = $this->get('innova_media_resource.manager.media_resource_region')->findByAndOrder($mr);
-        if ($mr->getId()) {
-            return $this->render('InnovaMediaResourceBundle:MediaResource:details.html.twig', array('_resource' => $mr, 'edit' => false, 'regions' => $regions, 'workspace' => $workspace));
-        } else {
-            $msg = $this->get('translator')->trans('no_media_resource', array(), 'media_resource');
-            $this->get('session')->getFlashBag()->set('error', $msg);
-            // TODO redirect to claro resource manager
-        }
+        return $this->render('InnovaMediaResourceBundle:MediaResource:details.html.twig', array(
+                                            '_resource' => $mr, 
+                                            'edit' => false, 
+                                            'regions' => $regions, 
+                                            'workspace' => $workspace,
+                                            'audioPath' => $audioPath
+                                        )
+                            );
     }
 
     /**
@@ -52,21 +53,22 @@ class MediaResourceController extends Controller {
         if (false === $this->container->get('security.context')->isGranted('ADMINISTRATE', $mr->getResourceNode())) {
             throw new AccessDeniedException();
         }
+        $audioPath = $this->get('innova_media_resource.manager.media_resource_media')->getAudioMediaUrl($mr);
         // use of specific method to order regions correctly
         $regions = $this->get('innova_media_resource.manager.media_resource_region')->findByAndOrder($mr);
-        if ($mr->getId()) {
-            return $this->render('InnovaMediaResourceBundle:MediaResource:details.html.twig', array('_resource' => $mr, 'edit' => true, 'regions' => $regions, 'workspace' => $workspace));
-        } else {
-            $msg = $this->get('translator')->trans('no_media_resource', array(), 'media_resource');
-            $this->get('session')->getFlashBag()->set('error', $msg);
-            // return $this->redirect($this->generateUrl('media_resource_list'));
-            // TODO redirect to claro resource manager
-        }
+        return $this->render('InnovaMediaResourceBundle:MediaResource:details.html.twig', array(
+                                            '_resource' => $mr, 
+                                            'edit' => true, 
+                                            'regions' => $regions, 
+                                            'workspace' => $workspace,
+                                            'audioPath' => $audioPath
+                                        )
+                            );
     }
 
     /**
      * AJAX
-     * save after editing (adding and/or configuring regions) a media resource
+     * save after editing a media resource (adding and/or configuring regions) 
      * @Route("/save/{id}", requirements={"id" = "\d+"}, name="media_resource_save")
      * @ParamConverter("MediaResource", class="InnovaMediaResourceBundle:MediaResource")
      *  @Method({"POST"})
@@ -75,7 +77,7 @@ class MediaResourceController extends Controller {
         if ($this->getRequest()->isMethod('POST')) {
             $request = $this->container->get('request');
             $data = $request->request->all();
-            if (count($data) > 0) {               
+            if (count($data) > 0) {
                 $regionManager = $this->get('innova_media_resource.manager.media_resource_region');
                 $mediaResource = $regionManager->handleMediaResourceRegions($mr, $data);
                 if ($mediaResource) {
@@ -88,4 +90,5 @@ class MediaResourceController extends Controller {
             }
         }
     }
+
 }

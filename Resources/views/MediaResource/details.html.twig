@@ -122,8 +122,8 @@
 
     <!-- hidden fields -->
     <input type="hidden" name="editing" value="{{edit ? 1:0}}">
-    <input type="hidden" name="type" value="audio">   
-    <input type="hidden" name="audio-url" value="{{asset('bundles/innovamediaresource/uploads/')}}{{_resource.medias[0].url}}">
+    <input type="hidden" name="type" value="audio">
+    <input type="hidden" name="audio-url" value="{{asset('')}}{{audioPath}}">
 
     {% if edit %}
         <input type="hidden" name="update_url" value="{{path('media_resource_save',  {'workspaceId': workspace.id ,'id':_resource.id})}}" />

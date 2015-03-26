@@ -1,12 +1,13 @@
 parameters:
-    # Controllers
-    innova_media_resource.controller.media_resource.class:  Innova\MediaResourceBundle\Controller\MediaResourceController
-    
-    # Managers
-    innova_media_resource.manager.media_resource.class:     Innova\MediaResourceBundle\Manager\MediaResourceManager
-    
+       
     # Listeners
     innova_media_resource.listener.media_resource.class:    Innova\MediaResourceBundle\EventListener\Resource\MediaResourceListener
     
     # Form Types
     innova_media_resource.form.type.media_resource.class:   Innova\MediaResourceBundle\Form\Type\MediaResourceType
+    
+    # Parameters  
+    # for upload
+    innova_media_resource.param.files_directory:            "%kernel.root_dir%/../innovamediaresourcefiles"
+    # for display
+    innova_media_resource.param.files_directory_name:       "/../../innovamediaresourcefiles"

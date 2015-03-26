@@ -9,19 +9,18 @@ use Innova\MediaResourceBundle\Entity\MediaResource;
 use Innova\MediaResourceBundle\Entity\Media;
 
 /**
- * Activity Manager
- * Performs CRUD actions for MediaResource
+ * MediaResource Manager
  */
 class MediaResourceManager {
 
     protected $em;
-    protected $kernelRoot;
     protected $translator;
+    protected $fileDir;
 
-    public function __construct(EntityManager $em, $kernelRoot, TranslatorInterface $translator) {
+    public function __construct(EntityManager $em, TranslatorInterface $translator, $fileDir) {
         $this->em = $em;
-        $this->kernelRoot = $kernelRoot;
         $this->translator = $translator;
+        $this->fileDir = $fileDir;                
     }
 
     public function getRepository() {
@@ -102,7 +101,7 @@ class MediaResourceManager {
         // so we want to force the audio format in any case
         $ext = pathinfo($url, PATHINFO_EXTENSION);
         $name = basename($url, "." . $ext);        
-        $cmd = 'avconv -i ' . $this->getUploadRootDir() . '/' . $url . ' -id3v2_version 3 -acodec  libmp3lame -ac 2 -ar 44100 -ab 128k -f mp3 - > ' . $this->getUploadRootDir() . '/' . $name . '_converted.mp3';
+        $cmd = 'avconv -i ' . $this->fileDir . '/' . $url . ' -id3v2_version 3 -acodec  libmp3lame -ac 2 -ar 44100 -ab 128k -f mp3 - > ' . $this->fileDir . '/' . $name . '_converted.mp3';
 
         exec($cmd, $output, $returnVar);
         // error
@@ -121,35 +120,19 @@ class MediaResourceManager {
         if (null === $file) {
             return;
         }
-        $uploaded = $file->move($this->getUploadRootDir(), $url);
+        $uploaded = $file->move($this->fileDir, $url);
         unset($file);
         return $uploaded;
     }
 
     public function removeUpload($filename) {
-        $url = $this->getUploadRootDir() . '/' . $filename;
+        $url = $this->fileDir . '/' . $filename;
         if (file_exists($url)) {
             unlink($url);
             return true;
         } else {
             return false;
         }
-    }
-
-    public function getAbsolutePath() {
-        return null === $this->getUrl() ? null : $this->getUploadRootDir() . '/' . $this->url;
-    }
-
-    public function getWebPath() {
-        return null === $this->getUrl() ? null : $this->getUploadDir() . '/' . $this->url;
-    }
-
-    protected function getUploadRootDir() {
-        return __DIR__ . '/../../../../../../web/' . $this->getUploadDir();
-    }
-
-    protected function getUploadDir() {
-        return 'bundles/innovamediaresource/uploads';
     }
 
 }

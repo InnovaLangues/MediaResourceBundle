@@ -1,6 +1,0 @@
-services:
-    # MediaResource controller
-    innova_media_resource.controller.media_resource:
-        class: %innova_media_resource.controller.media_resource.class%
-        arguments:
-            securityContext:    @security.context
