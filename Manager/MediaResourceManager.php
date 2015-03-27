@@ -15,12 +15,12 @@ class MediaResourceManager {
 
     protected $em;
     protected $translator;
-    protected $fileDir;
+    protected $uploadFileDir;
 
-    public function __construct(EntityManager $em, TranslatorInterface $translator, $fileDir) {
+    public function __construct(EntityManager $em, TranslatorInterface $translator, $uploadFileDir) {
         $this->em = $em;
         $this->translator = $translator;
-        $this->fileDir = $fileDir;                
+        $this->uploadFileDir = $uploadFileDir;
     }
 
     public function getRepository() {
@@ -51,7 +51,7 @@ class MediaResourceManager {
     public function handleMediaResourceMedia(UploadedFile $file, MediaResource $mr) {
 
         // set new filename
-        $name = $this->setFileName($file);
+        $name = $this->setFileName($file->getClientOriginalName());
 
         // upload file
         if ($this->upload($file, $name)) {
@@ -77,16 +77,29 @@ class MediaResourceManager {
         return $mr;
     }
 
+    public function copyMedia(MediaResource $mr, Media $origin) {
+
+        $newName = $this->setFileName($origin->getUrl());
+        // make a copy of the file
+        if (copy($this->getUploadDirectory() . '/' . $origin->getUrl(), $this->getUploadDirectory() . '/' . $newName)) {
+            // duplicate file
+            $new = new Media();
+            $new->setType($origin->getType());
+            $new->setUrl($newName);
+            $mr->addMedia($new);
+            $this->em->persist($mr);
+            $new->setMediaResource($mr);
+        }
+    }
+
     /**
-     * set a name for the file
-     * @param UploadedFile $file
+     * set a name for a file
+     * @param string $originalName
      * @return string the new name
      */
-    public function setFileName(UploadedFile $file) {
-        if (null !== $file) {
-            $ext = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
-            return sha1(uniqid(mt_rand(), true)) . '.' . $ext;
-        }
+    public function setFileName($originalName) {
+        $ext = pathinfo($originalName, PATHINFO_EXTENSION);
+        return sha1(uniqid(mt_rand(), true)) . '.' . $ext;
     }
 
     /**
@@ -100,8 +113,8 @@ class MediaResourceManager {
         // we want to ensure that the audio file uploaded will be correctly decoded by audioBuffer.decodeAudioData (WebAudio Api)
         // so we want to force the audio format in any case
         $ext = pathinfo($url, PATHINFO_EXTENSION);
-        $name = basename($url, "." . $ext);        
-        $cmd = 'avconv -i ' . $this->fileDir . '/' . $url . ' -id3v2_version 3 -acodec  libmp3lame -ac 2 -ar 44100 -ab 128k -f mp3 - > ' . $this->fileDir . '/' . $name . '_converted.mp3';
+        $name = basename($url, "." . $ext);
+        $cmd = 'avconv -i ' . $this->getUploadDirectory() . '/' . $url . ' -id3v2_version 3 -acodec  libmp3lame -ac 2 -ar 44100 -ab 128k -f mp3 - > ' . $this->getUploadDirectory() . '/' . $name . '_converted.mp3';
 
         exec($cmd, $output, $returnVar);
         // error
@@ -120,19 +133,23 @@ class MediaResourceManager {
         if (null === $file) {
             return;
         }
-        $uploaded = $file->move($this->fileDir, $url);
+        $uploaded = $file->move($this->getUploadDirectory(), $url);
         unset($file);
         return $uploaded;
     }
 
     public function removeUpload($filename) {
-        $url = $this->fileDir . '/' . $filename;
+        $url = $this->getUploadDirectory() . '/' . $filename;
         if (file_exists($url)) {
             unlink($url);
             return true;
         } else {
             return false;
         }
+    }
+
+    protected function getUploadDirectory() {
+        return $this->uploadFileDir;
     }
 
 }

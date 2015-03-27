@@ -27,9 +27,9 @@ class MediaResourceListener extends ContainerAware {
         $mediaResource = $event->getResource();
         $route = $this->container
                 ->get('router')
-                ->generate('innova_media_resource_administrate', array( 
-                        'id' => $mediaResource->getId(), 
-                        'workspaceId' => $mediaResource->getWorkspace()->getId()
+                ->generate('innova_media_resource_administrate', array(
+            'id' => $mediaResource->getId(),
+            'workspaceId' => $mediaResource->getWorkspace()->getId()
                 )
         );
         $event->setResponse(new RedirectResponse($route));
@@ -46,9 +46,9 @@ class MediaResourceListener extends ContainerAware {
         $route = $this->container
                 ->get('router')
                 ->generate('innova_media_resource_open', array(
-                                    'id' => $mediaResource->getId(), 
-                                    'workspaceId' => $mediaResource->getWorkspace()->getId()
-                    )
+            'id' => $mediaResource->getId(),
+            'workspaceId' => $mediaResource->getWorkspace()->getId()
+                )
         );
         $event->setResponse(new RedirectResponse($route));
         $event->stopPropagation();
@@ -70,7 +70,7 @@ class MediaResourceListener extends ContainerAware {
             // check access
             if (false === $this->container->get('security.context')->isGranted('CREATE', $mediaResource->getResourceNode())) {
                 throw new AccessDeniedException();
-            }          
+            }
             $file = $form['file']->getData();
             $this->container->get('innova_media_resource.manager.media_resource')->handleMediaResourceMedia($file, $mediaResource);
 
@@ -113,8 +113,30 @@ class MediaResourceListener extends ContainerAware {
         $event->stopPropagation();
     }
 
+    /**
+     * Fired when a ResourceNode of type MediaResource is duplicated
+     * @param \Claroline\CoreBundle\Event\CopyResourceEvent $event
+     * @throws \Exception
+     */
     public function onCopy(CopyResourceEvent $event) {
         
+        $toCopy = $event->getResource();        
+        $new = new MediaResource();
+        $new->setName($toCopy->getName());
+
+        // duplicate media resource media(s) (=file(s))
+        $medias = $toCopy->getMedias();
+        foreach ($medias as $media) {
+            $this->container->get('innova_media_resource.manager.media_resource')->copyMedia($new, $media);
+        }
+
+        // duplicate regions and region config
+        $regions = $toCopy->getRegions();
+        foreach ($regions as $region) {
+            $this->container->get('innova_media_resource.manager.media_resource_region')->copyRegion($new, $region);
+        }
+        $event->setCopy($new);
+        $event->stopPropagation();
     }
 
 }

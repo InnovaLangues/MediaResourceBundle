@@ -42,7 +42,11 @@ var wavesurferOptions = {
     minimap: true
 };
 
-/* SOME ACTIONS PLAY / PAUSE, BACKWARD / FORWARD, MARK, VIDEO FULLSCREEN, HIDE / SHOW TEXT | MEDIAS | VIDEO | WAVEFORM */
+
+
+// ======================================================================================================== //
+// ACTIONS BOUND WHEN DOM READY (PLAY / PAUSE, MOVE BACKWARD / FORWARD, ADD MARKER, CALL HELP, ANNOTATE)
+// ======================================================================================================== //
 var actions = {
     play: function () {
         if (!playing) {
@@ -115,7 +119,7 @@ var actions = {
         helpCurrentWRegion = wavesurferUtils.getCurrentRegion(wavesurfer, wavesurfer.getCurrentTime() + 0.1);
 
         // open modal
-        var hModal = domUtils.openRegionHelpModal(helpCurrentWRegion, audioUrl);
+        var hModal = domUtils.openRegionHelpModal(helpCurrentWRegion, audioUrl, wavesurfer, wavesurferUtils);
 
         hModal.on('shown.bs.modal', function () {
             console.log('help modal open');
@@ -141,7 +145,13 @@ var actions = {
     }
 };
 
-/* ON READY */
+// ======================================================================================================== //
+// ACTIONS BOUND WHEN DOM READY END
+// ======================================================================================================== //
+
+// ======================================================================================================== //
+// DOCUMENT READY
+// ======================================================================================================== //
 $(document).ready(function () {
     // get some hidden inputs usefull values
     currentExerciseType = 'audio';
@@ -257,16 +267,8 @@ $(document).ready(function () {
         }
     });
 
-
     wavesurfer.on('seek', function () {
-        /* if ('video' === currentExerciseType) {
-         var currentTime = wavesurfer.getCurrentTime();
-         videoPlayer.currentTime = currentTime;
-         
-         // highlight correspondig region ROW
-         var wRegion = wavesurferUtils.getCurrentRegion(wavesurfer, currentTime + 0.1);
-         highlightRegionRow(wRegion);
-         }*/
+       
     });
 
     wavesurfer.on('region-click', function (region, e) {
@@ -338,7 +340,7 @@ $(document).ready(function () {
     }
     /* /WAVESURFER */
 
-    /* FORM */
+    /* FORM SUBMIT */
     $('#media_resource_form').on('submit', function (e) {
         e.preventDefault();
         var url = $(this).attr('action');
@@ -355,14 +357,22 @@ $(document).ready(function () {
     });
 
 });
+// ======================================================================================================== //
+// DOCUMENT READY END
+// ======================================================================================================== //
 
 
-// help modal functions
-
-function playHelp(start, end) {
-    //$('#help-audio-player');
-    console.log('start ' + start);
-    console.log('end ' + end);
+// ======================================================================================================== //
+// HELP MODAL FUNCTIONS
+// ======================================================================================================== //
+/**
+ * play the region (<audio> element) and loop if needed
+ * Uses an <audio> element because we might need playback rate modification without changing the pitch of the sound
+ * Wavesurfer can't do that for now
+ * @param {float} start
+ * @param {float} end
+ */
+function playHelp(start, end) {  
     helpAudioPlayer = document.getElementsByTagName("audio")[0];
     helpAudioPlayer.addEventListener('timeupdate', function () {
         // console.log(helpAudioPlayer.currentTime);
@@ -391,8 +401,31 @@ function playHelp(start, end) {
         helpIsPlaying = true;
     }
 }
+/**
+ * Allow the user to play the help related region
+ * @param {float} start
+ */
+function playHelpRelatedRegion(start) {
 
+    var region = wavesurferUtils.getCurrentRegion(wavesurfer, start + 0.1);
+    if (!playing) {
+        wavesurfer.play(region.start, region.end);
+        playing = true;
+        region.once('out', function () {
+            // force pause
+            wavesurfer.pause();
+            playing = false;
+        });
+    }
+    else {
+        wavesurfer.pause();
+        playing = false;
+    }
+}
 
+/**
+ * change <audio> playback rate (not using wavesurfer because of pitch modification
+ */
 function setPlaybackRate(elem, value) {
     helpPlaybackRate = value;
 
@@ -406,7 +439,10 @@ function setPlaybackRate(elem, value) {
         helpIsPlaying = false;
     }
 }
-
+/**
+ * Called by HelpModal toggle loop button
+ * @param elem the button
+ */
 function toggleLoopPlayback(elem) {
     helpPlaybackLoop = !helpPlaybackLoop;
     if (helpPlaybackLoop) {
@@ -423,10 +459,9 @@ function toggleLoopPlayback(elem) {
 
 
 /**
+ * Will only work with chrome browser !!
  * Called by HelpModal play backward button
- * 
  */
-// will only work with chrome browser
 function playBackward() {
     // is playing for real audio (ie not for TTS)
     if (helpIsPlaying && helpAudioPlayer) {
@@ -446,7 +481,7 @@ function playBackward() {
         var array = text.split(' ');
         var start = array.length - 1;
         // check if utterance is already speaking before playing (pultiple click on backward button)
-        if (!window.speechSynthesis.speaking) { 
+        if (!window.speechSynthesis.speaking) {
             handleUtterancePlayback(start, utterance, array);
         }
     }
@@ -475,7 +510,18 @@ function handleUtterancePlayback(index, utterance, textArray) {
     }
 }
 
-// config region modal functions
+// ======================================================================================================== //
+// HELP MODAL FUNCTIONS END
+// ======================================================================================================== //
+
+
+// ======================================================================================================== //
+// CONFIG REGION MODAL FUNCTIONS
+// ======================================================================================================== //
+/**
+ * Open config modal
+ * @param the source of the event
+ */
 function configRegion(elem) {
     var configModal = domUtils.openConfigRegionModal(elem, wavesurfer, wavesurferUtils);
 
@@ -498,7 +544,10 @@ function configRegion(elem) {
 
     configModal.modal("show");
 }
-
+/**
+ * Called by ConfigModal <select> element
+ * @param {type} elem the source of the event
+ */
 function onSelectedRegionChange(elem) {
     var idx = elem.selectedIndex;
     var val = elem.options[idx].value;
@@ -510,18 +559,35 @@ function onSelectedRegionChange(elem) {
     }
 }
 
-function playHelpRelatedRegion() {
+/**
+ * Allow the user to listen to the selected help related region while configuring help
+ */
+function previewHelpRelatedRegion() {
     if (currentHelpRelatedRegion) {
-        // region.play() does not work great
-        wavesurfer.play(currentHelpRelatedRegion.start, currentHelpRelatedRegion.end);
-        playing = true;
-        currentHelpRelatedRegion.once('out', function () {
-            // force pause
+        if (!playing) {
+            wavesurfer.play(currentHelpRelatedRegion.start, currentHelpRelatedRegion.end);
+            playing = true;
+            currentHelpRelatedRegion.once('out', function () {
+                // force pause
+                wavesurfer.pause();
+                playing = false;
+            });
+        }
+        else {
             wavesurfer.pause();
             playing = false;
-        });
+        }
     }
 }
+
+// ======================================================================================================== //
+// CONFIG REGION MODAL FUNCTIONS END
+// ======================================================================================================== //
+
+
+// ======================================================================================================== //
+// OTHER MIXED FUNCTIONS
+// ======================================================================================================== //
 
 /**
  * put the wavesurfer play cursor at the given time and pause playback
@@ -661,3 +727,7 @@ function manualTextAnnotation(text, css) {
         document.execCommand('insertHTML', false, '<span class="' + css + '">' + text + '</span>');
     }
 }
+
+// ======================================================================================================== //
+//  OTHER MIXED FUNCTIONS END
+// ======================================================================================================== //

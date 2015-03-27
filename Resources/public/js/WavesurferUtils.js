@@ -2,7 +2,7 @@
 
 var WavesurferUtils = {
     /**
-     * get region from time
+     * get region for a given time
      * @param time current time 
      * @param wavesurfer wavesurfer instance
      * @returns a wavesurfer.region or null

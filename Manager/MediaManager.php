@@ -4,18 +4,21 @@ namespace Innova\MediaResourceBundle\Manager;
 
 use Doctrine\ORM\EntityManager;
 use Innova\MediaResourceBundle\Entity\MediaResource;
+use Innova\MediaResourceBundle\Entity\Media;
 
 /**
  * Media Manager
  */
 class MediaManager {
 
-    protected $fileDirName;
     protected $em;
+    protected $readFileDir;
+    protected $uploadFileDir;
 
-    public function __construct(EntityManager $em, $fileDirName) {
+    public function __construct(EntityManager $em, $readFileDir, $uploadfileDir) {
         $this->em = $em;
-        $this->fileDirName = $fileDirName;
+        $this->readFileDir = $readFileDir;
+        $this->uploadFileDir = $uploadfileDir;
     }
 
     public function getRepository() {
@@ -24,18 +27,27 @@ class MediaManager {
 
     public function getAudioMediaUrl(MediaResource $mr) {
         $audio = $this->getRepository()->findOneBy(array('mediaResource' => $mr, 'type' => 'audio'));
-        if($audio){
-            return  $this->fileDirName . '/' . $audio->getUrl();
+        if ($audio) {
+            return $this->getReadFileDirectory() . '/' . $audio->getUrl();
         }
         return null;
     }
 
     public function getVideoMedia(MediaResource $mr) {
         $video = $this->getRepository()->findOneBy(array('mediaResource' => $mr, 'type' => 'video'));
-        if($video){
-            return  $this->fileDirName . '/' . $video->getUrl();
+        if ($video) {
+            return $this->getReadFileDirectory() . '/' . $video->getUrl();
         }
         return null;
+    }
+
+
+    protected function getReadFileDirectory() {
+        return $this->readFileDir;
+    }
+
+    protected function getUploadDirectory() {
+        return $this->uploadFileDir;
     }
 
 }

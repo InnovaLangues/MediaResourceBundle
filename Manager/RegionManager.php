@@ -38,6 +38,28 @@ class RegionManager {
         return $this->em->getRepository('InnovaMediaResourceBundle:Region');
     }
 
+    public function copyRegion(MediaResource $mr, Region $region) {
+        $entity = new Region();
+        $entity->setMediaResource($mr);
+        $regionConfig = new RegionConfig();
+        $regionConfig->setRegion($entity);
+        $entity->setRegionConfig($regionConfig);
+
+        $entity->setStart($region->getStart());
+        $entity->setEnd($region->getEnd());
+        $entity->setNote($region->getNote());
+        $entity->setUuid($region->getUuid());
+
+        $oldConfig = $region->getRegionConfig();
+        $regionConfig->setHelpText($oldConfig->getHelpText());
+        $regionConfig->setHasLoop($oldConfig->getHasLoop());
+        $regionConfig->setHasRate($oldConfig->getHasRate());
+        $regionConfig->setHasBackward($oldConfig->getHasBackward());
+        $regionConfig->setHelpRegionUuid($oldConfig->getHelpRegionUuid());
+
+        $this->save($entity);
+    }
+
     /**
      * Create/Update MediaResource region (title)
      * @param MediaResource $mr
@@ -46,7 +68,7 @@ class RegionManager {
     public function handleMediaResourceRegions(MediaResource $mr, $data) {
 
         $regions = $this->getRegionsFromData($data);
-       
+
         $this->deleteUnusedRegions($mr, $regions);
         // update or create
         foreach ($regions as $region) {
@@ -59,23 +81,23 @@ class RegionManager {
                 $entity = new Region();
                 $entity->setMediaResource($mr);
                 $regionConfig = new RegionConfig();
-                $regionConfig -> setRegion($entity);
-                $entity -> setRegionConfig($regionConfig);
+                $regionConfig->setRegion($entity);
+                $entity->setRegionConfig($regionConfig);
             }
-            
+
             if ($entity) {
                 $entity->setStart($region['start']);
                 $entity->setEnd($region['end']);
                 $entity->setNote($region['note']);
                 $entity->setUuid($region['uuid']);
-                
-                $config = $entity -> getRegionConfig();
-                $config -> setHelpText($region['text']);
-                $config -> setHasLoop($region['loop']);
-                $config -> setHasRate($region['rate']);
-                $config -> setHasBackward($region['backward']);
-                $config -> setHelpRegionUuid($region['help-region-uuid']);               
-                
+
+                $config = $entity->getRegionConfig();
+                $config->setHelpText($region['text']);
+                $config->setHasLoop($region['loop']);
+                $config->setHasRate($region['rate']);
+                $config->setHasBackward($region['backward']);
+                $config->setHelpRegionUuid($region['help-region-uuid']);
+
                 $this->save($entity);
             }
         }
@@ -99,22 +121,22 @@ class RegionManager {
         $backwards = $data['backward'];
         $rates = $data['rate'];
         $texts = $data['text'];
-        
+
         $nbData = count($starts);
 
         for ($i = 0; $i < $nbData; $i++) {
             $regions[] = array(
-                                'id' => $ids[$i],
-                                'uuid' => $uuids[$i], 
-                                'start' => $starts[$i], 
-                                'end' => $ends[$i], 
-                                'note' => $notes[$i], 
-                                'help-region-uuid' => $helpRegionIds[$i],
-                                'loop' => $loops[$i],
-                                'backward' => $backwards[$i],
-                                'rate'  => $rates[$i],
-                                'text'  => $texts[$i]
-                        );
+                'id' => $ids[$i],
+                'uuid' => $uuids[$i],
+                'start' => $starts[$i],
+                'end' => $ends[$i],
+                'note' => $notes[$i],
+                'help-region-uuid' => $helpRegionIds[$i],
+                'loop' => $loops[$i],
+                'backward' => $backwards[$i],
+                'rate' => $rates[$i],
+                'text' => $texts[$i]
+            );
         }
 
         return $regions;

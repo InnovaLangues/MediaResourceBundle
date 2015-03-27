@@ -49,6 +49,8 @@ region_delete_confirm_base: Etes vous sur de vouloir supprimer le segment?
 region_delete_confirm_sub: Cette région est affectée à une ou plusieurs aides.<br/> Ces aides seront supprimées automatiquement.
 resource_update_success: La ressource à bien été mise à jour.
 resource_update_error: Une erreur est survenue lors de la mise à jour de la ressource.
+region_help_play_related_region_label: L'écoute de ce segment peut vous aider
+region_help_help_text_label: Ce texte peut vous aider
 
 #s
 save: Sauvegarder
