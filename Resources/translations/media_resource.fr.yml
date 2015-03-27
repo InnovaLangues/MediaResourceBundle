@@ -51,6 +51,12 @@ resource_update_success: La ressource à bien été mise à jour.
 resource_update_error: Une erreur est survenue lors de la mise à jour de la ressource.
 region_help_play_related_region_label: L'écoute de ce segment peut vous aider
 region_help_help_text_label: Ce texte peut vous aider
+region_help_segment_playback_label: Lecture du segment
+region_help_segment_playback: Jouer le segment
+region_help_segment_playback_backward: Jouer le segment en backward building
+region_help_segment_playback_loop: Jouer le segment en boucle
+region_help_segment_playback_rate: Modifier la vitesse de lecture du segment
+region_help_related_segment_playback: Jouer le segment connexe
 
 #s
 save: Sauvegarder

@@ -3,110 +3,119 @@
     {{ parent() }}
 {% endblock %}
 
-{% block media_resource_content %} 
-    <form role="form" enctype="multipart/form-data" id="media_resource_form"  method="post" {% if edit %} action="{{path('media_resource_save', {'workspaceId': workspace.id ,'id':_resource.id})}}"  {% endif %} name="edit">
+{% block media_resource_content %}
 
-        <!-- toolbar : save exercise - show / hide text - show / hide media(s) - switch media display waveform - video -->
-        <div class="row">
-            <div class="col-md-6">
-                <div class="media-resource-title">{{_resource.resourceNode.name}}</div>
-            </div>
-            <div class="col-md-6 text-right">
-                <div class="btn-group">
-                    {% if edit %}
-                        <button type="submit" class="btn btn-default fa fa-floppy-o" title="{{'save' | trans({}, 'media_resource')}}"></button>  
-                    {% endif %}                    
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            {{_resource.resourceNode.name}}
+        </h3>
+    </div>
+    <div class="panel-body">
+        <form role="form" enctype="multipart/form-data" id="media_resource_form"  method="post" {% if edit %} action="{{path('media_resource_save', {'workspaceId': workspace.id ,'id':_resource.id})}}"  {% endif %} name="edit">
+
+            <!-- toolbar : save exercise - show / hide text - show / hide media(s) - switch media display waveform - video -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="media-resource-title"></div>
+                </div>
+                <div class="col-md-6 text-right">
+                    <div class="btn-group">
+                        {% if edit %}
+                            <button type="submit" class="btn btn-default fa fa-floppy-o" title="{{'save' | trans({}, 'media_resource')}}"></button>  
+                        {% endif %}                    
+                    </div>
                 </div>
             </div>
-        </div>
-        <!-- waveform -->
-        <hr/>
-        <div class="row media-container">
-            <div class="col-md-12">
-                <div id="audio-player">
-                    <div id="wave-timeline"></div>
-                    <div id="waveform">
-                        <div class="progress progress-striped active" id="progress-bar">
-                            <div class="progress-bar progress-bar-info"></div>
+            <!-- waveform -->
+            <hr/>
+            <div class="row media-container">
+                <div class="col-md-12">
+                    <div id="audio-player">
+                        <div id="wave-timeline"></div>
+                        <div id="waveform">
+                            <div class="progress progress-striped active" id="progress-bar">
+                                <div class="progress-bar progress-bar-info"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <hr/>
-        <!-- media controls -->
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <button type="button" role="button" class="btn btn-default fa fa-step-backward" data-action="backward" title="{{'move_backward' | trans({}, 'media_resource')}}">
-                </button>
-                <button type="button" class="btn btn-default" data-action="play" title="{{'play_pause' | trans({}, 'media_resource')}}">
-                    <i class="fa fa-play"></i>
-                    /
-                    <i class="fa fa-pause"></i>
-                </button>
-                <button type="button" class="btn btn-default fa fa-step-forward" data-action="forward" title="{{'move_forward' | trans({}, 'media_resource')}}">
-                </button>
+            <hr/>
+            <!-- media controls -->
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <button type="button" role="button" class="btn btn-default fa fa-step-backward" data-action="backward" title="{{'move_backward' | trans({}, 'media_resource')}}">
+                    </button>
+                    <button type="button" class="btn btn-default" data-action="play" title="{{'play_pause' | trans({}, 'media_resource')}}">
+                        <i class="fa fa-play"></i>
+                        /
+                        <i class="fa fa-pause"></i>
+                    </button>
+                    <button type="button" class="btn btn-default fa fa-step-forward" data-action="forward" title="{{'move_forward' | trans({}, 'media_resource')}}">
+                    </button>
 
-                {% if edit %}
-                    <button type="button" class="btn btn-danger fa fa-flag" title="{{'add_marker' | trans({}, 'media_resource')}}" data-action="mark">
-                    </button> 
-                {% endif %}
-                <button type="button" class="btn btn-default fa fa-question" data-action="help" title="{{'region_help' | trans({}, 'media_resource')}}">
-                </button>
+                    {% if edit %}
+                        <button type="button" class="btn btn-danger fa fa-flag" title="{{'add_marker' | trans({}, 'media_resource')}}" data-action="mark">
+                        </button> 
+                    {% endif %}
+                    <button type="button" class="btn btn-default fa fa-question" data-action="help" title="{{'region_help' | trans({}, 'media_resource')}}">
+                    </button>
+                </div>
             </div>
-        </div>
-        <hr/>
-        <!-- segments -->
-        <div class="row">
-            <div class="col-md-12 text-center regions-container" {% if edit == false %} style="display:none;" {% endif %}>               
-                {% if regions | length > 0 %}
-                    {% for region in regions %}
-                        <div class="row form-row region" id="{{region.uuid}}" data-uuid="{{region.uuid}}">
-                            <div class="col-xs-1">                                    
-                                <div class="time-text start">{{ region.start | hmsTime }}</div>
-                            </div>
-                            <div class="col-xs-1">
-                                <div class="time-text end">{{ region.end | hmsTime }}</div>
-                            </div>
-                            {% if edit %}
-                                <div class="col-xs-8">
-                                    <div contenteditable="true" class="text-left note">{{ region.note | raw }}</div>
+            <hr/>
+            <!-- segments -->
+            <div class="row">
+                <div class="col-md-12 text-center regions-container" {% if edit == false %} style="display:none;" {% endif %}>               
+                    {% if regions | length > 0 %}
+                        {% for region in regions %}
+                            <div class="row form-row region" id="{{region.uuid}}" data-uuid="{{region.uuid}}">
+                                <div class="col-xs-1">                                    
+                                    <div class="time-text start">{{ region.start | hmsTime }}</div>
                                 </div>
-                            {% else %}
-                                <div class="col-xs-10">
-                                    <div class="text-left note">{{ region.note | raw }}</div>
+                                <div class="col-xs-1">
+                                    <div class="time-text end">{{ region.end | hmsTime }}</div>
                                 </div>
-                            {% endif %}
-                            {% if edit %}
-                                <div class="col-xs-2">
-                                    <div class="btn-group" role="group">
-                                        <button role="button" type="button" class="btn btn-default fa fa-cog" title="{{'region_config' | trans({}, 'media_resource')}}" onclick="configRegion(this);"> </button>
-                                        <button role="button" type="button" class="btn btn-danger fa fa-trash-o" title="{{'region_delete' | trans({}, 'media_resource')}}" onclick="deleteRegion(this);"></button>
+                                {% if edit %}
+                                    <div class="col-xs-8">
+                                        <div contenteditable="true" class="text-left note">{{ region.note | raw }}</div>
                                     </div>
-                                </div>
-                            {% endif %}                            
-                            <input type="hidden" class="hidden-start" name="start[]" value="{{ region.start }}" required="required">
-                            <input type="hidden" class="hidden-end" name="end[]" value="{{ region.end }}" required="required">
-                            <input type="hidden" class="hidden-note" name="note[]" value="{{ region.note }}">
-                            <input type="hidden" class="hidden-region-id" name="region-id[]" value="{{ region.id }}">
-                            <input type="hidden" class="hidden-region-uuid" name="region-uuid[]" value="{{ region.uuid }}">
-                            <!-- Region config  -->
-                            <input type="hidden" class="hidden-config-help-region-uuid" name="help-region-uuid[]" value="{{ region.regionConfig.helpRegionUuid ? region.regionConfig.helpRegionUuid : '' }}">
-                            <input type="hidden" class="hidden-config-loop" name="loop[]" value="{{ region.regionConfig.hasLoop ? '1' : '0' }}">
-                            <input type="hidden" class="hidden-config-backward" name="backward[]" value="{{ region.regionConfig.hasBackward ? '1' : '0' }}">
-                            <input type="hidden" class="hidden-config-rate" name="rate[]" value="{{ region.regionConfig.hasRate ? '1' : '0' }}">
-                            <input type="hidden" class="hidden-config-text" name="text[]" value="{{ region.regionConfig.helpText ? region.regionConfig.helpText : '' }}">
-                        </div>
-                    {% endfor %}                
-                {% endif %}
+                                {% else %}
+                                    <div class="col-xs-10">
+                                        <div class="text-left note">{{ region.note | raw }}</div>
+                                    </div>
+                                {% endif %}
+                                {% if edit %}
+                                    <div class="col-xs-2">
+                                        <div class="btn-group" role="group">
+                                            <button role="button" type="button" class="btn btn-default fa fa-cog" title="{{'region_config' | trans({}, 'media_resource')}}" onclick="configRegion(this);"> </button>
+                                            <button role="button" type="button" class="btn btn-danger fa fa-trash-o" title="{{'region_delete' | trans({}, 'media_resource')}}" onclick="deleteRegion(this);"></button>
+                                        </div>
+                                    </div>
+                                {% endif %}                            
+                                <input type="hidden" class="hidden-start" name="start[]" value="{{ region.start }}" required="required">
+                                <input type="hidden" class="hidden-end" name="end[]" value="{{ region.end }}" required="required">
+                                <input type="hidden" class="hidden-note" name="note[]" value="{{ region.note }}">
+                                <input type="hidden" class="hidden-region-id" name="region-id[]" value="{{ region.id }}">
+                                <input type="hidden" class="hidden-region-uuid" name="region-uuid[]" value="{{ region.uuid }}">
+                                <!-- Region config  -->
+                                <input type="hidden" class="hidden-config-help-region-uuid" name="help-region-uuid[]" value="{{ region.regionConfig.helpRegionUuid ? region.regionConfig.helpRegionUuid : '' }}">
+                                <input type="hidden" class="hidden-config-loop" name="loop[]" value="{{ region.regionConfig.hasLoop ? '1' : '0' }}">
+                                <input type="hidden" class="hidden-config-backward" name="backward[]" value="{{ region.regionConfig.hasBackward ? '1' : '0' }}">
+                                <input type="hidden" class="hidden-config-rate" name="rate[]" value="{{ region.regionConfig.hasRate ? '1' : '0' }}">
+                                <input type="hidden" class="hidden-config-text" name="text[]" value="{{ region.regionConfig.helpText ? region.regionConfig.helpText : '' }}">
+                            </div>
+                        {% endfor %}                
+                    {% endif %}
+                </div>
             </div>
-        </div>
-    </form>
+        </form>
+
+    </div>
 
     {% if edit %}
         <hr/>
         <!-- annotation buttons -->
-        <div class="row">
+        <div class="row annotation-container">
             <div class="col-md-12">
                 <input type="checkbox" name="toggle-annotation-checkbox" data-on-text="hide" data-off-text="show" data-off-color="warning" checked>
                 <hr/>

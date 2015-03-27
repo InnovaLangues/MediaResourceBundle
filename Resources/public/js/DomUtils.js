@@ -26,39 +26,49 @@ var DomUtils = {
         html += '       <div class="col-md-12 text-center">';
         html += '           <audio id="help-audio-player" src="' + audioUrl + '">'; // will not show as no controls defined
         html += '           </audio>';
-        html += '           <button class="btn btn-default" onclick="playHelp(' + current.start + ', ' + current.end + ')" style="margin:5px;">';
-        html += '               <i class="fa fa-play"></i> ';
-        html += '                / ';
-        html += '               <i class="fa fa-pause"></i>';
-        html += '           </button>';
+        html += '           <div class="row">';
+        html += '               <div class="col-md-12">';
+        html += '                   <label>' + Translator.trans('region_help_segment_playback_label', {}, 'media_resource') + ':</label>';
+        html += '              </div>';
+        html += '           </div>';
+        html += '           <div class="row">';
+        html += '               <div class="col-md-12">';
+        html += '                   <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback', {}, 'media_resource') + '" onclick="playHelp(' + current.start + ', ' + current.end + ')" style="margin:5px;">';
+        html += '                       <i class="fa fa-play"></i> ';
+        html += '                       / ';
+        html += '                       <i class="fa fa-pause"></i>';
+        html += '                   </button>';
         if (backward) {
-            html += '       <button class="btn btn-default" onclick="playBackward();" style="margin:5px;">';
-            html += '           <i class="fa fa-exchange"></i> ';
-            html += '       </button>';
+            html += '               <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback_backward', {}, 'media_resource') +'" onclick="playBackward();" style="margin:5px;">';
+            html += '                   <i class="fa fa-exchange"></i> ';
+            html += '               </button>';
         }
         if (loop) {
-            html += '       <button class="btn btn-default" onclick="toggleLoopPlayback(this)" style="margin:5px;">';
-            html += '           <i class="fa fa-retweet"></i> ';
-            html += '       </button>';
+            html += '               <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback_loop', {}, 'media_resource') +'"  onclick="toggleLoopPlayback(this)" style="margin:5px;">';
+            html += '                   <i class="fa fa-retweet"></i> ';
+            html += '               </button>';
         }
         if (rate) {
-            html += '       <div class="btn-group">';
-            html += '           <button class="btn btn-default active" onclick="setPlaybackRate(this, 1)">x1</button>';
-            html += '           <button class="btn btn-default" onclick="setPlaybackRate(this, 0.8)">x0.8</button>';
-            html += '           <button class="btn btn-default" onclick="setPlaybackRate(this, 0.5)">x0.5</button>';
-            html += '       </div>';
+            html += '               <div class="btn-group">';
+            html += '                   <button class="btn btn-default active" title="' + Translator.trans('region_help_segment_playback_rate', {}, 'media_resource') +'"  onclick="setPlaybackRate(this, 1)">x1</button>';
+            html += '                   <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback_rate', {}, 'media_resource') +'"  onclick="setPlaybackRate(this, 0.8)">x0.8</button>';
+            html += '                   <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback_rate', {}, 'media_resource') +'"  onclick="setPlaybackRate(this, 0.5)">x0.5</button>';
+            html += '               </div>';
         }
+        
+        html += '               </div>';
+        html += '           </div>';
         if (text !== '') {
             html += '       <hr/>';
-            html += '       <label>'+Translator.trans('region_help_help_text_label', {}, 'media_resource')+':</label>';
+            html += '       <label>' + Translator.trans('region_help_help_text_label', {}, 'media_resource') + ':</label>';
             html += '       <label style="margin:5px;">' + text + '</label>';
         }
         if (relatedRegionUuid) {
             html += '       <hr/>';
-            html += '       <label>'+Translator.trans('region_help_play_related_region_label', {}, 'media_resource')+':</label>';
+            html += '       <label>' + Translator.trans('region_help_play_related_region_label', {}, 'media_resource') + ':</label>';
             // we have the dom row uuid so let's find the begin and end for this row
             var helpRegionStart = this.getHelpRelatedRegionStart(relatedRegionUuid);
-            html += '       <button class="btn btn-default" onclick="playHelpRelatedRegion( ' + helpRegionStart + ');" style="margin:5px;">';
+            html += '       <button class="btn btn-default" title="' + Translator.trans('region_help_related_segment_playback', {}, 'media_resource') + '" onclick="playHelpRelatedRegion( ' + helpRegionStart + ');" style="margin:5px;">';
             html += '           <i class="fa fa-play"></i> ';
             html += '                / ';
             html += '           <i class="fa fa-pause"></i>';

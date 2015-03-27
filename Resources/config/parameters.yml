@@ -1,5 +1,4 @@
-parameters:
-       
+parameters:       
     # Listeners
     innova_media_resource.listener.media_resource.class:    Innova\MediaResourceBundle\EventListener\Resource\MediaResourceListener
     

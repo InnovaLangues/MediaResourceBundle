@@ -16,8 +16,3 @@ services:
         arguments:
             entityManager:  @doctrine.orm.entity_manager
             translator:     @translator
-    innova_media_resource.manager.media_resource_region_config:
-        class: Innova\MediaResourceBundle\Manager\RegionConfigManager 
-        arguments:
-            entityManager:  @doctrine.orm.entity_manager
-            translator:     @translator

@@ -51,6 +51,12 @@ resource_update_success: Resource update successfull.
 resource_update_error: An error occured while updating the resource.
 region_help_play_related_region_label: Listen to this segment can help you
 region_help_help_text_label: This text might help you
+region_help_segment_playback_label: Segment playback
+region_help_segment_playback: Play the segment
+region_help_segment_playback_backward: Play the segment with backward building
+region_help_segment_playback_loop: Loop the playback
+region_help_segment_playback_rate: Change playback rate
+region_help_related_segment_playback: Play the related segment
 
 #s
 save: Save
