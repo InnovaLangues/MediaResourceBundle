@@ -6,6 +6,7 @@ This Bundle is a Claroline Plugin
 Install with composer :
 
    $ composer require innova/media-resource-bundle
+   
    $ php app/console claroline:plugin:install InnovaMediaResourceBundle
 
 
@@ -19,5 +20,5 @@ Install with composer :
 * Patrick Guillou (pitrackster)
 
 ## Javascript librairies
-Intensive use of the wonderful library : [wavesurfer.js] (http://www.wavesurfer.fm/)
+Intensive use of the wonderful library [wavesurfer.js] (http://www.wavesurfer.fm/)
 
