@@ -72,6 +72,7 @@ class MediaResourceListener extends ContainerAware {
                 throw new AccessDeniedException();
             }
             $file = $form['file']->getData();
+            
             $this->container->get('innova_media_resource.manager.media_resource')->handleMediaResourceMedia($file, $mediaResource);
 
             // Send new path to dispatcher through event object

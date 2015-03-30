@@ -49,7 +49,6 @@ class MediaResourceManager {
      * @param MediaResource $mr
      */
     public function handleMediaResourceMedia(UploadedFile $file, MediaResource $mr) {
-
         // set new filename
         $name = $this->setFileName($file->getClientOriginalName());
 

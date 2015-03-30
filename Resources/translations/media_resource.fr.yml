@@ -12,6 +12,7 @@ back: Quitter
 
 # c
 close: Fermer
+creation_error_wrong_file_format: Le format du fichier fournit n'est pas autorisé (mp3 / ogg / wav)
 
 # d
 delete_media_resource: Supprimer la ressource

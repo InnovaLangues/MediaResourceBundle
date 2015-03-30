@@ -17,7 +17,18 @@ class MediaResourceType extends AbstractType {
         $builder->add('name', 'text', array('required' => true))
                 ->add('file', 'file', array('required' => true, 'mapped' => false, 'constraints' => array(
                     new NotBlank(),
-                    new File()
+                    new File(array(
+                                    'mimeTypes' => array(
+                                        'audio/mpeg',
+                                        'audio/ogg', 
+                                        'audio/wav',
+                                        'audio/x-wav',
+                                        'application/ogg'
+                                        ),
+                                        'mimeTypesMessage' => 'The type of the file is invalid ({{ type }}). Allowed types are {{ types }}. Please check that your file is well encoded.'
+                                    )
+                                    
+                            )
                 )));
     }
 

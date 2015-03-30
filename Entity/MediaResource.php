@@ -64,8 +64,7 @@ class MediaResource extends AbstractResource {
      */
     protected $modified;
 
-    /**
-     * 
+    /**     
      * 
      */
     public $file;
