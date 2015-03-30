@@ -6,6 +6,7 @@ This Bundle is a Claroline Plugin
 Install with composer :
 
    $ composer require innova/media-resource-bundle
+   
    $ php app/console claroline:plugin:install InnovaMediaResourceBundle
 
 
