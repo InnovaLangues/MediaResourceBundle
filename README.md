@@ -19,5 +19,5 @@ Install with composer :
 * Patrick Guillou (pitrackster)
 
 ## Javascript librairies
-Intensive use of the wonderful library : [wavesurfer.js] (http://www.wavesurfer.fm/)
+Intensive use of the wonderful library [wavesurfer.js] (http://www.wavesurfer.fm/)
 
