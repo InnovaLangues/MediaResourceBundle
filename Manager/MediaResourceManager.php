@@ -63,9 +63,9 @@ class MediaResourceManager {
                 $this->em->persist($mr);
                 $audioMedia->setMediaResource($mr);
                 // delete original file
-                $removed = $this->removeUpload($name);
+                $this->removeUpload($name);
             } else {
-                $removed = $this->removeUpload($name);
+                $this->removeUpload($name);
                 $message = $this->translator->trans("error_while_encoding", array(), "media_resource");
                 throw new \Exception($message);
             }

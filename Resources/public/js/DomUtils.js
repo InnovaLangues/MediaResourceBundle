@@ -383,7 +383,4 @@ var DomUtils = {
             $(hiddenTitleInput).val($(elem).text());
         }
     }
-
-
 };
-
