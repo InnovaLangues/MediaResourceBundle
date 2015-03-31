@@ -4,78 +4,128 @@ var DomUtils = {
     /**
      * Open help for a region
      * @param object current : current wavesurfer region
+     * @param object previous : previous (relatively to current) wavesurfer region can be null
      * @param string audioUrl : current media audio url
-     * @param object wInstance wavesurfer instance
-     * @param object wUtilsInstance wavesurfer Utils instance
      * @returns bootbox modal object
      */
-    openRegionHelpModal: function (current, audioUrl, wInstance, wUtilsInstance) {
-        var domRow = this.getRegionRow(current.start + 0.1, current.end - 0.1);
-        // loop available ?
-        var loop = $(domRow).find('.hidden-config-loop').val() === '1' ? true : false;
-        // backward available ?
-        var backward = $(domRow).find('.hidden-config-backward').val() === '1' ? true : false; //$('input[name=backward]').is(':checked');
-        // rate available ?
-        var rate = $(domRow).find('.hidden-config-rate').val() === '1' ? true : false;
-        // text
-        var text = $(domRow).find('.hidden-config-text').val();
-        // related help region
-        var relatedRegionUuid = $(domRow).find('.hidden-config-help-region-uuid').val();
-
-        var html = '<div class="row">';
-        html += '       <div class="col-md-12 text-center">';
-        html += '           <audio id="help-audio-player" src="' + audioUrl + '">'; // will not show as no controls defined
-        html += '           </audio>';
-        html += '           <div class="row">';
-        html += '               <div class="col-md-12">';
-        html += '                   <label>' + Translator.trans('region_help_segment_playback_label', {}, 'media_resource') + ':</label>';
-        html += '              </div>';
-        html += '           </div>';
-        html += '           <div class="row">';
-        html += '               <div class="col-md-12">';
-        html += '                   <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback', {}, 'media_resource') + '" onclick="playHelp(' + current.start + ', ' + current.end + ')" style="margin:5px;">';
-        html += '                       <i class="fa fa-play"></i> ';
-        html += '                       / ';
-        html += '                       <i class="fa fa-pause"></i>';
-        html += '                   </button>';
-        if (backward) {
-            html += '               <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback_backward', {}, 'media_resource') +'" onclick="playBackward();" style="margin:5px;">';
-            html += '                   <i class="fa fa-exchange"></i> ';
-            html += '               </button>';
-        }
-        if (loop) {
-            html += '               <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback_loop', {}, 'media_resource') +'"  onclick="toggleLoopPlayback(this)" style="margin:5px;">';
-            html += '                   <i class="fa fa-retweet"></i> ';
-            html += '               </button>';
-        }
-        if (rate) {
-            html += '               <div class="btn-group">';
-            html += '                   <button class="btn btn-default active" title="' + Translator.trans('region_help_segment_playback_rate', {}, 'media_resource') +'"  onclick="setPlaybackRate(this, 1)">x1</button>';
-            html += '                   <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback_rate', {}, 'media_resource') +'"  onclick="setPlaybackRate(this, 0.8)">x0.8</button>';
-            html += '                   <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback_rate', {}, 'media_resource') +'"  onclick="setPlaybackRate(this, 0.5)">x0.5</button>';
-            html += '               </div>';
-        }
-        
+    openRegionHelpModal: function (current, previous, audioUrl) {
+        var html = '<div id="help-tab-panel" class="row" role="tabpanel">';
+        html += '       <ul class="nav nav-tabs" role="tablist">';
+        html += '           <li role="presentation" class="active">';
+        html += '               <a href="#choice" aria-controls="choice" role="tab" data-toggle="tab">' + Translator.trans('help_modal_choice_tab_label', {}, 'media_resource') + '</a>';
+        html += '           </li>';
+        html += '           <li role="presentation">';
+        html += '               <a href="#options" aria-controls="options" role="tab" data-toggle="tab">' + Translator.trans('help_modal_help_tab_label', {}, 'media_resource') + '</a>';
+        html += '           </li>';
+        html += '       </ul>';
+        html += '       <div class="tab-content">';
+        //                  FIRST PANE
+        html += '           <div role="tabpanel" class="tab-pane active" id="choice">';
+        html += '               <div class="row">';
+        html += '                   <div class="col-md-12 text-center">';
+        html +=                         Translator.trans('help_modal_intro', {}, 'media_resource');
+        html += '                   </div>';
         html += '               </div>';
+        html += '               <hr/>';
+        //                      CURRENT REGION
+        html += '               <div class="form-inline">';
+        html += '                   <div class="form-group">';
+        html += '                       <div class="input-group">';
+        html += '                           <label class="input-group-addon" style="width:250px;">' + Translator.trans('current_segment', {}, 'media_resource') + '</label>';
+        html += '                           <div class="input-group-addon">';
+        html += '                               <input type="radio" name="segment" value="current" checked>';
+        html += '                           </div>';
+        html += '                           <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback', {}, 'media_resource') + '"  onclick="playHelp(' + current.start + ', ' + current.end + ', ' + false + ',' + false + ')" style="margin:5px;">';
+        html += '                               <i class="fa fa-play"></i> ';
+        html += '                               / ';
+        html += '                               <i class="fa fa-pause"></i>';
+        html += '                           </button>';
+        html += '                       </div>';
+        html += '                   </div>';
+        html += '               </div>';
+        //                      PREVIOUS REGION
+        if (previous) {
+            html += '           <hr/>';
+            html += '           <div class="form-inline">';
+            html += '               <div class="form-group">';
+            html += '                   <div class="input-group">';
+            html += '                       <label class="input-group-addon" style="width:250px;">' + Translator.trans('previous_segment', {}, 'media_resource') + '</label>';
+            html += '                       <div class="input-group-addon">';
+            html += '                           <input type="radio" name="segment" value="previous">';
+            html += '                       </div>';
+            html += '                       <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback', {}, 'media_resource') + '" onclick="playHelp(' + previous.start + ', ' + previous.end + ', ' + false + ',' + false + ')" style="margin:5px;">';
+            html += '                           <i class="fa fa-play"></i> ';
+            html += '                           / ';
+            html += '                           <i class="fa fa-pause"></i>';
+            html += '                       </button>';
+            html += '                   </div>';
+            html += '               </div>';
+            html += '           </div>';
+        }        
+        html += '            </div>'; // END OF FIRST PANE
+        //                  SECOND PANE = Available helps for selected region (current or previous)
+        html += '           <div role="tabpanel" class="tab-pane" id="options">';       
         html += '           </div>';
-        if (text !== '') {
-            html += '       <hr/>';
-            html += '       <label>' + Translator.trans('region_help_help_text_label', {}, 'media_resource') + ':</label>';
-            html += '       <label style="margin:5px;">' + text + '</label>';
-        }
-        if (relatedRegionUuid) {
-            html += '       <hr/>';
-            html += '       <label>' + Translator.trans('region_help_play_related_region_label', {}, 'media_resource') + ':</label>';
-            // we have the dom row uuid so let's find the begin and end for this row
-            var helpRegionStart = this.getHelpRelatedRegionStart(relatedRegionUuid);
-            html += '       <button class="btn btn-default" title="' + Translator.trans('region_help_related_segment_playback', {}, 'media_resource') + '" onclick="playHelpRelatedRegion( ' + helpRegionStart + ');" style="margin:5px;">';
-            html += '           <i class="fa fa-play"></i> ';
-            html += '                / ';
-            html += '           <i class="fa fa-pause"></i>';
-            html += '       </button>';
-        }
         html += '       </div>';
-        html += '</div>';
+        html += '   </div>';
+        html += '   <audio id="help-audio-player" style="display:none;" src="' + audioUrl + '">'; // will not show as no controls are defined
+        html += '   </audio>';
+
+
+        /*var html = '<div class="row">';
+         html += '       <div class="col-md-12 text-center">';
+         html += '           <audio id="help-audio-player" src="' + audioUrl + '">'; // will not show as no controls are defined
+         html += '           </audio>';
+         html += '           <div class="row">';
+         html += '               <div class="col-md-12">';
+         html += '                   <label>' + Translator.trans('region_help_segment_playback_label', {}, 'media_resource') + ':</label>';
+         html += '              </div>';
+         html += '           </div>';
+         html += '           <div class="row">';
+         html += '               <div class="col-md-12">';
+         html += '                   <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback', {}, 'media_resource') + '" onclick="playHelp(' + current.start + ', ' + current.end + ')" style="margin:5px;">';
+         html += '                       <i class="fa fa-play"></i> ';
+         html += '                       / ';
+         html += '                       <i class="fa fa-pause"></i>';
+         html += '                   </button>';
+         if (backward) {
+         html += '               <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback_backward', {}, 'media_resource') +'" onclick="playBackward();" style="margin:5px;">';
+         html += '                   <i class="fa fa-exchange"></i> ';
+         html += '               </button>';
+         }
+         if (loop) {
+         html += '               <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback_loop', {}, 'media_resource') +'"  onclick="toggleLoopPlayback(this)" style="margin:5px;">';
+         html += '                   <i class="fa fa-retweet"></i> ';
+         html += '               </button>';
+         }
+         if (rate) {
+         html += '               <div class="btn-group">';
+         html += '                   <button class="btn btn-default active" title="' + Translator.trans('region_help_segment_playback_rate', {}, 'media_resource') +'"  onclick="setPlaybackRate(this, 1)">x1</button>';
+         html += '                   <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback_rate', {}, 'media_resource') +'"  onclick="setPlaybackRate(this, 0.8)">x0.8</button>';
+         html += '                   <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback_rate', {}, 'media_resource') +'"  onclick="setPlaybackRate(this, 0.5)">x0.5</button>';
+         html += '               </div>';
+         }
+         
+         html += '               </div>';
+         html += '           </div>';
+         if (text !== '') {
+         html += '       <hr/>';
+         html += '       <label>' + Translator.trans('region_help_help_text_label', {}, 'media_resource') + ':</label>';
+         html += '       <label style="margin:5px;">' + text + '</label>';
+         }
+         if (relatedRegionUuid) {
+         html += '       <hr/>';
+         html += '       <label>' + Translator.trans('region_help_play_related_region_label', {}, 'media_resource') + ':</label>';
+         // we have the dom row uuid so let's find the begin and end for this row
+         var helpRegionStart = this.getHelpRelatedRegionStart(relatedRegionUuid);
+         html += '       <button class="btn btn-default" title="' + Translator.trans('region_help_related_segment_playback', {}, 'media_resource') + '" onclick="playHelpRelatedRegion( ' + helpRegionStart + ');" style="margin:5px;">';
+         html += '           <i class="fa fa-play"></i> ';
+         html += '                / ';
+         html += '           <i class="fa fa-pause"></i>';
+         html += '       </button>';
+         }
+         html += '       </div>';
+         html += '</div>';*/
 
         var modal = bootbox.dialog({
             title: Translator.trans('region_help', {}, 'media_resource'), //"Aide sur la région:",
@@ -92,65 +142,6 @@ var DomUtils = {
             }
         });
         return modal;
-    },
-    /**
-     * Add the region to the DOM at the right place
-     * @param region wavesurfer.region 
-     */
-    addRegionToDom: function (wavesurfer, wavesurferUtils, region, uuid) {
-        var my = this;
-        //console.log(uuid);
-        var container = $('.regions-container');
-        // HTML to append
-        var html = '';
-        html += '<div class="row form-row region" id="' + uuid + '" data-uuid="' + uuid + '">';
-        // start input
-        html += '       <div class="col-xs-1">';
-        html += '           <div class="time-text start">' + wavesurferUtils.secondsToHms(region.start) + '</div>';
-        html += '       </div>';
-        // end input
-        html += '       <div class="col-xs-1">';
-        html += '           <div class="time-text end">' + wavesurferUtils.secondsToHms(region.end) + '</div>';
-        html += '       </div>';
-        // text input
-
-        html += '       <div class="col-xs-8">';
-        html += '           <div contenteditable="true" class="text-left note">' + region.data.note + '</div>';
-        html += '       </div>';
-
-        // delete button
-        html += '       <div class="col-xs-2">';
-        html += '           <div class="btn-group" role="group">';
-        html += '               <button role="button" type="button" class="btn btn-default fa fa-cog" title="' + Translator.trans('region_config', {}, 'media_resource') + '" onclick="configRegion(this);"> </button>';
-        html += '               <button type="button" name="del-region-btn" class="btn btn-danger fa fa-trash-o ' + region.id + '" data-id="' + region.id + '" title="' + Translator.trans('region_delete', {}, 'media_resource') + '" onclick="deleteRegion(this)"></button>';
-        html += '           </div>';
-        html += '       </div>';
-        html += '       <input type="hidden" class="hidden-start" name="start[]" value="' + region.start + '" required="required">';
-        html += '       <input type="hidden" class="hidden-end" name="end[]" value="' + region.end + '" required="required">';
-        html += '       <input type="hidden" class="hidden-note" name="note[]" value="' + region.data.note + '">';
-        html += '       <input type="hidden" class="hidden-region-id" name="region-id[]" value="" >';
-        html += '       <input type="hidden" class="hidden-region-uuid" name="region-uuid[]" value="' + uuid + '" >';
-
-        html += '       <input type="hidden" class="hidden-config-help-region-uuid" name="help-region-uuid[]" value="" >';
-        html += '       <input type="hidden" class="hidden-config-loop" name="loop[]" value="0" >';
-        html += '       <input type="hidden" class="hidden-config-backward" name="backward[]" value="0" >';
-        html += '       <input type="hidden" class="hidden-config-rate" name="rate[]" value="0" >';
-        html += '       <input type="hidden" class="hidden-config-text" name="text[]" value="" >';
-        html += '</div>';
-
-        // find the previous row in order to happend the new one in the good place
-        if (Object.keys(wavesurfer.regions.list).length > 1) {
-            var previous = my.findPreviousRegionRow(region.start);
-            if (previous) {
-                $(html).insertAfter(previous);
-            }
-            else {
-                console.log('previous not found');
-            }
-        }
-        else {
-            $(container).append(html);
-        }
     },
     /**
      * Allow author to set witch help will be available for the region
@@ -232,15 +223,12 @@ var DomUtils = {
         // loop
         for (var i = 0; i < rRows.length; i++) {
             if (currentStart !== rRows[i].hstart) {
-                // wavesurfer.regions.list
                 var selected = '';
                 if (helpRegionId.val() === rRows[i].uid) {
                     selected = 'selected';
-
-                    var time = parseFloat(rRows[i].start + 0.1);
+                    var time = parseFloat(rRows[i].start) + 0.1;
                     currentHelpRelatedRegion = wutils.getCurrentRegion(w, time);
                 }
-
                 html += '           <option value="' + rRows[i].uid + '" ' + selected + '>' + rRows[i].hstart + ' - ' + rRows[i].hend + '</option>';
             }
         }
@@ -285,6 +273,160 @@ var DomUtils = {
             }
         });
         return modal;
+    },
+    getRegionRowHelpConfig: function (row) {
+        // loop available ?
+        var loop = $(row).find('.hidden-config-loop').val() === '1' ? true : false;
+        // backward available ?
+        var backward = $(row).find('.hidden-config-backward').val() === '1' ? true : false; //$('input[name=backward]').is(':checked');
+        // rate available ?
+        var rate = $(row).find('.hidden-config-rate').val() === '1' ? true : false;
+        // text
+        var text = $(row).find('.hidden-config-text').val();
+        // related help region
+        var relatedRegionUuid = $(row).find('.hidden-config-help-region-uuid').val();
+
+        var config = {
+            loop: loop,
+            backward: backward,
+            rate: rate,
+            text: text,
+            relatedRegionUuid: relatedRegionUuid
+        };
+
+        return config;
+    },
+    appendHelpModalConfig: function (modal, config, region) {
+        var root = $(modal).find('#options');
+        $(root).empty();
+        var html = '<hr/>';
+        console.log(config);
+        if (config.loop || config.backward || config.rate || config.text !== '' || config.relatedRegionUuid !== '') {           
+            if (config.backward) {                
+                html += '<div class="row">';
+                html += '   <div class="col-md-12">';
+                html += '       <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback_backward', {}, 'media_resource') + '" onclick="playBackward();" style="margin:5px;">';
+                html += '           <i class="fa fa-exchange"></i> ';
+                html += '       </button>';
+                html += '       <label>' + Translator.trans('region_help_segment_playback_backward', {}, 'media_resource') + '</label>';                
+                html += '   </div>';
+                html += '</div>';
+                html += '<hr/>';
+            }
+            if (config.loop) {                
+                html += '<div class="row">';
+                html += '   <div class="col-md-12">';                
+                html += '       <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback_loop', {}, 'media_resource') + '"  onclick="playHelp(' + region.start + ', ' + region.end + ', ' + true + ',' + false + ')" style="margin:5px;">';
+                html += '           <i class="fa fa-retweet"></i> ';
+                html += '       </button>';
+                html += '       <label>' + Translator.trans('region_help_segment_playback_loop', {}, 'media_resource') + '</label>';
+                html += '   </div>';
+                html += '</div>';
+                html += '<hr/>';              
+            }
+            if (config.rate) {               
+                html += '<div class="row">';
+                html += '   <div class="col-md-12">'; 
+                html += '       <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback_rate', {}, 'media_resource') + '"  onclick="playHelp(' + region.start + ', ' + region.end + ', ' + false + ',' + true + ')">x0.8</button>';
+                html += '       <label>' + Translator.trans('region_help_segment_playback_rate', {}, 'media_resource') + '</label>';
+                html += '   </div>';
+                html += '</div>';
+                html += '<hr/>';
+            }         
+            if (config.text !== '') {
+                html += '<div class="row">';
+                html += '   <div class="col-md-12">';                
+                html += '       <button class="btn btn-default" title="' + Translator.trans('region_help_related_segment_playback', {}, 'media_resource') + '" onclick="showHelpText();" style="margin:5px;">';
+                html +=             Translator.trans('region_help_help_text_label', {}, 'media_resource');
+                html += '       </button>'; 
+                html += '       <label id="help-modal-help-text" style="margin:5px;display:none;">' + config.text + '</label>';
+                html += '   </div>';
+                html += '</div>';
+                html += '<hr/>';               
+            }
+            if (config.relatedRegionUuid) {
+                var helpRegionStart = this.getHelpRelatedRegionStart(config.relatedRegionUuid);                
+                html += '<div class="row">';
+                html += '   <div class="col-md-12">'; 
+                html += '       <button class="btn btn-default" title="' + Translator.trans('region_help_related_segment_playback', {}, 'media_resource') + '" onclick="playHelpRelatedRegion( ' + helpRegionStart + ');" style="margin:5px;">';
+                html += '           <i class="fa fa-play"></i> ';
+                html += '           / ';
+                html += '           <i class="fa fa-pause"></i>';
+                html += '       </button>';
+                html += '       <label>' + Translator.trans('region_help_related_segment_playback', {}, 'media_resource') + '</label>';
+                html += '   </div>';
+                html += '</div>';
+            }
+            
+        }
+        else {
+            html += '<div class="row">';
+            html += '   <div class="col-md-12">'; 
+            html += '       <h4>' + Translator.trans('region_help_no_help_available', {}, 'media_resource') + '</h4>';
+            html += '   </div>';
+            html += '</div>';
+        }
+        $(html).appendTo(root);
+    },
+    /**
+     * Add the region to the DOM at the right place
+     * @param region wavesurfer.region 
+     */
+    addRegionToDom: function (wavesurfer, wavesurferUtils, region, uuid) {
+        var my = this;
+        //console.log(uuid);
+        var container = $('.regions-container');
+        // HTML to append
+        var html = '';
+        html += '<div class="row form-row region" id="' + uuid + '" data-uuid="' + uuid + '">';
+        // start input
+        html += '       <div class="col-xs-1">';
+        html += '           <div class="time-text start">' + wavesurferUtils.secondsToHms(region.start) + '</div>';
+        html += '       </div>';
+        // end input
+        html += '       <div class="col-xs-1">';
+        html += '           <div class="time-text end">' + wavesurferUtils.secondsToHms(region.end) + '</div>';
+        html += '       </div>';
+        // text input
+
+        html += '       <div class="col-xs-8">';
+        html += '           <div contenteditable="true" class="text-left note">' + region.data.note + '</div>';
+        html += '       </div>';
+
+        // delete button
+        html += '       <div class="col-xs-2">';
+        html += '           <div class="btn-group" role="group">';
+        html += '               <button type="button" class="btn btn-default fa fa-play" title="' + Translator.trans('play_pause', {}, 'media_resource') + '" onclick="playRegion(this);">';
+        html += '               <button role="button" type="button" class="btn btn-default fa fa-cog" title="' + Translator.trans('region_config', {}, 'media_resource') + '" onclick="configRegion(this);"> </button>';
+        html += '               <button type="button" name="del-region-btn" class="btn btn-danger fa fa-trash-o ' + region.id + '" data-id="' + region.id + '" title="' + Translator.trans('region_delete', {}, 'media_resource') + '" onclick="deleteRegion(this)"></button>';
+        html += '           </div>';
+        html += '       </div>';
+        html += '       <input type="hidden" class="hidden-start" name="start[]" value="' + region.start + '" required="required">';
+        html += '       <input type="hidden" class="hidden-end" name="end[]" value="' + region.end + '" required="required">';
+        html += '       <input type="hidden" class="hidden-note" name="note[]" value="' + region.data.note + '">';
+        html += '       <input type="hidden" class="hidden-region-id" name="region-id[]" value="" >';
+        html += '       <input type="hidden" class="hidden-region-uuid" name="region-uuid[]" value="' + uuid + '" >';
+
+        html += '       <input type="hidden" class="hidden-config-help-region-uuid" name="help-region-uuid[]" value="" >';
+        html += '       <input type="hidden" class="hidden-config-loop" name="loop[]" value="0" >';
+        html += '       <input type="hidden" class="hidden-config-backward" name="backward[]" value="0" >';
+        html += '       <input type="hidden" class="hidden-config-rate" name="rate[]" value="0" >';
+        html += '       <input type="hidden" class="hidden-config-text" name="text[]" value="" >';
+        html += '</div>';
+
+        // find the previous row in order to happend the new one in the good place
+        if (Object.keys(wavesurfer.regions.list).length > 1) {
+            var previous = my.findPreviousRegionRow(region.start);
+            if (previous) {
+                $(html).insertAfter(previous);
+            }
+            else {
+                console.log('previous not found');
+            }
+        }
+        else {
+            $(container).append(html);
+        }
     },
     /**
      * get regions that are using the given regionUuid as help region

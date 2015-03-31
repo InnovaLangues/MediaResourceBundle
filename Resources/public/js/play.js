@@ -22,13 +22,13 @@ var previousResizedRegion = null;
 var previousResizedRegionRow = null;
 
 // current help options
-var helpPlaybackLoop = false;
-var helpPlaybackRate = 1;
 var helpPlaybackBackward = false;
 var helpIsPlaying = false;
 var helpAudioPlayer;
-var helpCurrentWRegion; // the region where we are when asking help
-var currentHelpRelatedRegion; // the related region for help; 
+var helpCurrentWRegion; // the wavesurfer region where we are when asking help
+var helpPreviousWRegion; // the previous wavesurfer region relatively to helpCurrentWRegion
+var currentHelpRelatedRegion; // the related help region; 
+var hModal;
 
 var utterance; // global SpeechSynthesisUtterance instance;
 
@@ -87,7 +87,7 @@ var actions = {
     mark: function () {
         // BEWARE !!! We only show the begin region handler in order to avoid marker(s) overlaps
         // (endmarker time = next region start marker time)
-        console.log('mark');
+        // console.log('mark');
 
         // if one or more region(s) (always true because a default region is created at startup)
         if (!jQuery.isEmptyObject(wavesurfer.regions.list)) {
@@ -109,7 +109,6 @@ var actions = {
             endTimeDisplay.text(wavesurferUtils.secondsToHms(time));
             // ADD new region to DOM in the right place
             var toAdd = addRegion(time, savedEnd, '', false);
-            //addRegionToDom(toAdd);
             var guid = StringUtils.createGuid();
             domUtils.addRegionToDom(wavesurfer, wavesurferUtils, toAdd, guid);
         }
@@ -117,21 +116,36 @@ var actions = {
     help: function () {
         // get current wavesurfer region
         helpCurrentWRegion = wavesurferUtils.getCurrentRegion(wavesurfer, wavesurfer.getCurrentTime() + 0.1);
+        // get previous
+        helpPreviousWRegion = wavesurferUtils.getPrevRegion(wavesurfer, wavesurfer.getCurrentTime() + 0.1);
 
         // open modal
-        var hModal = domUtils.openRegionHelpModal(helpCurrentWRegion, audioUrl, wavesurfer, wavesurferUtils);
+        hModal = domUtils.openRegionHelpModal(helpCurrentWRegion, helpPreviousWRegion, audioUrl);
 
         hModal.on('shown.bs.modal', function () {
-            console.log('help modal open');
+
+            // by default the current region is selected so we append to modal help tab the current region help options
+            var currentDomRow = domUtils.getRegionRow(helpCurrentWRegion.start + 0.1, helpCurrentWRegion.end - 0.1);
+            var config = domUtils.getRegionRowHelpConfig(currentDomRow);
+            domUtils.appendHelpModalConfig(hModal, config, helpCurrentWRegion);
+
+            // listen to tab click event
+            $('#help-tab-panel a').click(function (e) {
+                e.preventDefault();
+                $(this).tab('show');
+            })
         });
 
         hModal.on('hidden.bs.modal', function () {
-            console.log('help modal close');
+            // console.log('help modal close');
             helpPlaybackLoop = false;
             helpPlaybackRate = 1;
             helpPlaybackBackward = false;
             helpIsPlaying = false;
             utterance = null;
+            helpPreviousWRegion = null;
+            helpCurrentWRegion = null;
+            hModal = null;
         });
 
         hModal.modal("show");
@@ -158,7 +172,8 @@ $(document).ready(function () {
     audioUrl = $('input[name="audio-url"]').val();
     isEditing = parseInt($('input[name="editing"]').val()) === 1 ? true : false;
 
-
+    // color config region buttons if needed
+    toggleConfigButtonColor();
 
     // bind data-action events
     $("button[data-action]").click(function () {
@@ -191,13 +206,30 @@ $(document).ready(function () {
         if ($this.data('before') !== $this.html()) {
             $this.data('before', $this.html());
             $this.trigger('change');
-            //updateHiddenNoteOrTitleInput($this);
             domUtils.updateHiddenNoteOrTitleInput($this);
         }
         return $this;
     }).on('blur', '[contenteditable]', function (e) {
         isInRegionNoteRow = false;
     });
+
+    // HELP MODAL EVENTS ATTACHED TO THE BODY
+    $('body').on('change', 'input[name=segment]:radio', function (e) {
+        console.log(e.target.value);
+        if (e.target.value === 'previous') {
+            console.log('yep');
+            var currentDomRow = domUtils.getRegionRow(helpPreviousWRegion.start + 0.1, helpPreviousWRegion.end - 0.1);
+            var config = domUtils.getRegionRowHelpConfig(currentDomRow);
+            domUtils.appendHelpModalConfig(hModal, config, helpPreviousWRegion);
+        }
+        else if (e.target.value === 'current') {
+            var currentDomRow = domUtils.getRegionRow(helpCurrentWRegion.start + 0.1, helpCurrentWRegion.end - 0.1);
+            var config = domUtils.getRegionRowHelpConfig(currentDomRow);
+            domUtils.appendHelpModalConfig(hModal, config, helpCurrentWRegion);
+        }
+    });
+
+
 
 
     /* JS HELPERS */
@@ -268,7 +300,7 @@ $(document).ready(function () {
     });
 
     wavesurfer.on('seek', function () {
-       
+
     });
 
     wavesurfer.on('region-click', function (region, e) {
@@ -282,7 +314,6 @@ $(document).ready(function () {
     });
 
     if (isEditing) {
-
         // catch region resize start to store some data
         wavesurfer.on('region-resize-start', function (region, e) {
             isResizing = true;
@@ -290,7 +321,7 @@ $(document).ready(function () {
             //currentlyResizedRegionRow = getRegionRow(region.start + 0.1, region.end - 0.1);
             currentlyResizedRegionRow = domUtils.getRegionRow(region.start + 0.1, region.end - 0.1);
 
-            previousResizedRegion = wavesurferUtils.getPrevRegion(wavesurfer, region.start - 0.1);
+            previousResizedRegion = wavesurferUtils.getPrevRegion(wavesurfer, region.start + 0.1);
             //previousResizedRegionRow = getRegionRow(previousResizedRegion.start, previousResizedRegion.end);
             previousResizedRegionRow = domUtils.getRegionRow(previousResizedRegion.start, previousResizedRegion.end);
             originalStart = region.start;
@@ -372,14 +403,23 @@ $(document).ready(function () {
  * @param {float} start
  * @param {float} end
  */
-function playHelp(start, end) {  
+function playHelp(start, end, loop, rate) {
     helpAudioPlayer = document.getElementsByTagName("audio")[0];
+    console.log(loop);
+    helpAudioPlayer.loop = loop;
+    if (rate) {
+        helpAudioPlayer.playbackRate = 0.8;
+    }
+    else{
+        helpAudioPlayer.playbackRate = 1;
+    }
     helpAudioPlayer.addEventListener('timeupdate', function () {
         // console.log(helpAudioPlayer.currentTime);
         if (helpAudioPlayer.currentTime >= end) {
             helpAudioPlayer.pause();
             helpAudioPlayer.currentTime = start;
-            if (helpPlaybackLoop) {
+            if (helpAudioPlayer.loop) {
+                console.log('yes i want to loop!');
                 helpAudioPlayer.play();
             }
             else {
@@ -388,8 +428,7 @@ function playHelp(start, end) {
         }
 
     });
-    helpAudioPlayer.loop = helpPlaybackLoop;
-    helpAudioPlayer.playbackRate = helpPlaybackRate;
+    
 
     if (helpIsPlaying) {
         helpAudioPlayer.pause();
@@ -406,57 +445,12 @@ function playHelp(start, end) {
  * @param {float} start
  */
 function playHelpRelatedRegion(start) {
-
-    var region = wavesurferUtils.getCurrentRegion(wavesurfer, start + 0.1);
-    if (!playing) {
-        wavesurfer.play(region.start, region.end);
-        playing = true;
-        region.once('out', function () {
-            // force pause
-            wavesurfer.pause();
-            playing = false;
-        });
-    }
-    else {
-        wavesurfer.pause();
-        playing = false;
-    }
+    playRegionFrom(start + 0.1);
 }
 
-/**
- * change <audio> playback rate (not using wavesurfer because of pitch modification
- */
-function setPlaybackRate(elem, value) {
-    helpPlaybackRate = value;
-
-    $('.modal-body').find('.btn-group > .btn').each(function () {
-        $(this).removeClass('active');
-    });
-    $(elem).addClass('active');
-
-    if (helpIsPlaying && helpAudioPlayer) {
-        helpAudioPlayer.pause();
-        helpIsPlaying = false;
-    }
+function showHelpText(){
+    $('#help-modal-help-text').toggle();
 }
-/**
- * Called by HelpModal toggle loop button
- * @param elem the button
- */
-function toggleLoopPlayback(elem) {
-    helpPlaybackLoop = !helpPlaybackLoop;
-    if (helpPlaybackLoop) {
-        $(elem).addClass('active');
-    }
-    else {
-        $(elem).removeClass('active');
-    }
-    if (helpIsPlaying && helpAudioPlayer) {
-        helpAudioPlayer.pause();
-        helpIsPlaying = false;
-    }
-}
-
 
 /**
  * Will only work with chrome browser !!
@@ -520,7 +514,7 @@ function handleUtterancePlayback(index, utterance, textArray) {
 // ======================================================================================================== //
 /**
  * Open config modal
- * @param the source of the event
+ * @param the source of the event (button)
  */
 function configRegion(elem) {
     var configModal = domUtils.openConfigRegionModal(elem, wavesurfer, wavesurferUtils);
@@ -540,9 +534,30 @@ function configRegion(elem) {
             wavesurfer.pause();
             playing = false;
         }
+        
+        // color the config button if any value in config parameters
+        toggleConfigButtonColor();
     });
 
     configModal.modal("show");
+}
+
+function checkIfRowHasConfigValue(row) {
+    var helpRegion = $(row).find('.hidden-config-help-region-uuid').val() !== '' ? true : false;
+    //console.log(helpRegion ? 'has help' : 'has no help');
+    var loop = $(row).find('.hidden-config-loop').val() === '1' ? true : false;
+    //console.log(loop ? 'has loop' : 'has no loop');
+    //console.log('loop ' + $(row).find('.hidden-config-loop').val());
+    var backward = $(row).find('.hidden-config-backward').val() === '1' ? true : false;
+    //console.log(backward ? 'has backward' : 'has no backward');
+    //console.log('back' + $(row).find('.hidden-config-backward').val());
+    var rate = $(row).find('.hidden-config-rate').val() === '1' ? true : false;
+    //console.log(rate ? 'has rate' : 'has no rate');
+    //console.log('rate' +  $(row).find('.hidden-config-rate').val());
+    var text = $(row).find('.hidden-config-text').val() !== '' ? true : false;
+    //console.log(text ? 'has text' : 'has no text');
+    //console.log(text ? 'text':'notext');
+    return helpRegion || loop || backward || rate || text;
 }
 /**
  * Called by ConfigModal <select> element
@@ -564,19 +579,7 @@ function onSelectedRegionChange(elem) {
  */
 function previewHelpRelatedRegion() {
     if (currentHelpRelatedRegion) {
-        if (!playing) {
-            wavesurfer.play(currentHelpRelatedRegion.start, currentHelpRelatedRegion.end);
-            playing = true;
-            currentHelpRelatedRegion.once('out', function () {
-                // force pause
-                wavesurfer.pause();
-                playing = false;
-            });
-        }
-        else {
-            wavesurfer.pause();
-            playing = false;
-        }
+        playRegionFrom(currentHelpRelatedRegion.start + 0.1);
     }
 }
 
@@ -671,7 +674,7 @@ function deleteRegion(elem) {
                         }
                     }
 
-                    var start = toRemove.start;
+                    var start = toRemove.start;                   
                     var end = toRemove.end;
                     // if we are deleting the first region
                     if (start === 0) {
@@ -695,8 +698,8 @@ function deleteRegion(elem) {
                         }
                     } else { // all other cases
                         // update previous wavesurfer region (will automatically update the dom ??)
-                        var previous = wavesurferUtils.getPrevRegion(wavesurfer, start - 0.1);
-
+                        var previous = wavesurferUtils.getPrevRegion(wavesurfer, start + 0.1);
+                        console.log(start);
                         if (previous) {
                             previous.update({
                                 end: end
@@ -718,6 +721,48 @@ function deleteRegion(elem) {
             });
         }
     }
+}
+/**
+ * Called from play button on a region row
+ * @param {type} elem
+ * @returns {undefined}
+ */
+function playRegion(elem) {
+    var start = parseFloat($(elem).closest('.region').find('.hidden-start').val());
+    playRegionFrom(start + 0.1);
+}
+
+function playRegionFrom(start) {
+    var region = wavesurferUtils.getCurrentRegion(wavesurfer, start);
+    if (!playing) {
+        wavesurfer.play(region.start, region.end);
+        playing = true;
+        region.once('out', function () {
+            // force pause
+            wavesurfer.pause();
+            playing = false;
+        });
+    }
+    else {
+        wavesurfer.pause();
+        playing = false;
+    }
+}
+
+
+/**
+ * Add a color to region config button if any config parameter found for the row
+ * 
+ */
+function toggleConfigButtonColor() {
+    $('.region').each(function () {
+        if (checkIfRowHasConfigValue($(this))) {
+            $(this).find('.fa.fa-cog').addClass('btn-warning').removeClass('btn-default');
+        }
+        else {
+            $(this).find('.fa.fa-cog').removeClass('btn-warning').addClass('btn-default');
+        }
+    });
 }
 
 function manualTextAnnotation(text, css) {

@@ -13,6 +13,7 @@ back: Quitter
 # c
 close: Fermer
 creation_error_wrong_file_format: Le format du fichier fournit n'est pas autorisé (mp3 / ogg / wav)
+current_segment: Segment courant
 
 # d
 delete_media_resource: Supprimer la ressource
@@ -22,6 +23,11 @@ dialog_region_configure: Configurer le segment
 # e
 error_while_uploading: Erreur lors de l'upload du fichier.
 error_while_encoding: Erreur lors de la conversion du fichier.
+
+# h
+help_modal_intro: <h4>Il est possible que vous ayez raté le bon segment.</h4><h5>Ici vous pouvez choisir entre le segment courant et le précédent (si il existe).</h5><h5>Vous verrez l'aide correspondante (si elle existe) sur l'autre onglet.</h5>
+help_modal_choice_tab_label: Choix du segment
+help_modal_help_tab_label: Aide disponible pour le segment
 
 # i
 innova_media_resource: Ressource média
@@ -36,6 +42,7 @@ no_media_resource: Aucune resource trouvée.
 
 #p
 play_pause: PLay / Pause
+previous_segment: Segment précédent
 
 #r
 region_help: Aide sur un segment
@@ -50,14 +57,14 @@ region_delete_confirm_base: Etes vous sur de vouloir supprimer le segment?
 region_delete_confirm_sub: Cette région est affectée à une ou plusieurs aides.<br/> Ces aides seront supprimées automatiquement.
 resource_update_success: La ressource à bien été mise à jour.
 resource_update_error: Une erreur est survenue lors de la mise à jour de la ressource.
-region_help_play_related_region_label: L'écoute de ce segment peut vous aider
-region_help_help_text_label: Ce texte peut vous aider
+region_help_help_text_label: Voir l'élément textuel
 region_help_segment_playback_label: Lecture du segment
 region_help_segment_playback: Jouer le segment
-region_help_segment_playback_backward: Jouer le segment en backward building
-region_help_segment_playback_loop: Jouer le segment en boucle
-region_help_segment_playback_rate: Modifier la vitesse de lecture du segment
-region_help_related_segment_playback: Jouer le segment connexe
+region_help_segment_playback_backward: Lire le segment en backward building
+region_help_segment_playback_loop: Lire le segment en boucle
+region_help_segment_playback_rate: Lire le segment plus lentement
+region_help_related_segment_playback: Lire le segment connexe
+region_help_no_help_available: Aucune aide disponible pour le segment.
 
 #s
 save: Sauvegarder

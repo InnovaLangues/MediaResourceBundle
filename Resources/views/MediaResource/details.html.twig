@@ -87,6 +87,7 @@
                                 {% if edit %}
                                     <div class="col-xs-2">
                                         <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-default fa fa-play" title="{{'play_pause' | trans({}, 'media_resource')}}" onclick="playRegion(this);">
                                             <button role="button" type="button" class="btn btn-default fa fa-cog" title="{{'region_config' | trans({}, 'media_resource')}}" onclick="configRegion(this);"> </button>
                                             <button role="button" type="button" class="btn btn-danger fa fa-trash-o" title="{{'region_delete' | trans({}, 'media_resource')}}" onclick="deleteRegion(this);"></button>
                                         </div>

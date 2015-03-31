@@ -13,6 +13,8 @@ back: Quit
 # c
 close: Close
 creation_error_wrong_file_format: The given file format is not allowed (mp3 / ogg / wav)
+current_segment: Current segment
+
 
 # d
 delete_media_resource: Delete Resource
@@ -21,6 +23,11 @@ dialog_region_configure: Configure segment
 # e
 error_while_uploading: Erreur lors de l'upload du fichier.
 error_while_encoding: Erreur lors de la conversion du fichier.
+
+# h
+help_modal_intro: <h4>You might have missed the right segment.</h4><h5>Here you will be able to choose between the current and previous segment (if exists).</h5><h5>You will see the corresponding help (if exists) on the other tab.</h5>
+help_modal_choice_tab_label: Segment choice
+help_modal_help_tab_label: Help available for the selected segment
 
 # i
 innova_media_resource: Media Resource
@@ -35,6 +42,7 @@ no_media_resource: None found.
 
 #p
 play_pause: PLay / Pause
+previous_segment: Previous segment
 
 #r
 region_help: Segment help
@@ -49,14 +57,14 @@ region_delete_confirm_base: Are you sure you want to delete this segment?
 region_delete_confirm_sub: This segment is related to one or more helps.<br/> Those helps will be automatically deleted.
 resource_update_success: Resource update successfull.
 resource_update_error: An error occured while updating the resource.
-region_help_play_related_region_label: Listen to this segment can help you
-region_help_help_text_label: This text might help you
+region_help_help_text_label: Show me the textual element
 region_help_segment_playback_label: Segment playback
 region_help_segment_playback: Play the segment
 region_help_segment_playback_backward: Play the segment with backward building
-region_help_segment_playback_loop: Loop the playback
-region_help_segment_playback_rate: Change playback rate
+region_help_segment_playback_loop: Play the segment in loop
+region_help_segment_playback_rate: Play the segment slower
 region_help_related_segment_playback: Play the related segment
+region_help_no_help_available: No help available for this segment.
 
 #s
 save: Save

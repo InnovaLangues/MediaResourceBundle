@@ -44,9 +44,10 @@ var WavesurferUtils = {
     getPrevRegion: function (wavesurfer, time) {
         var result = null;
         for (var index in wavesurfer.regions.list) {
-            if (wavesurfer.regions.list[index].start < time) {
+            console.log('end ' + wavesurfer.regions.list[index].end + ' time ' + time);
+            if (wavesurfer.regions.list[index].end < time) {
                 // if existing result check that current region is closer
-                if (!result || (result && result.start < wavesurfer.regions.list[index].start)) {
+                if (!result || (result && result.end < wavesurfer.regions.list[index].end)) {
                     result = wavesurfer.regions.list[index];
                 }
             }
