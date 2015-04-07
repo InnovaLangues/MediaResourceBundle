@@ -4,65 +4,80 @@
 {% endblock %}
 
 {% block media_resource_content %}
+    <!-- PANEL HEADER -->
 
-    <div class="panel-heading">
-        <h3 class="panel-title">
-            {{_resource.resourceNode.name}}
-        </h3>
-    </div>
-    <div class="panel-body">
-        <form role="form" enctype="multipart/form-data" id="media_resource_form"  method="post" {% if edit %} action="{{path('media_resource_save', {'workspaceId': workspace.id ,'id':_resource.id})}}"  {% endif %} name="edit">
-
-            <!-- toolbar : save exercise - show / hide text - show / hide media(s) - switch media display waveform - video -->
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="media-resource-title"></div>
-                </div>
-                <div class="col-md-6 text-right">
-                    <div class="btn-group">
-                        {% if edit %}
-                            <button type="submit" class="btn btn-default fa fa-floppy-o" title="{{'save' | trans({}, 'media_resource')}}"></button>  
-                        {% endif %}                    
+    {% if edit %}
+        <div class="panel-heading">
+            <h3 class="panel-title"> {{_resource.resourceNode.name}} </h3>
+        </div>
+    {% else %}
+        <div class="panel-heading" style="height: 75px;">
+            <form role="form" class="form-inline" id="media_resource_change_view"  method="post" action="{{path('media_resource_change_view', {'workspaceId': workspace.id ,'id':_resource.id})}}" name="view">          
+                <div class="form-row">
+                    <div class="col-md-4 form-group">
+                        <h3 class="panel-title"> {{_resource.resourceNode.name}} </h3>
+                    </div>
+                    <div class="col-md-8 form-group">
+                        <div class="btn-group">
+                            <input type="submit" name="active" class="btn btn-default active" value="Ecoute active">
+                            <input type="submit" name="pause" class="btn btn-default" value="Pause automatique">
+                            <input type="submit" name="live" class="btn btn-default" value="Ecoute live">
+                        </div>
                     </div>
                 </div>
-            </div>
-            <!-- waveform -->
-            <hr/>
-            <div class="row media-container">
-                <div class="col-md-12">
-                    <div id="audio-player">
-                        <div id="wave-timeline"></div>
-                        <div id="waveform">
-                            <div class="progress progress-striped active" id="progress-bar">
-                                <div class="progress-bar progress-bar-info"></div>
-                            </div>
+            </form>
+        </div>
+    {% endif %}
+
+    <div class="panel-body">   
+        <!-- waveform -->
+        <hr/>
+        <div class="row media-container">
+            <div class="col-md-12">
+                <div id="audio-player">
+                    <div id="wave-timeline"></div>
+                    <div id="waveform">
+                        <div class="progress progress-striped active" id="progress-bar">
+                            <div class="progress-bar progress-bar-info"></div>
                         </div>
                     </div>
                 </div>
             </div>
-            <hr/>
-            <!-- media controls -->
-            <div class="row">
-                <div class="col-md-12 text-center">
-                    <button type="button" role="button" class="btn btn-default fa fa-step-backward" data-action="backward" title="{{'move_backward' | trans({}, 'media_resource')}}">
-                    </button>
-                    <button type="button" class="btn btn-default" data-action="play" title="{{'play_pause' | trans({}, 'media_resource')}}">
-                        <i class="fa fa-play"></i>
-                        /
-                        <i class="fa fa-pause"></i>
-                    </button>
-                    <button type="button" class="btn btn-default fa fa-step-forward" data-action="forward" title="{{'move_forward' | trans({}, 'media_resource')}}">
-                    </button>
+        </div>
+        <hr/>
+        <!-- media controls -->
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <button type="button" role="button" class="btn btn-default fa fa-step-backward" data-action="backward" title="{{'move_backward' | trans({}, 'media_resource')}}">
+                </button>
+                <button type="button" class="btn btn-default" data-action="play" title="{{'play_pause' | trans({}, 'media_resource')}}">
+                    <i class="fa fa-play"></i>
+                    /
+                    <i class="fa fa-pause"></i>
+                </button>
+                <button type="button" class="btn btn-default fa fa-step-forward" data-action="forward" title="{{'move_forward' | trans({}, 'media_resource')}}">
+                </button>
 
-                    {% if edit %}
-                        <button type="button" class="btn btn-danger fa fa-flag" title="{{'add_marker' | trans({}, 'media_resource')}}" data-action="mark">
-                        </button> 
-                    {% endif %}
-                    <button type="button" class="btn btn-default fa fa-question" data-action="help" title="{{'region_help' | trans({}, 'media_resource')}}">
-                    </button>
-                </div>
+                {% if edit %}
+                    <button type="button" class="btn btn-danger fa fa-flag" title="{{'add_marker' | trans({}, 'media_resource')}}" data-action="mark">
+                    </button> 
+                {% endif %}
+                <button type="button" class="btn btn-default fa fa-question" data-action="help" title="{{'region_help' | trans({}, 'media_resource')}}">
+                </button>
             </div>
-            <hr/>
+        </div>
+        <hr/>
+        <form role="form" id="media_resource_form"  method="post" {% if edit %} action="{{path('media_resource_save', {'workspaceId': workspace.id ,'id':_resource.id})}}"  {% endif %} name="edit">
+            {% if edit %}
+                <div class="row">
+                    <div class="col-md-12 text-right">
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-default fa fa-floppy-o" title="{{'save' | trans({}, 'media_resource')}}"></button>  
+                        </div>
+                    </div>
+                </div>
+                <hr/>
+            {% endif %}  
             <!-- segments -->
             <div class="row">
                 <div class="col-md-12 text-center regions-container" {% if edit == false %} style="display:none;" {% endif %}>               
@@ -88,8 +103,8 @@
                                     <div class="col-xs-2">
                                         <div class="btn-group" role="group">
                                             <button type="button" class="btn btn-default fa fa-play" title="{{'play_pause' | trans({}, 'media_resource')}}" onclick="playRegion(this);">
-                                            <button role="button" type="button" class="btn btn-default fa fa-cog" title="{{'region_config' | trans({}, 'media_resource')}}" onclick="configRegion(this);"> </button>
-                                            <button role="button" type="button" class="btn btn-danger fa fa-trash-o" title="{{'region_delete' | trans({}, 'media_resource')}}" onclick="deleteRegion(this);"></button>
+                                                <button role="button" type="button" class="btn btn-default fa fa-cog" title="{{'region_config' | trans({}, 'media_resource')}}" onclick="configRegion(this);"> </button>
+                                                <button role="button" type="button" class="btn btn-danger fa fa-trash-o" title="{{'region_delete' | trans({}, 'media_resource')}}" onclick="deleteRegion(this);"></button>
                                         </div>
                                     </div>
                                 {% endif %}                            

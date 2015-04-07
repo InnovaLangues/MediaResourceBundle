@@ -9,6 +9,9 @@ alert_only_one_region_left: Just one region. Can not delete!
 
 # b
 back: Quitter
+btn_auto_pause: Pause automatique
+btn_active_listening: Ecoute active
+btn_live_listening: Ecoute live
 
 # c
 close: Fermer

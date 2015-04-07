@@ -1,0 +1,88 @@
+{% extends  "InnovaMediaResourceBundle::layout.html.twig" %}
+{% block breadcrumb %}
+    {{ parent() }}
+{% endblock %}
+
+{% block media_resource_content %}
+    <!-- PANEL HEADER -->
+    <div class="panel-heading" style="height: 75px;">
+        <form role="form" class="form-inline" id="media_resource_change_view"  method="post" action="{{path('media_resource_change_view', {'workspaceId': workspace.id ,'id':_resource.id})}}" name="view">          
+            <div class="form-row">
+                <div class="col-md-4 form-group">
+                    <h3 class="panel-title"> {{_resource.resourceNode.name}} </h3>
+                </div>
+                <div class="col-md-8 form-group">
+                    <div class="btn-group">
+                        <input type="submit" name="active" class="btn btn-default" value="{{'btn_active_listening' | trans({}, 'media_resource')}}">
+                        <input type="submit" name="pause" class="btn btn-default active" value="{{'btn_auto_pause' | trans({}, 'media_resource')}}">
+                        <input type="submit" name="live" class="btn btn-default" value="{{'btn_live_listening' | trans({}, 'media_resource')}}">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="panel-body">   
+        <!-- audio player -->
+        <hr/>
+        <div class="row media-container">
+          
+            <!-- play / pause button -->
+            <div class="col-md-1">
+                <button type="button" class="btn btn-default fa fa-play" id="play" onclick="play()" title="{{'play_pause' | trans({}, 'media_resource')}}">
+                   
+                </button>
+            </div>
+            <!-- timeline -->
+            <div class="col-md-11">
+                <div class="progress" style="margin-bottom:0px;height:26px;">
+                    <div  id="seekbar" class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                </div>
+            </div>
+            <audio src="{{asset('')}}{{audioPath}}" style="width:100%;"></audio>
+        </div>
+        <hr/>
+        <!-- segments hidden -->
+        <div class="row">
+            <div class="col-md-12 text-center regions-container"  style="display:none;">               
+                {% if regions | length > 0 %}
+                    {% for region in regions %}
+                        <div class="row form-row region" id="{{region.uuid}}" data-uuid="{{region.uuid}}">
+                            <div class="col-xs-1">                                    
+                                <div class="time-text start">{{ region.start | hmsTime }}</div>
+                            </div>
+                            <div class="col-xs-1">
+                                <div class="time-text end">{{ region.end | hmsTime }}</div>
+                            </div>
+
+                            <div class="col-xs-10">
+                                <div class="text-left note">{{ region.note | raw }}</div>
+                            </div>
+                            <input type="hidden" class="hidden-start" name="start[]" value="{{ region.start }}" required="required">
+                            <input type="hidden" class="hidden-end" name="end[]" value="{{ region.end }}" required="required">
+                            <input type="hidden" class="hidden-note" name="note[]" value="{{ region.note }}">
+                            <input type="hidden" class="hidden-region-id" name="region-id[]" value="{{ region.id }}">
+                            <input type="hidden" class="hidden-region-uuid" name="region-uuid[]" value="{{ region.uuid }}">
+                            <!-- Region config  -->
+                            <input type="hidden" class="hidden-config-help-region-uuid" name="help-region-uuid[]" value="{{ region.regionConfig.helpRegionUuid ? region.regionConfig.helpRegionUuid : '' }}">
+                            <input type="hidden" class="hidden-config-loop" name="loop[]" value="{{ region.regionConfig.hasLoop ? '1' : '0' }}">
+                            <input type="hidden" class="hidden-config-backward" name="backward[]" value="{{ region.regionConfig.hasBackward ? '1' : '0' }}">
+                            <input type="hidden" class="hidden-config-rate" name="rate[]" value="{{ region.regionConfig.hasRate ? '1' : '0' }}">
+                            <input type="hidden" class="hidden-config-text" name="text[]" value="{{ region.regionConfig.helpText ? region.regionConfig.helpText : '' }}">
+                        </div>
+                    {% endfor %}                
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts  %}
+    {{parent()}}    
+    {% javascripts         
+        '@InnovaMediaResourceBundle/Resources/public/js/play_pause.js'         
+    %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %} 

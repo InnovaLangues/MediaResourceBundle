@@ -9,6 +9,9 @@ alert_only_one_region_left: Il n'y a qu'un seul segment. Impossible de supprimer
 
 # b
 back: Quit
+btn_auto_pause: Auto pause
+btn_active_listening: Active listening
+btn_live_listening: Live listening
 
 # c
 close: Close

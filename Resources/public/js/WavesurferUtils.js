@@ -13,7 +13,7 @@ var WavesurferUtils = {
             if (region.start < time && region.end > time) {
                 return region;
             }
-            index++;
+            //index++;
         }
         return null;
     },
@@ -55,8 +55,8 @@ var WavesurferUtils = {
         return result;
     },
     /**
-     * format wavesurfer time into human readable time
-     * @param d
+     * format decimal time into human readable time
+     * @param d decimal
      * @returns formated time
      */
     secondsToHms: function (d) {

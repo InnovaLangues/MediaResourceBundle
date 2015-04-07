@@ -1,0 +1,79 @@
+{% extends  "InnovaMediaResourceBundle::layout.html.twig" %}
+{% block breadcrumb %}
+    {{ parent() }}
+{% endblock %}
+
+{% block media_resource_content %}
+    <!-- PANEL HEADER -->
+
+    <div class="panel-heading" style="height: 75px;">
+        <form role="form" class="form-inline" id="media_resource_change_view"  method="post" action="{{path('media_resource_change_view', {'workspaceId': workspace.id ,'id':_resource.id})}}" name="view">          
+            <div class="form-row">
+                <div class="col-md-4 form-group">
+                    <h3 class="panel-title"> {{_resource.resourceNode.name}} </h3>
+                </div>
+                <div class="col-md-8 form-group">
+                    <div class="btn-group">
+                        <input type="submit" name="active" class="btn btn-default" value="{{'btn_active_listening' | trans({}, 'media_resource')}}">
+                        <input type="submit" name="pause" class="btn btn-default" value="{{'btn_auto_pause' | trans({}, 'media_resource')}}">
+                        <input type="submit" name="live" class="btn btn-default active" value="{{'btn_live_listening' | trans({}, 'media_resource')}}">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="panel-body">   
+        <!-- waveform -->
+        <hr/>
+        <div class="row media-container">
+            <div class="col-md-12">
+                <div id="audio-player">
+                    <div id="wave-timeline"></div>
+                    <div id="waveform">
+                        <div class="progress progress-striped active" id="progress-bar">
+                            <div class="progress-bar progress-bar-info"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr/>
+        <!-- media controls -->
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <button type="button" class="btn btn-default" onclick="play()" title="{{'play_pause' | trans({}, 'media_resource')}}">
+                    <i class="fa fa-play"></i> / <i class="fa fa-pause"></i>
+                </button>
+                <button type="button" id="help-btn" disabled class="btn btn-default" onclick="toggleHelp()">
+                    <i class="fa fa-question"></i>
+                </button>
+                <button type="button" class="btn btn-default" onclick="deleteRegions()">
+                    <i class="fa fa-trash-o"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- hidden fields -->
+    <input type="hidden" name="type" value="audio">
+    <input type="hidden" name="audio-url" value="{{asset('')}}{{audioPath}}">
+
+
+{% endblock %}
+
+{% block javascripts  %}
+    {{parent()}}
+    {% javascripts         
+        '@InnovaMediaResourceBundle/Resources/public/js/wavesurfer/wavesurfer.js' 
+        '@InnovaMediaResourceBundle/Resources/public/js/wavesurfer/webaudio.js' 
+        '@InnovaMediaResourceBundle/Resources/public/js/wavesurfer/drawer.js' 
+        '@InnovaMediaResourceBundle/Resources/public/js/wavesurfer/drawer.canvas.js'
+        '@InnovaMediaResourceBundle/Resources/public/js/wavesurfer/plugins/wavesurfer.timeline.js'
+        '@InnovaMediaResourceBundle/Resources/public/js/wavesurfer/plugins/wavesurfer.regions.js'
+        '@InnovaMediaResourceBundle/Resources/public/js/wavesurfer/plugins/wavesurfer.minimap.js'
+        '@InnovaMediaResourceBundle/Resources/public/js/play_live.js' 
+        
+    %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %} 

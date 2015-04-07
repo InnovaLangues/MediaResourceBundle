@@ -23,7 +23,7 @@ var DomUtils = {
         html += '           <div role="tabpanel" class="tab-pane active" id="choice">';
         html += '               <div class="row">';
         html += '                   <div class="col-md-12 text-center">';
-        html +=                         Translator.trans('help_modal_intro', {}, 'media_resource');
+        html += Translator.trans('help_modal_intro', {}, 'media_resource');
         html += '                   </div>';
         html += '               </div>';
         html += '               <hr/>';
@@ -61,10 +61,10 @@ var DomUtils = {
             html += '                   </div>';
             html += '               </div>';
             html += '           </div>';
-        }        
+        }
         html += '            </div>'; // END OF FIRST PANE
         //                  SECOND PANE = Available helps for selected region (current or previous)
-        html += '           <div role="tabpanel" class="tab-pane" id="options">';       
+        html += '           <div role="tabpanel" class="tab-pane" id="options">';
         html += '           </div>';
         html += '       </div>';
         html += '   </div>';
@@ -301,53 +301,53 @@ var DomUtils = {
         $(root).empty();
         var html = '<hr/>';
         console.log(config);
-        if (config.loop || config.backward || config.rate || config.text !== '' || config.relatedRegionUuid !== '') {           
-            if (config.backward) {                
+        if (config.loop || config.backward || config.rate || config.text !== '' || config.relatedRegionUuid !== '') {
+            if (config.backward) {
                 html += '<div class="row">';
                 html += '   <div class="col-md-12">';
                 html += '       <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback_backward', {}, 'media_resource') + '" onclick="playBackward();" style="margin:5px;">';
                 html += '           <i class="fa fa-exchange"></i> ';
                 html += '       </button>';
-                html += '       <label>' + Translator.trans('region_help_segment_playback_backward', {}, 'media_resource') + '</label>';                
+                html += '       <label>' + Translator.trans('region_help_segment_playback_backward', {}, 'media_resource') + '</label>';
                 html += '   </div>';
                 html += '</div>';
                 html += '<hr/>';
             }
-            if (config.loop) {                
+            if (config.loop) {
                 html += '<div class="row">';
-                html += '   <div class="col-md-12">';                
+                html += '   <div class="col-md-12">';
                 html += '       <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback_loop', {}, 'media_resource') + '"  onclick="playHelp(' + region.start + ', ' + region.end + ', ' + true + ',' + false + ')" style="margin:5px;">';
                 html += '           <i class="fa fa-retweet"></i> ';
                 html += '       </button>';
                 html += '       <label>' + Translator.trans('region_help_segment_playback_loop', {}, 'media_resource') + '</label>';
                 html += '   </div>';
                 html += '</div>';
-                html += '<hr/>';              
+                html += '<hr/>';
             }
-            if (config.rate) {               
+            if (config.rate) {
                 html += '<div class="row">';
-                html += '   <div class="col-md-12">'; 
+                html += '   <div class="col-md-12">';
                 html += '       <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback_rate', {}, 'media_resource') + '"  onclick="playHelp(' + region.start + ', ' + region.end + ', ' + false + ',' + true + ')">x0.8</button>';
                 html += '       <label>' + Translator.trans('region_help_segment_playback_rate', {}, 'media_resource') + '</label>';
                 html += '   </div>';
                 html += '</div>';
                 html += '<hr/>';
-            }         
+            }
             if (config.text !== '') {
                 html += '<div class="row">';
-                html += '   <div class="col-md-12">';                
+                html += '   <div class="col-md-12">';
                 html += '       <button class="btn btn-default" title="' + Translator.trans('region_help_related_segment_playback', {}, 'media_resource') + '" onclick="showHelpText();" style="margin:5px;">';
-                html +=             Translator.trans('region_help_help_text_label', {}, 'media_resource');
-                html += '       </button>'; 
+                html += Translator.trans('region_help_help_text_label', {}, 'media_resource');
+                html += '       </button>';
                 html += '       <label id="help-modal-help-text" style="margin:5px;display:none;">' + config.text + '</label>';
                 html += '   </div>';
                 html += '</div>';
-                html += '<hr/>';               
+                html += '<hr/>';
             }
             if (config.relatedRegionUuid) {
-                var helpRegionStart = this.getHelpRelatedRegionStart(config.relatedRegionUuid);                
+                var helpRegionStart = this.getHelpRelatedRegionStart(config.relatedRegionUuid);
                 html += '<div class="row">';
-                html += '   <div class="col-md-12">'; 
+                html += '   <div class="col-md-12">';
                 html += '       <button class="btn btn-default" title="' + Translator.trans('region_help_related_segment_playback', {}, 'media_resource') + '" onclick="playHelpRelatedRegion( ' + helpRegionStart + ');" style="margin:5px;">';
                 html += '           <i class="fa fa-play"></i> ';
                 html += '           / ';
@@ -357,11 +357,11 @@ var DomUtils = {
                 html += '   </div>';
                 html += '</div>';
             }
-            
+
         }
         else {
             html += '<div class="row">';
-            html += '   <div class="col-md-12">'; 
+            html += '   <div class="col-md-12">';
             html += '       <h4>' + Translator.trans('region_help_no_help_available', {}, 'media_resource') + '</h4>';
             html += '   </div>';
             html += '</div>';
@@ -524,5 +524,49 @@ var DomUtils = {
             var hiddenTitleInput = $(elem).closest('.row').find('input[name=title]');
             $(hiddenTitleInput).val($(elem).text());
         }
-    }
+    },
+    /**
+     * Open help for a region
+     * @param object current : current wavesurfer region
+     * @param string audioUrl : current media audio url
+     * @returns bootbox modal object
+     */
+    openSimpleHelpModal: function (current, audioUrl) {
+        var html = '<div class="row">';
+        html += '       <div class="col-md-12 text-center">';
+        html += '           <audio id="help-audio-player" src="' + audioUrl + '"></audio>'; // will not show as no controls are defined
+        html += '           <div class="row">';
+        html += '               <div class="col-md-12">';
+        html += '                   <div class="btn-group">';
+        html += '                       <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback', {}, 'media_resource') + '" onclick="playHelp(' + current.start + ', ' + current.end + ', ' + false + ',' + false + ')">';
+        html += '                           <i class="fa fa-play"></i> ';
+        html += '                           / ';
+        html += '                           <i class="fa fa-pause"></i>';
+        html += '                       </button>';
+        html += '                       <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback_loop', {}, 'media_resource') + '"  onclick="playHelp(' + current.start + ', ' + current.end + ', ' + true + ', ' + false + ')">';
+        html += '                           <i class="fa fa-retweet"></i> ';
+        html += '                       </button>';
+        html += '                       <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback_rate', {}, 'media_resource') + '"  onclick="playHelp(' + current.start + ', ' + current.end + ', ' + false + ',' + true + ')">x0.8</button>';
+        html += '                   </div>';
+        html += '               </div>';
+        html += '           </div>';
+        html += '       </div>';
+        html += '</div>';
+
+        var modal = bootbox.dialog({
+            title: Translator.trans('region_help', {}, 'media_resource'),
+            message: html,
+            show: true,
+            buttons: {
+                success: {
+                    label: Translator.trans('close', {}, 'media_resource'),
+                    className: "btn-default",
+                    callback: function () {
+
+                    }
+                }
+            }
+        });
+        return modal;
+    },
 };

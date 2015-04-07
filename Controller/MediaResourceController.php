@@ -33,13 +33,57 @@ class MediaResourceController extends Controller {
         // use of specific method to order regions correctly
         $regions = $this->get('innova_media_resource.manager.media_resource_region')->findByAndOrder($mr);
         return $this->render('InnovaMediaResourceBundle:MediaResource:details.html.twig', array(
-                                            '_resource' => $mr, 
-                                            'edit' => false, 
-                                            'regions' => $regions, 
-                                            'workspace' => $workspace,
-                                            'audioPath' => $audioPath
-                                        )
-                            );
+                    '_resource' => $mr,
+                    'edit' => false,
+                    'regions' => $regions,
+                    'workspace' => $workspace,
+                    'audioPath' => $audioPath,
+                    'playMode' => 'active'
+                        )
+        );
+    }
+
+    /**
+     * Player view option
+     * @Route("/mode/{id}", requirements={"id" = "\d+"}, name="media_resource_change_view") 
+     * @ParamConverter("MediaResource", class="InnovaMediaResourceBundle:MediaResource")
+     * @Method("POST")
+     */
+    public function changeViewAction(Workspace $workspace, MediaResource $mr) {
+        if (false === $this->container->get('security.context')->isGranted('OPEN', $mr->getResourceNode())) {
+            throw new AccessDeniedException();
+        }
+        if ($this->getRequest()->isMethod('POST')) {
+            
+            $audioPath = $this->get('innova_media_resource.manager.media_resource_media')->getAudioMediaUrl($mr);
+            // use of specific method to order regions correctly
+            $regions = $this->get('innova_media_resource.manager.media_resource_region')->findByAndOrder($mr);
+            
+            $pause = $this->getRequest()->get('pause');
+            $live = $this->getRequest()->get('live');
+            
+            if ($pause) {
+                return $this->render('InnovaMediaResourceBundle:MediaResource:details.pause.html.twig', array(
+                            '_resource' => $mr,
+                            'regions' => $regions,
+                            'workspace' => $workspace,
+                            'audioPath' => $audioPath
+                                )
+                );
+            } else if ($live) {
+                return $this->render('InnovaMediaResourceBundle:MediaResource:details.live.html.twig', array(
+                            '_resource' => $mr,
+                            'regions' => $regions,
+                            'workspace' => $workspace,
+                            'audioPath' => $audioPath
+                                )
+                );
+            } else {
+                
+                $url = $this->generateUrl('innova_media_resource_open', array('id' => $mr->getId(), 'workspaceId' => $workspace->getId()));
+                return $this->redirect($url);
+            }
+        }
     }
 
     /**
@@ -57,13 +101,14 @@ class MediaResourceController extends Controller {
         // use of specific method to order regions correctly
         $regions = $this->get('innova_media_resource.manager.media_resource_region')->findByAndOrder($mr);
         return $this->render('InnovaMediaResourceBundle:MediaResource:details.html.twig', array(
-                                            '_resource' => $mr, 
-                                            'edit' => true, 
-                                            'regions' => $regions, 
-                                            'workspace' => $workspace,
-                                            'audioPath' => $audioPath
-                                        )
-                            );
+                    '_resource' => $mr,
+                    'edit' => true,
+                    'regions' => $regions,
+                    'workspace' => $workspace,
+                    'audioPath' => $audioPath,
+                    'playMode' => 'active'
+                        )
+        );
     }
 
     /**
