@@ -87,7 +87,6 @@ var actions = {
     mark: function () {
         // BEWARE !!! We only show the begin region handler in order to avoid marker(s) overlaps
         // (endmarker time = next region start marker time)
-        // console.log('mark');
 
         // if one or more region(s) (always true because a default region is created at startup)
         if (!jQuery.isEmptyObject(wavesurfer.regions.list)) {
@@ -109,7 +108,7 @@ var actions = {
             endTimeDisplay.text(wavesurferUtils.secondsToHms(time));
             // ADD new region to DOM in the right place
             var toAdd = addRegion(time, savedEnd, '', false);
-            var guid = StringUtils.createGuid();
+            var guid = strUtils.createGuid();
             domUtils.addRegionToDom(wavesurfer, wavesurferUtils, toAdd, guid);
         }
     },
@@ -283,7 +282,7 @@ $(document).ready(function () {
             console.log('no region creating a new one');
             // if no region : add one by default
             var region = addRegion(0.0, wavesurfer.getDuration(), '', false);
-            var guid = StringUtils.createGuid();
+            var guid = strUtils.createGuid();
             // addRegionToDom(region);
             domUtils.addRegionToDom(wavesurfer, wavesurferUtils, region, guid);
         } else {
@@ -620,17 +619,17 @@ function addRegion(start, end, note, dataset) {
     var region = {};
     region.start = start;
     region.end = end;
-    region.color = wavesurferUtils.randomColor(0.1);
+    region.color = isEditing ? wavesurferUtils.randomColor(0.1): 'rgba(0, 0, 0, 0.0)';
     region.resize = isEditing;
     region.resizeHandlerColor = '#FF0000';
-    region.resizeHandlerWidth = '2px';
+    region.resizeHandlerWidth = '2px';//isEditing ? '2px':'0px';
+    region.showStartHandler = isEditing ? true:false;
     region.drag = false;
     region.showEndHandler = false;
     region.data = {note: note};
     region = wavesurfer.addRegion(region);
     // set data-id to del button
     if (dataset) {
-        console.log('dataset');
         var regionRow = domUtils.getRegionRow(start, end);
         var btn = $(regionRow).find('button.fa-trash-o');
         $(btn).addClass(region.id);

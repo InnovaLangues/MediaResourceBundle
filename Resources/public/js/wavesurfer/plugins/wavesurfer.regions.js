@@ -80,7 +80,7 @@ WaveSurfer.Region = {
         this.loop = Boolean(params.loop);
         this.color = params.color || 'rgba(0, 0, 0, 0.1)';
 
-        // resizable regions css params
+        // resizable regions css params PGU - HACKS
         this.resizeHandlerWidth = params.resizeHandlerWidth ? params.resizeHandlerWidth : '1%';
         this.resizeHandlerMaxWidth = params.resizeHandlerMaxWidth ? params.resizeHandlerMaxWidth : '2px';
         this.resizeHandlerColor = params.resizeHandlerColor ? params.resizeHandlerColor : '#000000';
@@ -157,7 +157,7 @@ WaveSurfer.Region = {
         });
 
         /* Resize handles */
-        if (this.resize || this.showStartHandler) {
+        if (this.resize || this.showStartHandler) { // PGU - HACKS
             var css = {
                 cursor: 'col-resize',
                 position: 'absolute',
@@ -169,7 +169,6 @@ WaveSurfer.Region = {
                 backgroundColor: this.resizeHandlerColor
             };
             // want to see every starting handler except the first one (don't want the user to move it)
-            // if (this.showStartHandler) {
             if (this.showStartHandler && this.start > 0) {
                 var handleLeft = regionEl.appendChild(document.createElement('handle'));
                 handleLeft.className = 'wavesurfer-handle wavesurfer-handle-start';
