@@ -136,7 +136,6 @@ var actions = {
         });
 
         hModal.on('hidden.bs.modal', function () {
-            // console.log('help modal close');
             helpPlaybackLoop = false;
             helpPlaybackRate = 1;
             helpPlaybackBackward = false;
@@ -214,9 +213,7 @@ $(document).ready(function () {
 
     // HELP MODAL EVENTS ATTACHED TO THE BODY
     $('body').on('change', 'input[name=segment]:radio', function (e) {
-        console.log(e.target.value);
         if (e.target.value === 'previous') {
-            console.log('yep');
             var currentDomRow = domUtils.getRegionRow(helpPreviousWRegion.start + 0.1, helpPreviousWRegion.end - 0.1);
             var config = domUtils.getRegionRowHelpConfig(currentDomRow);
             domUtils.appendHelpModalConfig(hModal, config, helpPreviousWRegion);
@@ -279,11 +276,9 @@ $(document).ready(function () {
 
         // check if there are regions defined
         if ($(".row.form-row.region").size() === 0) {
-            console.log('no region creating a new one');
             // if no region : add one by default
             var region = addRegion(0.0, wavesurfer.getDuration(), '', false);
             var guid = strUtils.createGuid();
-            // addRegionToDom(region);
             domUtils.addRegionToDom(wavesurfer, wavesurferUtils, region, guid);
         } else {
             // for each existing PHP Region entity ( = region row) create a wavesurfer region
@@ -404,7 +399,6 @@ $(document).ready(function () {
  */
 function playHelp(start, end, loop, rate) {
     helpAudioPlayer = document.getElementsByTagName("audio")[0];
-    console.log(loop);
     helpAudioPlayer.loop = loop;
     if (rate) {
         helpAudioPlayer.playbackRate = 0.8;
@@ -413,12 +407,10 @@ function playHelp(start, end, loop, rate) {
         helpAudioPlayer.playbackRate = 1;
     }
     helpAudioPlayer.addEventListener('timeupdate', function () {
-        // console.log(helpAudioPlayer.currentTime);
         if (helpAudioPlayer.currentTime >= end) {
             helpAudioPlayer.pause();
             helpAudioPlayer.currentTime = start;
             if (helpAudioPlayer.loop) {
-                console.log('yes i want to loop!');
                 helpAudioPlayer.play();
             }
             else {
@@ -543,19 +535,10 @@ function configRegion(elem) {
 
 function checkIfRowHasConfigValue(row) {
     var helpRegion = $(row).find('.hidden-config-help-region-uuid').val() !== '' ? true : false;
-    //console.log(helpRegion ? 'has help' : 'has no help');
     var loop = $(row).find('.hidden-config-loop').val() === '1' ? true : false;
-    //console.log(loop ? 'has loop' : 'has no loop');
-    //console.log('loop ' + $(row).find('.hidden-config-loop').val());
     var backward = $(row).find('.hidden-config-backward').val() === '1' ? true : false;
-    //console.log(backward ? 'has backward' : 'has no backward');
-    //console.log('back' + $(row).find('.hidden-config-backward').val());
     var rate = $(row).find('.hidden-config-rate').val() === '1' ? true : false;
-    //console.log(rate ? 'has rate' : 'has no rate');
-    //console.log('rate' +  $(row).find('.hidden-config-rate').val());
     var text = $(row).find('.hidden-config-text').val() !== '' ? true : false;
-    //console.log(text ? 'has text' : 'has no text');
-    //console.log(text ? 'text':'notext');
     return helpRegion || loop || backward || rate || text;
 }
 /**
@@ -698,7 +681,6 @@ function deleteRegion(elem) {
                     } else { // all other cases
                         // update previous wavesurfer region (will automatically update the dom ??)
                         var previous = wavesurferUtils.getPrevRegion(wavesurfer, start + 0.1);
-                        console.log(start);
                         if (previous) {
                             previous.update({
                                 end: end

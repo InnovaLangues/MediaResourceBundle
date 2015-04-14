@@ -149,7 +149,6 @@ var DomUtils = {
      */
     openConfigRegionModal: function (elem, w, wutils) {
         // get wavesurfer regions
-        // console.log(wavesurfer.regions.list);
         var rRows = [];
         $('.region').each(function () {
             var row = {};
@@ -300,7 +299,6 @@ var DomUtils = {
         var root = $(modal).find('#options');
         $(root).empty();
         var html = '<hr/>';
-        console.log(config);
         if (config.loop || config.backward || config.rate || config.text !== '' || config.relatedRegionUuid !== '') {
             if (config.backward) {
                 html += '<div class="row">';
@@ -374,7 +372,6 @@ var DomUtils = {
      */
     addRegionToDom: function (wavesurfer, wavesurferUtils, region, uuid) {
         var my = this;
-        //console.log(uuid);
         var container = $('.regions-container');
         // HTML to append
         var html = '';

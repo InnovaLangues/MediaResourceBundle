@@ -80,7 +80,6 @@ $(document).ready(function () {
     });
 
     wavesurfer.on('region-created', function (current) {
-        //console.log(current);
         currentRegion = current;
         helpButton.disabled = false;
         // delete all other existing regions
@@ -133,7 +132,6 @@ function deleteRegions() {
 }
 
 function toggleHelp(){
-    console.log('yo');
     domUtils.openSimpleHelpModal(currentRegion, audioUrl);
 
 }
@@ -193,12 +191,10 @@ function playHelp(start, end, loop, rate) {
         helpAudioPlayer.playbackRate = 1;
     }
     helpAudioPlayer.addEventListener('timeupdate', function () {
-        // console.log(helpAudioPlayer.currentTime);
         if (helpAudioPlayer.currentTime >= end) {
             helpAudioPlayer.pause();
             helpAudioPlayer.currentTime = start;
             if (helpAudioPlayer.loop) {
-                console.log('yes i want to loop!');
                 helpAudioPlayer.play();
             }
             else {
