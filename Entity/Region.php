@@ -3,7 +3,9 @@
 namespace Innova\MediaResourceBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 use Innova\MediaResourceBundle\Entity\MediaResource;
+use Innova\MediaResourceBundle\Entity\PlaylistRegion;
 
 /**
  * Region
@@ -62,76 +64,44 @@ class Region {
      *
      * @ORM\Column(name="uuid", type="string", length=255)
      */
-    private $uuid;    
-
-    /**
-     * Get id
-     *
-     * @return integer 
+    private $uuid;
+    
+     /**
+     * @ORM\OneToMany(targetEntity="Innova\MediaResourceBundle\Entity\PlaylistRegion", mappedBy="playlist")
      */
+    protected $playlistRegions;
+
+   public function __construct() {
+        $this->playlistRegions = new ArrayCollection();
+    }
+    
     public function getId() {
         return $this->id;
     }
-
-    /**
-     * Set start of the region
-     *
-     * @param float $start
-     * @return Region
-     */
+    
     public function setStart($start) {
         $this->start = $start;
-
         return $this;
     }
-
-    /**
-     * Get start
-     *
-     * @return float 
-     */
+    
     public function getStart() {
         return $this->start;
     }
-
-    /**
-     * Set end
-     *
-     * @param float $end
-     * @return Region
-     */
+    
     public function setEnd($end) {
         $this->end = $end;
-
         return $this;
     }
-
-    /**
-     * Get end
-     *
-     * @return float 
-     */
+   
     public function getEnd() {
         return $this->end;
     }
-
-    /**
-     * Set note
-     *
-     * @param string $note
-     * @return Region
-     */
+    
     public function setNote($note) {
         $this->note = $note;
-
         return $this;
     }
-
-    /**
-     * Get note
-     *
-     * @return string 
-     */
+    
     public function getNote() {
         return $this->note;
     }
@@ -153,7 +123,7 @@ class Region {
     public function getRegionConfig() {
         return $this->regionConfig;
     }
-    
+
     public function getUuid() {
         return $this->uuid;
     }
@@ -161,6 +131,20 @@ class Region {
     public function setUuid($uuid) {
         $this->uuid = $uuid;
         return $this;
+    }
+    
+     public function addPlaylistRegion(PlaylistRegion $playlistRegion){
+        $this->playlistRegions[] = $playlistRegion;
+        return $this;
+    }
+    
+    public function removePlaylistRegion(PlaylistRegion $playlistRegion){
+         $this->playlistRegions->removeElement($playlistRegion);
+        return $this;
+    }
+
+    public function getPlaylistRegions(){
+        return $this->playlistRegions;
     }
 
 }

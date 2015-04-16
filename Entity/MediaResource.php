@@ -10,6 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 use Innova\MediaResourceBundle\Entity\Media;
 use Innova\MediaResourceBundle\Entity\Region;
+use Innova\MediaResourceBundle\Entity\Context;
 
 /**
  * MediaResource Entity
@@ -49,6 +50,14 @@ class MediaResource extends AbstractResource {
      * 
      */
     protected $regions;
+    
+    
+    /**
+     * @ORM\OneToMany(targetEntity="Innova\MediaResourceBundle\Entity\Context", cascade={"remove", "persist"}, mappedBy="mediaResource")
+     * 
+     */
+    protected $contexts;
+   
 
     /**
      * @var boolean
@@ -72,19 +81,11 @@ class MediaResource extends AbstractResource {
     public function __construct() {
         $this->medias = new ArrayCollection();
         $this->regions = new ArrayCollection();
+        $this->contexts = new ArrayCollection();
 
         $this->published = false;
         $this->modified = false;
-    }
-
-    public function getFile() {
-        return $this->file;
-    }
-    
-     public function setFile(UploadedFile $file) {
-        $this->file = $file;
-        return $this;
-    }
+    }   
 
     /**
      * Get id
@@ -179,9 +180,35 @@ class MediaResource extends AbstractResource {
     public function getRegions() {
         return $this->regions;
     }
+    
+    
+    public function addContext(Context $context) {
+        $this->contexts[] = $context;
+        return $this;
+    }
+
+    public function removeContext(Context $context) {
+        $this->contexts->removeElement($context);
+        return $this;
+    }
+
+    public function getContexts() {
+        return $this->contexts;
+    }
+    
+    
+    
+    public function getFile() {
+        return $this->file;
+    }
+    
+     public function setFile(UploadedFile $file) {
+        $this->file = $file;
+        return $this;
+    }
 
     /**
-     * Wrapper to access workspace of the Path
+     * Wrapper to access workspace of the MediaResource
      * @return \Claroline\CoreBundle\Entity\Workspace\Workspace
      */
     public function getWorkspace() {

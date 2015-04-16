@@ -607,6 +607,7 @@ function addRegion(start, end, note, dataset) {
     region.resizeHandlerColor = '#FF0000';
     region.resizeHandlerWidth = '2px';//isEditing ? '2px':'0px';
     region.showStartHandler = isEditing ? true:false;
+    console.log(isEditing);
     region.drag = false;
     region.showEndHandler = false;
     region.data = {note: note};

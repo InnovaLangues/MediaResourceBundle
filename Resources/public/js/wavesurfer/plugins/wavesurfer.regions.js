@@ -84,8 +84,8 @@ WaveSurfer.Region = {
         this.resizeHandlerWidth = params.resizeHandlerWidth ? params.resizeHandlerWidth : '1%';
         this.resizeHandlerMaxWidth = params.resizeHandlerMaxWidth ? params.resizeHandlerMaxWidth : '2px';
         this.resizeHandlerColor = params.resizeHandlerColor ? params.resizeHandlerColor : '#000000';
-        this.showStartHandler = params.showStartHandler === undefined ? true : false;
-        this.showEndHandler = params.showEndHandler === undefined ? true : false;
+        this.showStartHandler = params.showStartHandler || (params.showStartHandler === undefined) ? true : false;
+        this.showEndHandler = params.showEndHandler || (params.showEndHandler === undefined) ? true : false;
 
         this.data = params.data || {};
 
