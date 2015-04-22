@@ -11,6 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Innova\MediaResourceBundle\Entity\Media;
 use Innova\MediaResourceBundle\Entity\Region;
 use Innova\MediaResourceBundle\Entity\Context;
+use Innova\MediaResourceBundle\Entity\Playlist;
 
 /**
  * MediaResource Entity
@@ -57,6 +58,12 @@ class MediaResource extends AbstractResource {
      * 
      */
     protected $contexts;
+    
+     /**
+     * @ORM\OneToMany(targetEntity="Innova\MediaResourceBundle\Entity\Playlist", cascade={"remove", "persist"}, mappedBy="mediaResource")
+     * 
+     */
+    protected $playlists;
    
 
     /**
@@ -82,6 +89,7 @@ class MediaResource extends AbstractResource {
         $this->medias = new ArrayCollection();
         $this->regions = new ArrayCollection();
         $this->contexts = new ArrayCollection();
+        $this->playlists = new ArrayCollection();
 
         $this->published = false;
         $this->modified = false;
@@ -196,7 +204,19 @@ class MediaResource extends AbstractResource {
         return $this->contexts;
     }
     
-    
+    public function addPLaylist(Playlist $playlist) {
+        $this->playlists[] = $playlist;
+        return $this;
+    }
+
+    public function removePlaylist(Playlist $playlist) {
+        $this->playlists->removeElement($playlist);
+        return $this;
+    }
+
+    public function getPLaylists() {
+        return $this->playlists;
+    }
     
     public function getFile() {
         return $this->file;

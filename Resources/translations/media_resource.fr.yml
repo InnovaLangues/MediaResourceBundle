@@ -46,6 +46,10 @@ no_media_resource: Aucune resource trouvée.
 #p
 play_pause: PLay / Pause
 previous_segment: Segment précédent
+playlists_manage: Gérer les playlistes pour ce média
+playlists_title: Playlists
+playlist_none: Aucune playliste n'existe pour cette ressource!
+playlist_add: Créer une playliste
 
 #r
 region_help: Aide sur un segment

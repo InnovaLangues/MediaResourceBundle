@@ -146,5 +146,18 @@ class Region {
     public function getPlaylistRegions(){
         return $this->playlistRegions;
     }
+    
+    public function __toString() {
+        return $this->timeToHms($this->getStart()) . ' - ' . $this->timeToHms($this->getEnd());
+    }
+    
+    private function timeToHms($time){
+        $stringSec = strval($time);
+        $fullMilli = explode(".", $stringSec);
+        $milli = array_key_exists(1, $fullMilli) ?  substr($fullMilli[1], 0, 2): '00';
+        $ms = \gmdate('i:s', $time);
+       
+        return $ms.':'.$milli;
+    }
 
 }

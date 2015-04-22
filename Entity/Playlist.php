@@ -7,9 +7,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Innova\MediaResourceBundle\Entity\Context;
 use Innova\MediaResourceBundle\Entity\PlaylistRegion;
+use Innova\MediaResourceBundle\Entity\MediaResource;
 
 /**
- * A playlist is an ordered list of MediaResource regions
+ * A playlist is an ordered list of MediaResource Regions
+ * .... Or an ordered list of PLaylistRegion (fake entity for ordered relationship)
  * @ORM\Table(name="innova_media_resource_playlist")
  * @ORM\Entity
  */
@@ -33,16 +35,23 @@ class Playlist {
     protected $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="Innova\MediaResourceBundle\Entity\PlaylistRegion", mappedBy="playlist")
+     * @ORM\OneToMany(targetEntity="Innova\MediaResourceBundle\Entity\PlaylistRegion", cascade={"remove"}, mappedBy="playlist")
      */
     protected $playlistRegions;
 
     /**
-     *
-     * @var Context 
+     * Context for the playlist (if used in a InnovaPath)
+     * @var context 
      * @ORM\OneToOne(targetEntity="Innova\MediaResourceBundle\Entity\Context", mappedBy="playlist")
      */
     protected $context;
+    
+    /**
+     * @var MediaResource 
+     * @ORM\ManyToOne(targetEntity="Innova\MediaResourceBundle\Entity\MediaResource", inversedBy="playlists")
+     * @ORM\JoinColumn(name="media_resource_id", nullable=true)
+     */
+    protected $mediaResource;
 
     public function __construct() {
         $this->playlistRegions = new ArrayCollection();
@@ -73,6 +82,15 @@ class Playlist {
 
     public function getContext() {
         return $this->context;
+    }
+    
+     public function setMediaResource(MediaResource $mediaResource) {
+        $this->mediaResource = $mediaResource;
+        return $this;
+    }
+
+    public function getMediaResource() {
+        return $this->mediaResource;
     }
     
     public function addPlaylistRegion(PlaylistRegion $playlistRegion){

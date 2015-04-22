@@ -16,3 +16,13 @@ services:
         arguments:
             entityManager:  @doctrine.orm.entity_manager
             translator:     @translator
+    innova_media_resource.manager.playlist:
+        class: Innova\MediaResourceBundle\Manager\PlaylistManager 
+        arguments:
+            entityManager:  @doctrine.orm.entity_manager
+            translator:     @translator
+    innova_media_resource.manager.playlist_region:
+        class: Innova\MediaResourceBundle\Manager\PlaylistRegionManager 
+        arguments:
+            entityManager:  @doctrine.orm.entity_manager
+            translator:     @translator

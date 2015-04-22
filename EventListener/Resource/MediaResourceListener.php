@@ -139,5 +139,4 @@ class MediaResourceListener extends ContainerAware {
         $event->setCopy($new);
         $event->stopPropagation();
     }
-
 }

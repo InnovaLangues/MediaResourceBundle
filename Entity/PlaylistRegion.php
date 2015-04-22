@@ -7,7 +7,7 @@ use Innova\MediaResourceBundle\Entity\Region;
 use Innova\MediaResourceBundle\Entity\Playlist;
 
 /**
- * 
+ * Relationship entity with ordering extra field
  * @ORM\Table(name="innova_media_resource_playlist_region")
  * @ORM\Entity
  */
@@ -23,25 +23,26 @@ class PlaylistRegion {
     protected $id;
 
     /**
-     * 
+     * Related region
      * @ORM\ManyToOne(targetEntity="Innova\MediaResourceBundle\Entity\Region", inversedBy="playlistRegions")
      * @ORM\JoinColumn(name="region_id")
      */
     protected $region;
 
     /**
-     * 
+     * Related playlist
      * @ORM\ManyToOne(targetEntity="Innova\MediaResourceBundle\Entity\Playlist", inversedBy="playlistRegions")
-     * @ORM\JoinColumn(name="playlist_id")
+     * @ORM\JoinColumn(name="playlist_id", nullable=true)
      */
     protected $playlist;    
 
     /**
-     *
-     * @var type 
+     * Order for the element in the playlist
+     * Can not call this field order since this is a key word for sql...
+     * @var ordering 
      * @ORM\Column(type="integer")
      */
-    protected $order;
+    protected $ordering;
 
     public function setId($id) {
         $this->id = $id;
@@ -70,13 +71,13 @@ class PlaylistRegion {
         return $this->playlist;
     }
 
-    public function setOrder(type $order) {
-        $this->order = $order;
+    public function setOrdering($ordering) {
+        $this->ordering = $ordering;
         return $this;
     }
 
-    public function getOrder() {
-        return $this->order;
+    public function getOrdering() {
+        return $this->ordering;
     }
 
 }

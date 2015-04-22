@@ -1,4 +1,8 @@
 innova_media_resource:
-    resource: "@InnovaMediaResourceBundle/Controller/"
+    resource: "@InnovaMediaResourceBundle/Controller/MediaResourceController.php"
     prefix:   /
+    type: annotation
+innova_playlist:
+    resource: "@InnovaMediaResourceBundle/Controller/PlaylistController.php"
+    prefix: /playlists
     type: annotation

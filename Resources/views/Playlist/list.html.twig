@@ -1,0 +1,55 @@
+{% extends  "InnovaMediaResourceBundle::layout.html.twig" %}
+{% block breadcrumb %}
+    {{ parent() }}
+{% endblock %}
+
+{% block media_resource_content %}
+    <!-- PANEL HEADER -->
+
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-8">
+                <h3 class="panel-title"> {{_resource.resourceNode.name}}: {{'playlists_title' | trans({}, 'media_resource')}} </h3>
+            </div>
+            <div class="col-md-4 text-right">
+                <a href="{{path('innova_playlist_add', {'id':_resource.id})}}" class="btn btn-default" title="{{'playlist_add' | trans({}, 'media_resource')}}"><i class="fa fa-plus"></i></a>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="panel-body">  
+        <div class="row">
+            <div class="col-md-12">
+                {% if playlists | length > 0 %}
+                    <table class="table table-striped">
+                    {% for playlist in playlists %}
+                        <tr>
+                            <td>{{playlist.name}}</td>
+                            <td class="text-right">
+                                <div class="btn-group">
+                                    <a href="{{path('innova_playlist_edit', {'id':playlist.id})}}" class="btn btn-default fa fa-pencil"></a>
+                                    <a href="{{path('innova_playlist_delete', {'id':playlist.id})}}" class="btn btn-danger fa fa-trash"></a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </table>
+                {% else %}
+                    <h5 class="center-text">{{'playlist_none' | trans({}, 'media_resource')}}</h5>
+                {% endif %}
+            </div>
+        </div>
+        <hr/>
+    </div>
+
+{% endblock %}
+
+
+{% block javascripts  %}
+    {{parent()}}
+    {% javascripts %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %} 

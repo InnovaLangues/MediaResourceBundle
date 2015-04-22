@@ -1,0 +1,109 @@
+{% extends  "InnovaMediaResourceBundle::layout.html.twig" %}
+{% block breadcrumb %}
+    {{ parent() }}
+{% endblock %}
+
+{% macro playlist_region_prototype(playlistRegion) %}
+    <tr>
+        <td class="informations_widget">{{ form_widget(playlistRegion.region) }}</td>
+        <td class="informations_widget">{{ form_widget(playlistRegion.ordering) }}</td>
+        <td class="informations_widget">
+            <button role="button" type="button" onclick="removeRegionPlaylistRow(this)" class="btn btn-danger fa fa-trash"></button>
+        </td>
+    </tr>
+{% endmacro %}
+
+{% block media_resource_content %}
+
+    {{ form_start(form) }}
+    <!-- PANEL HEADER -->
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-8">
+                <h3 class="panel-title"> {{_resource.resourceNode.name}}: {{'playlist_create_title' | trans({}, 'resource_form')}} </h3>  
+            </div>
+            <div class="col-md-4 text-right">
+                {{ form_widget(form.save) }}                
+                <a href="{{path('innova_playlists', {'id':_resource.id})}}" class="btn btn-default">{{'playlist_return_to_list' | trans({}, 'resource_form')}}</a> 
+            </div>
+        </div>
+    </div>
+    <!-- PANEL BODY -->
+    <div class="panel-body playlist-add-container">       
+        <!-- errors row -->
+        <div class="row">
+            <div class="col-md-12">
+                {{ form_errors(form) }}
+            </div>
+        </div>     
+        <!-- PLAYLIST NAME ROW -->
+        <div class="row">
+            <div class="col-md-2">
+                <label>{{'media_resource_playlist_title_field_label' | trans({}, 'resource_form')}}</label>
+            </div>
+            <div class="col-md-10">
+                {{ form_errors(form.name) }}
+                {{ form_widget(form.name) }}                
+            </div>
+        </div>
+        <hr/>
+        <!-- PLAYLIST SEGMENTS / ORDER ROW -->
+        <div class="row">  
+            <div class="col-md-12">
+                <table class="table table-striped collection" data-prototype="{{ _self.playlist_region_prototype(form.playlistRegions.vars.prototype)|e }}">
+                    <thead>
+                        <tr>
+                            <th>{{'media_resource_playlist_playlistRegions_region' | trans({}, 'resource_form')}}</th>
+                            <th>{{'media_resource_playlist_playlistRegions_order' | trans({}, 'resource_form')}}</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for playslitRegion in form.playlistRegions %}
+                            {{ _self.playlist_region_prototype(playslitRegion) }}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <hr/>
+        <!-- ADD ELEMENT ROW -->
+        <div class="row">
+            <div class="col-md-12 text-right">
+                <button type="button" role="button" class="btn btn-default add-collection">{{'media_resource_playlist_add_element' | trans({}, 'resource_form')}}</button>
+            </div>
+        </div>
+    </div>
+
+    {{ form_end(form) }}
+{% endblock %}
+
+
+{% block javascripts  %}
+    {{parent()}}
+    <script>
+
+        var prototypeHolder = $('.collection');
+        var collectionHolder = $('.collection tbody');
+        var $addButton = $('.add-collection');//add-collection
+        jQuery(document).ready(function () {
+            // remove defaultly created Add button
+            $('.form-collection-add').remove();
+            $addButton.on('click', function (e) {
+                e.preventDefault();
+                addRegionPlaylistForm(collectionHolder);
+            });
+        });
+
+        function addRegionPlaylistForm(collectionHolder) {
+            var prototype = prototypeHolder.attr('data-prototype');
+            var newForm = prototype.replace(/__name__/g, collectionHolder.children().length);
+            $(collectionHolder).append(newForm);
+        }
+
+        function removeRegionPlaylistRow(sender) {
+            $(sender).closest('tr').remove();
+        }
+
+    </script>
+{% endblock %} 

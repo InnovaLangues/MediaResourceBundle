@@ -602,12 +602,14 @@ function addRegion(start, end, note, dataset) {
     var region = {};
     region.start = start;
     region.end = end;
+    // do not set different colors per region if we are not editing
     region.color = isEditing ? wavesurferUtils.randomColor(0.1): 'rgba(0, 0, 0, 0.0)';
+    // do not allow region resize if we are not editing
     region.resize = isEditing;
     region.resizeHandlerColor = '#FF0000';
-    region.resizeHandlerWidth = '2px';//isEditing ? '2px':'0px';
+    region.resizeHandlerWidth = '2px';
+    // do not show region handlers if we are not editing
     region.showStartHandler = isEditing ? true:false;
-    console.log(isEditing);
     region.drag = false;
     region.showEndHandler = false;
     region.data = {note: note};
