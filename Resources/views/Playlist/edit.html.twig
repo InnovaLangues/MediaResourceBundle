@@ -29,6 +29,7 @@
             </div>
             <div class="col-md-4 text-right">                          
                 <a href="{{path('innova_playlists', {'id':_resource.id})}}" style="line-height: 1;" class="btn btn-info">{{'playlist_return_to_list' | trans({}, 'resource_form')}}</a>
+                <button type="button" role="button" class="btn btn-primary fa fa-play" id="play-button" disabled onclick="playlistPreListen();"></button>
                 {{ form_widget(form.save) }}     
             </div>
         </div>
@@ -79,7 +80,7 @@
                     <button type="button" role="button" class="btn btn-default add-collection">{{'media_resource_playlist_add_element' | trans({}, 'resource_form')}}</button>
                 </div>
             </div>
-
+            <audio id="aplayer" src="{{asset('')}}{{audioUrl}}"></audio>
         {% else %}
             <div class="row">
                 <div class="col-md-12 center-text">

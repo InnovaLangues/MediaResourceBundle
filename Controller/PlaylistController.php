@@ -94,7 +94,7 @@ class PlaylistController extends Controller {
         if (false === $this->container->get('security.context')->isGranted('EDIT', $mr->getResourceNode())) {
             throw new AccessDeniedException();
         }
-
+        $audioPath = $this->get('innova_media_resource.manager.media_resource_media')->getAudioMediaUrl($mr);
         // temporary assign old PlaylistRegion to an ArrayCollection (for deleting)
         $originalPLayListRegions = new ArrayCollection();
         foreach ($playlist->getPlaylistRegions() as $plr) {
@@ -131,6 +131,7 @@ class PlaylistController extends Controller {
 
         return $this->render('InnovaMediaResourceBundle:Playlist:edit.html.twig', array(
                     '_resource' => $mr,
+                    'audioUrl' => $audioPath,
                     'form' => $form->createView()
                         )
         );
@@ -154,7 +155,5 @@ class PlaylistController extends Controller {
 
         return $this->redirect($this->generateUrl('innova_playlists', array('id' => $mrId)));
     }
-    
-   
 
 }

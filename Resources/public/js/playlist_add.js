@@ -15,6 +15,7 @@ jQuery(document).ready(function () {
     aUrl = audio.src;
     // for existing elements (don't know hos to do it in twig)
     refreshOrdering();
+    togglePlaylistPreListenButton();
 });
 
 function addRegionPlaylistForm(collectionHolder) {
@@ -57,8 +58,6 @@ function play(items, index) {
         var paramString = '#t=' + start + ',' + offset;
         audio.src = aUrl + paramString;
         audio.play();
-        console.log(index);
-        console.log(items.length);
         audio.onpause = function () {
             index = index + 1;
             play(items, index);
