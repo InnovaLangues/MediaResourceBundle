@@ -28,7 +28,8 @@ class PlaylistType extends AbstractType {
                                     'allow_delete' => true,
                                     'label' => ' ',
                                     'mapped' => true,
-                                    'by_reference' => true,
+                                    'by_reference' => false,
+                                    'options' => array('required' => false)
                      )
                 )
                 ->add('save', 'submit', array( 'label' => ' ', 'attr' => array('class' => 'btn btn-default fa fa-floppy-o')));

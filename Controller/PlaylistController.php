@@ -50,9 +50,8 @@ class PlaylistController extends Controller {
         if (false === $this->container->get('security.context')->isGranted('EDIT', $mr->getResourceNode())) {
             throw new AccessDeniedException();
         }
-
+        $audioPath = $this->get('innova_media_resource.manager.media_resource_media')->getAudioMediaUrl($mr);
         $playlist = new Playlist();
-        $playlist->setMediaResource($mr);
         $form = $this->createForm(new PlaylistType($mr), $playlist, array(
             'action' => $this->generateUrl('innova_playlist_add', array('id' => $mr->getId())),
             'method' => 'POST'));
@@ -62,14 +61,13 @@ class PlaylistController extends Controller {
 
             //$em = $this->get('innova_media_resource.manager.playlist');
             $em = $this->getDoctrine()->getManager();
+            $playlist->setMediaResource($mr);
             $playlistRegions = $playlist->getPlaylistRegions();
             foreach ($playlistRegions as $plRegion) {
                 $plRegion->setPlaylist($playlist);
             }
             $em->persist($playlist);
             $em->flush();
-
-            //$em->save($playlist);
 
             $msg = $this->get('translator')->trans('playlist_save_success', array(), 'media_resource');
             $this->get('session')->getFlashBag()->set('success', $msg);
@@ -79,6 +77,7 @@ class PlaylistController extends Controller {
 
         return $this->render('InnovaMediaResourceBundle:Playlist:add.html.twig', array(
                     '_resource' => $mr,
+                    'audioUrl' => $audioPath,
                     'form' => $form->createView()
                         )
         );
@@ -155,5 +154,7 @@ class PlaylistController extends Controller {
 
         return $this->redirect($this->generateUrl('innova_playlists', array('id' => $mrId)));
     }
+    
+   
 
 }
