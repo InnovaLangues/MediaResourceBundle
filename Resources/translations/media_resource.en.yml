@@ -5,7 +5,7 @@ accent_primary: Primary accent
 accent_secondary: Secondary accent
 accent_weak_vowel: Weak vowel
 accent_no_accent: Normal text
-alert_only_one_region_left: Il n'y a qu'un seul segment. Impossible de supprimer!
+alert_only_one_region_left: Only one segment left. You can not delete it!
 
 # b
 back: Quit
@@ -17,7 +17,7 @@ btn_live_listening: Live listening
 close: Close
 creation_error_wrong_file_format: The given file format is not allowed (mp3 / ogg / wav)
 current_segment: Current segment
-
+confirm: Confirm
 
 # d
 delete_media_resource: Delete Resource
@@ -50,6 +50,11 @@ playlists_manage: Manage playlists for this media
 playlists_title: Playlists
 playlist_none: No playlist for this resource!
 playlist_add: Add a playlist
+playlist_save_success: The playlist was saved.
+playlist_save_error: An error occurred while saving the playlist.
+playlist_deletion_success: The playlist was deleted.
+playlist_deletion_error: An error occurred while deleting the playlist.
+playlist_deletion_confirm: Are you sure you want to delete the playlist?
 
 #r
 region_help: Segment help

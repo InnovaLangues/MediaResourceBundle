@@ -67,7 +67,7 @@ class Region {
     private $uuid;
     
      /**
-     * @ORM\OneToMany(targetEntity="Innova\MediaResourceBundle\Entity\PlaylistRegion", mappedBy="playlist")
+     * @ORM\OneToMany(targetEntity="Innova\MediaResourceBundle\Entity\PlaylistRegion", mappedBy="region")
      */
     protected $playlistRegions;
 

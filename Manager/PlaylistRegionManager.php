@@ -26,21 +26,6 @@ class PlaylistRegionManager {
         $this->em->flush();
         return $plRegion;
     }
-
-    /**
-     * Custom method to record PlaylistRegion entities
-     * @param Playlist $playlist
-     * @param array $data POST data passed by the symfony form 
-     */
-    public function createPLaylistRegions(Playlist $playlist, $data) {
-        foreach ($data as $plRegion) {
-            $plr = new PlaylistRegion();
-            $plr->setPlaylist($playlist);
-            $plr->setOrdering(intval($plRegion['ordering']));
-            $region = $this->em->getRepository('InnovaMediaResourceBundle:Region')->find($plRegion['region']);
-            $plr->setRegion($region);
-            $this->save($plr);
-        }
-    }
+   
 
 }

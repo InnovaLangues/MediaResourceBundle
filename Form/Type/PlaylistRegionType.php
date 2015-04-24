@@ -33,8 +33,8 @@ class PlaylistRegionType extends AbstractType {
                         }
                     )
                 )
-                ->add('ordering', 'integer', array(
-                    'required' => true, 'label' => 'order', 'attr' => array('min' => 1)
+                ->add('ordering', 'hidden', array(
+                    'required' => true
                 )
         );
     }

@@ -25,9 +25,9 @@
     <div class="panel-heading">
         <div class="row">
             <div class="col-md-8">
-                <h3 class="panel-title"> {{_resource.resourceNode.name}}: {{'playlist_create_title' | trans({}, 'resource_form')}} </h3>  
+                <h3 class="panel-title"> {{_resource.resourceNode.name}}: {{'playlist_edit_title' | trans({}, 'resource_form')}} </h3>  
             </div>
-            <div class="col-md-4 text-right">                           
+            <div class="col-md-4 text-right">                          
                 <a href="{{path('innova_playlists', {'id':_resource.id})}}" style="line-height: 1;" class="btn btn-info">{{'playlist_return_to_list' | trans({}, 'resource_form')}}</a>
                 {{ form_widget(form.save) }}     
             </div>
@@ -58,15 +58,15 @@
                 <div class="col-md-12">
                     <table class="table table-striped collection" data-prototype="{{ _self.playlist_region_prototype(form.playlistRegions.vars.prototype)|e }}">
                         <thead>
-                            <tr>                            
-                                <th>{{'media_resource_playlist_playlistRegions_order' | trans({}, 'resource_form')}}</th>
+                            <tr>
                                 <th>{{'media_resource_playlist_playlistRegions_region' | trans({}, 'resource_form')}}</th>
+                                <th>{{'media_resource_playlist_playlistRegions_order' | trans({}, 'resource_form')}}</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for playslitRegion in form.playlistRegions %}
-                                {{ _self.playlist_region_prototype(playslitRegion) }}
+                                {{ _self.playlist_region_prototype(playslitRegion, form) }}
                             {% endfor %}
                         </tbody>
                     </table>
@@ -79,6 +79,7 @@
                     <button type="button" role="button" class="btn btn-default add-collection">{{'media_resource_playlist_add_element' | trans({}, 'resource_form')}}</button>
                 </div>
             </div>
+
         {% else %}
             <div class="row">
                 <div class="col-md-12 center-text">
@@ -91,10 +92,10 @@
     {{ form_end(form) }}
 {% endblock %}
 
-
 {% block javascripts  %}
     {{parent()}}
     {% javascripts '@InnovaMediaResourceBundle/Resources/public/js/playlist_add.js'%}
     <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
 {% endblock %} 
+

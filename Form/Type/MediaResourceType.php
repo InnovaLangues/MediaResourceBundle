@@ -23,7 +23,8 @@ class MediaResourceType extends AbstractType {
                                         'audio/ogg', 
                                         'audio/wav',
                                         'audio/x-wav',
-                                        'application/ogg'
+                                        'application/ogg',
+                                        'application/octet-stream'
                                         ),
                                         'mimeTypesMessage' => 'The type of the file is invalid ({{ type }}). Allowed types are {{ types }}. Please check that your file is well encoded.'
                                     )

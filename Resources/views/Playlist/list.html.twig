@@ -5,7 +5,6 @@
 
 {% block media_resource_content %}
     <!-- PANEL HEADER -->
-
     <div class="panel-heading">
         <div class="row">
             <div class="col-md-8">
@@ -17,24 +16,39 @@
         </div>
     </div>
 
-
-
+    <!-- PANEL BODY -->
     <div class="panel-body">  
+        <div class="row">
+            <div class="col-md-12">
+                {% for flashMessage in app.session.flashbag.get('success') %}
+                    <div class="alert alert-success alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        {{ flashMessage }}
+                    </div>
+                {% endfor %}
+                {% for flashMessage in app.session.flashbag.get('error') %}
+                    <div class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        {{ flashMessage }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
         <div class="row">
             <div class="col-md-12">
                 {% if playlists | length > 0 %}
                     <table class="table table-striped">
-                    {% for playlist in playlists %}
-                        <tr>
-                            <td>{{playlist.name}}</td>
-                            <td class="text-right">
-                                <div class="btn-group">
-                                    <a href="{{path('innova_playlist_edit', {'id':playlist.id})}}" class="btn btn-default fa fa-pencil"></a>
-                                    <a href="{{path('innova_playlist_delete', {'id':playlist.id})}}" class="btn btn-danger fa fa-trash"></a>
-                                </div>
-                            </td>
-                        </tr>
-                    {% endfor %}
+                        {% for playlist in playlists %}
+                            <tr>
+                                <td>{{playlist.name}}</td>
+                                <td class="text-right">
+                                    <div class="btn-group">
+                                        <a href="{{path('innova_playlist_edit', {'id':playlist.id})}}" class="btn btn-default fa fa-pencil"></a>
+                                        <a href="{{path('innova_playlist_delete', {'id':playlist.id})}}" class="btn btn-danger fa fa-trash"></a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
                     </table>
                 {% else %}
                     <h5 class="center-text">{{'playlist_none' | trans({}, 'media_resource')}}</h5>
@@ -43,13 +57,28 @@
         </div>
         <hr/>
     </div>
+      
+    <div id="dataConfirmModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">{{'playlist_deletion_confirm' | trans({}, 'media_resource')}}</h4>
+                </div>               
+                <div class="modal-body text-right">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{'close' | trans({}, 'media_resource')}}</button>
+                    <a  id="dataConfirmOK" class="btn btn-primary">{{'confirm' | trans({}, 'media_resource')}}</a>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 
 {% endblock %}
 
 
 {% block javascripts  %}
     {{parent()}}
-    {% javascripts %}
+    {% javascripts '@InnovaMediaResourceBundle/Resources/public/js/playlists.js'%}
     <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
 {% endblock %} 

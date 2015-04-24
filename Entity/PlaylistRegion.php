@@ -31,8 +31,8 @@ class PlaylistRegion {
 
     /**
      * Related playlist
-     * @ORM\ManyToOne(targetEntity="Innova\MediaResourceBundle\Entity\Playlist", inversedBy="playlistRegions")
-     * @ORM\JoinColumn(name="playlist_id", nullable=true)
+     * @ORM\ManyToOne(targetEntity="Innova\MediaResourceBundle\Entity\Playlist", cascade={"persist"}, inversedBy="playlistRegions")
+     * @ORM\JoinColumn(name="playlist_id", nullable=false, onDelete="CASCADE")
      */
     protected $playlist;    
 

@@ -35,7 +35,7 @@ class Playlist {
     protected $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="Innova\MediaResourceBundle\Entity\PlaylistRegion", cascade={"remove"}, mappedBy="playlist")
+     * @ORM\OneToMany(targetEntity="Innova\MediaResourceBundle\Entity\PlaylistRegion", cascade={"all"}, orphanRemoval=true, mappedBy="playlist")
      */
     protected $playlistRegions;
 

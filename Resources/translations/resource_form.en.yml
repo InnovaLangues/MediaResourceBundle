@@ -4,6 +4,10 @@ media_resource_playlist_playlistRegions: Segments
 media_resource_playlist_playlistRegions_region: Segment
 media_resource_playlist_playlistRegions_order: Order
 media_resource_playlist_add_element: Add element
+media_resource_playlist_title_field_label: Title
+
+#p
 playlist_create_title: New playlist
-media_resource_playlist_title_field_label: Playlist title
-playlist_return_to_list: Return to list
+playlist_edit_title: Edit playlist
+playlist_return_to_list: Back to list
+playlist_no_segment: No segment for this media resource. you can not create a playlist!
