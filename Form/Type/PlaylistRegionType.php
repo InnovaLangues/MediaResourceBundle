@@ -28,7 +28,8 @@ class PlaylistRegionType extends AbstractType {
                     'label' => 'segment',
                     'query_builder' => function(EntityRepository $er)  {
                         return $er->createQueryBuilder('r')
-                                ->where('r.mediaResource = :mr' )
+                                ->where('r.mediaResource = :mr')
+                                ->orderBy('r.start', 'ASC')
                                 ->setParameter('mr', $this->mr);
                         }
                     )
