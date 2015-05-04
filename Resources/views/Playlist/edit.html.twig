@@ -20,7 +20,6 @@
 
 {% block media_resource_content %}
 
-    {{ form_start(form) }}
     <!-- PANEL HEADER -->
     <div class="panel-heading">
         <div class="row">
@@ -36,18 +35,22 @@
                       
                     </a>
                 </div>
-                <div class="btn-group">
-                    <button type="button" role="button" class="btn btn-primary fa fa-play" title="{{'playlist_preview' | trans({}, 'resource_form')}}" id="play-button" disabled onclick="playlistPreListen();">
-            
-                    </button>
-                     {{ form_widget(form.save) }} 
-                </div>
-               
             </div>
         </div>
     </div>
     <!-- PANEL BODY -->
-    <div class="panel-body playlist-add-container">       
+    <div class="panel-body playlist-add-container">     
+         {{ form_start(form) }}
+        <div class="row">
+            <div class="col-md-12 text-right">
+                <div class="btn-group">
+                    <button type="button" role="button" class="btn btn-primary fa fa-play" title="{{'playlist_preview' | trans({}, 'resource_form')}}" id="play-button" disabled onclick="playlistPreListen();">
+                    </button>
+                    {{ form_widget(form.save) }}
+                </div>
+            </div>
+        </div>
+        <hr/>
         <!-- errors row -->
         <div class="row">
             <div class="col-md-12">
@@ -100,9 +103,13 @@
                 </div>
             </div>
         {% endif %}
+         {#{ form_end(form) }#}
+        {{ form_widget(form._token) }}
+        <!-- disable the automaticly created add link -->
+        {{ form_end(form, {'render_rest': false}) }}
     </div>
 
-    {{ form_end(form) }}
+    
 {% endblock %}
 
 {% block javascripts  %}
