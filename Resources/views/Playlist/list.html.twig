@@ -10,8 +10,11 @@
             <div class="col-md-8">
                 <h3 class="panel-title"> {{_resource.resourceNode.name}}: {{'playlists_title' | trans({}, 'media_resource')}} </h3>
             </div>
-            <div class="col-md-4 text-right">
-                <a href="{{path('innova_playlist_add', {'id':_resource.id})}}" class="btn btn-default" title="{{'playlist_add' | trans({}, 'media_resource')}}"><i class="fa fa-plus"></i></a>
+            <div class="col-md-4 text-right">                
+                <a href="{{path('innova_media_resource_administrate', {'workspaceId': _resource.resourceNode.workspace.id, 'id':_resource.id})}}" class="btn btn-default" title="{{'back_to_media_resource_details' | trans({}, 'media_resource') | format(_resource.resourceNode.name)}}">
+                    <i class="fa fa-arrow-left"></i>
+                </a>
+                <a href="{{path('innova_playlist_add', {'workspaceId': _resource.resourceNode.workspace.id, 'id':_resource.id})}}" class="btn btn-default" title="{{'playlist_add' | trans({}, 'media_resource')}}"><i class="fa fa-plus"></i></a>
             </div>
         </div>
     </div>
@@ -43,8 +46,8 @@
                                 <td>{{playlist.name}}</td>
                                 <td class="text-right">
                                     <div class="btn-group">
-                                        <a href="{{path('innova_playlist_edit', {'id':playlist.id})}}" class="btn btn-default fa fa-pencil"></a>
-                                        <a href="{{path('innova_playlist_delete', {'id':playlist.id})}}" class="btn btn-danger fa fa-trash"></a>
+                                        <a href="{{path('innova_playlist_edit', {'workspaceId': _resource.resourceNode.workspace.id, 'id':playlist.id})}}" class="btn btn-default fa fa-pencil"></a>
+                                        <a href="{{path('innova_playlist_delete', {'workspaceId': _resource.resourceNode.workspace.id, 'id':playlist.id})}}" class="btn btn-danger fa fa-trash"></a>
                                     </div>
                                 </td>
                             </tr>

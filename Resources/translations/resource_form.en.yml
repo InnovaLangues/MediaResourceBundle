@@ -9,5 +9,7 @@ media_resource_playlist_title_field_label: Title
 #p
 playlist_create_title: New playlist
 playlist_edit_title: Edit playlist
-playlist_return_to_list: Back to list
+playlist_return_to_list: Back to %s playlist list
 playlist_no_segment: No segment for this media resource. you can not create a playlist!
+playlist_save: Save playlist
+playlist_preview: Playlist prelisten

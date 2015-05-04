@@ -32,7 +32,7 @@ class PlaylistType extends AbstractType {
                                     'options' => array('required' => false)
                      )
                 )
-                ->add('save', 'submit', array( 'label' => ' ', 'attr' => array('class' => 'btn btn-default fa fa-floppy-o')));
+                ->add('save', 'submit', array( 'label' => ' ', 'attr' => array('class' => 'btn btn-default fa fa-floppy-o', 'title' => 'playlist_save')));
     }
 
     public function getDefaultOptions() {

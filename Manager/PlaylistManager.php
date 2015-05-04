@@ -11,7 +11,7 @@ use Innova\MediaResourceBundle\Entity\Playlist;
  *
  */
 class PlaylistManager {
-    
+
     protected $em;
     protected $translator;
 
@@ -25,4 +25,18 @@ class PlaylistManager {
         $this->em->flush();
         return $pl;
     }
+
+    public function getPlaylistRegionsInOrder(Playlist $playlist) {
+        $qb = $this->em->createQueryBuilder();
+        $qb->select('plr')
+                ->from('Innova\MediaResourceBundle\Entity\PlaylistRegion', 'plr')
+                ->where('plr.playlist = :playlistId')
+                ->orderBy('plr.ordering', 'ASC')
+                ->setParameter('playlistId', $playlist->getId());
+        
+        $query = $qb->getQuery();
+        $result = $query->getResult();
+        return $result;
+    }
+
 }

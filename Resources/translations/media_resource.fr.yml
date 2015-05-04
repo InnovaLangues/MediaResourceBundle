@@ -12,6 +12,7 @@ back: Quitter
 btn_auto_pause: Pause automatique
 btn_active_listening: Ecoute active
 btn_live_listening: Ecoute live
+back_to_media_resource_details: Retour aux details de %s
 
 # c
 close: Fermer

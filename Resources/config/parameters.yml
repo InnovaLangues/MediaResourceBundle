@@ -5,6 +5,10 @@ parameters:
     # Form Types
     innova_media_resource.form.type.media_resource.class:   Innova\MediaResourceBundle\Form\Type\MediaResourceType
     
+    # Managers
+    innova_media_resource.manager.playlist_region.class:    Innova\MediaResourceBundle\Manager\PlaylistRegionManager
+    innova_media_resource.manager.playlist.class:           Innova\MediaResourceBundle\Manager\PlaylistManager
+    
     # Parameters  
     # for upload
     innova_media_resource.param.upload_files_directory:     "%kernel.root_dir%/../innovamediaresourcefiles"

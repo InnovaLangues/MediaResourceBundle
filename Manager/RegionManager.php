@@ -7,15 +7,18 @@ use Symfony\Component\Translation\TranslatorInterface;
 use Innova\MediaResourceBundle\Entity\MediaResource;
 use Innova\MediaResourceBundle\Entity\Region;
 use Innova\MediaResourceBundle\Entity\RegionConfig;
+use Innova\MediaResourceBundle\Manager\PlaylistRegionManager;
 
 class RegionManager {
 
     protected $em;
     protected $translator;
+    protected $playlistRegionManager;
 
-    public function __construct(EntityManager $em, TranslatorInterface $translator) {
+    public function __construct(EntityManager $em, TranslatorInterface $translator, PlaylistRegionManager $plRManager) {
         $this->em = $em;
         $this->translator = $translator;
+        $this->playlistRegionManager = $plRManager;
     }
 
     public function save(Region $region) {
@@ -25,8 +28,19 @@ class RegionManager {
     }
 
     public function delete(Region $region) {
+
+        // before deleting the region get the playlistRegions list
+        $playlistRegions = $region->getPlaylistRegions();     
+
+        // delete region (this will also delete all related playlist region entries)
         $this->em->remove($region);
-        $this->em->flush();
+        $this->em->flush();       
+ 
+        // reorder each related playlist
+        if (count($playlistRegions) > 0) {
+            $this->playlistRegionManager->reorder($playlistRegions);
+        }
+        
         return $this;
     }
 
@@ -149,8 +163,7 @@ class RegionManager {
      */
     private function deleteUnusedRegions(MediaResource $mr, $toCheck) {
         // get existing regions in database
-        $existing = $this->getRepository()->findBy(array('mediaResource' => $mr));
-
+        $existing = $this->getRepository()->findBy(array('mediaResource' => $mr));      
         // delete regions if they are no more here
         if (count($existing) > 0) {
             $toDelete = $this->checkIfRegionExists($existing, $toCheck);

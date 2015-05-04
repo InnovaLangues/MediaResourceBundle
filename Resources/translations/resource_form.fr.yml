@@ -9,5 +9,7 @@ media_resource_playlist_title_field_label: Titre
 #p
 playlist_create_title: Nouvelle playliste
 playlist_edit_title: Editer la playliste
-playlist_return_to_list: Revenir à la liste
+playlist_return_to_list: Revenir à la liste des playlistes de %s
 playlist_no_segment: Aucun segment pour cette media ressource. Vous ne pouvez pas créer de playliste!
+playlist_save: Sauvegarde de la playliste
+playlist_preview: Préécoute de la playliste

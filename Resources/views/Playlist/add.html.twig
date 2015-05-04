@@ -27,13 +27,25 @@
             <div class="col-md-8">
                 <h3 class="panel-title"> {{_resource.resourceNode.name}}: {{'playlist_create_title' | trans({}, 'resource_form')}} </h3>  
             </div>
-            <div class="col-md-4 text-right">                           
-                <a href="{{path('innova_playlists', {'id':_resource.id})}}" style="line-height: 1;" class="btn btn-info">{{'playlist_return_to_list' | trans({}, 'resource_form')}}</a>
-                <button type="button" role="button" class="btn btn-primary fa fa-play" id="play-button" disabled onclick="playlistPreListen();"></button>
-                {{ form_widget(form.save) }}
+            <div class="col-md-4 text-right">   
+                <div class="btn-group">
+                    <a href="{{path('innova_media_resource_administrate', {'workspaceId': _resource.resourceNode.workspace.id, 'id':_resource.id})}}" class="btn btn-default fa fa-arrow-left" title="{{'back_to_media_resource_details' | trans({}, 'media_resource') | format(_resource.resourceNode.name)}}">
+              
+                    </a>
+                    <a href="{{path('innova_playlists', {'id':_resource.id})}}" class="btn btn-default fa fa-sort-amount-desc" title="{{'playlist_return_to_list' | trans({}, 'resource_form') | format(_resource.resourceNode.name)}}">
+                      
+                    </a>
+                </div>
+                <div class="btn-group">
+                    <button type="button" role="button" class="btn btn-primary fa fa-play" title="{{'playlist_preview' | trans({}, 'resource_form')}}" id="play-button" disabled onclick="playlistPreListen();">
+            
+                    </button>
+                    {{ form_widget(form.save) }}
+                </div>
             </div>
         </div>
     </div>
+
     <!-- PANEL BODY -->
     <div class="panel-body playlist-add-container">       
         <!-- errors row -->
@@ -80,8 +92,8 @@
                     <button type="button" role="button" class="btn btn-default add-collection">{{'media_resource_playlist_add_element' | trans({}, 'resource_form')}}</button>
                 </div>
             </div>
-                <audio id="aplayer" src="{{asset('')}}{{audioUrl}}"></audio>
-        {% else %}
+            <audio id="aplayer" src="{{asset('')}}{{audioUrl}}"></audio>
+            {% else %}
             <div class="row">
                 <div class="col-md-12 center-text">
                     <h4>{{'playlist_no_segment' | trans({}, 'resource_form')}}</h4>
@@ -99,7 +111,7 @@
 
 {% block javascripts  %}
     {{parent()}}
-    {% javascripts '@InnovaMediaResourceBundle/Resources/public/js/playlist_add.js'%}
+    {% javascripts '@InnovaMediaResourceBundle/Resources/public/js/playlist_add_edit.js'%}
     <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
 {% endblock %} 

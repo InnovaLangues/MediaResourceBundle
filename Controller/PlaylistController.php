@@ -13,11 +13,11 @@ use Innova\MediaResourceBundle\Form\Type\PlaylistType;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Common\Collections\ArrayCollection;
 
+
 /**
  * Handle MediaRessource Playlist management
  * 
  * 
- *
  */
 class PlaylistController extends Controller {
 

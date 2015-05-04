@@ -2,8 +2,8 @@
 var prototypeHolder = $('.collection');
 var collectionHolder = $('.collection tbody');
 var $addButton = $('.add-collection');
-var audio;
-var aUrl;
+var audio; // audio player dom object
+var aUrl; // audio url
 
 jQuery(document).ready(function () {
     // attach add event
