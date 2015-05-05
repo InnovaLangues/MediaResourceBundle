@@ -676,8 +676,22 @@ function deleteRegion(elem) {
 
                             var divToUpdate = currentRow.next().find(".time-text.start");
                             divToUpdate.text(wavesurferUtils.secondsToHms(start));
-
+                            
+                            // remove segment DOM row
                             $(currentRow).remove();
+                            
+                            // the "marker" is visible but not draggable... need to hide it
+                            // sometimes it is not the first one...
+                           
+                            $('region.wavesurfer-region').each(function(){
+                                var title = $(this).attr('title');
+                                if(title.indexOf('0:00') !== -1){
+                                    var $marker = $(this).find('handle').first();
+                                    $marker.hide();
+                                }
+                                
+                            });
+                            
                         } else {
                             console.log('not found');
                         }
