@@ -35,7 +35,9 @@ class Playlist {
     protected $name;
 
     /**
+     * Mapping Entity which allow ordering informations
      * @ORM\OneToMany(targetEntity="Innova\MediaResourceBundle\Entity\PlaylistRegion", cascade={"all"}, orphanRemoval=true, mappedBy="playlist")
+     * @ORM\OrderBy({"ordering" = "ASC"})
      */
     protected $playlistRegions;
 

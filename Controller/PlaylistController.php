@@ -133,7 +133,7 @@ class PlaylistController extends Controller {
                     '_resource' => $mr,
                     'audioUrl' => $audioPath,
                     'form' => $form->createView()
-                        )
+                    )
         );
     }
 
