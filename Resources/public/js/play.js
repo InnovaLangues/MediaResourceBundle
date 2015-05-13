@@ -28,6 +28,7 @@ var helpAudioPlayer;
 var helpCurrentWRegion; // the wavesurfer region where we are when asking help
 var helpPreviousWRegion; // the previous wavesurfer region relatively to helpCurrentWRegion
 var currentHelpRelatedRegion; // the related help region; 
+var currentHelpTextLevel = 0;
 var hModal;
 
 var utterance; // global SpeechSynthesisUtterance instance;
@@ -223,6 +224,10 @@ $(document).ready(function () {
             var config = domUtils.getRegionRowHelpConfig(currentDomRow);
             domUtils.appendHelpModalConfig(hModal, config, helpCurrentWRegion);
         }
+    });
+    
+    $('body').on('click', '#btn-show-help-text', function (e) {
+        
     });
 
 
@@ -437,10 +442,6 @@ function playHelp(start, end, loop, rate) {
  */
 function playHelpRelatedRegion(start) {
     playRegionFrom(start + 0.1);
-}
-
-function showHelpText(){
-    $('#help-modal-help-text').toggle();
 }
 
 /**
