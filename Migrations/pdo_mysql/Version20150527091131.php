@@ -1,6 +1,6 @@
 <?php
 
-namespace Innova\MediaResourceBundle\Migrations\mysqli;
+namespace Innova\MediaResourceBundle\Migrations\pdo_mysql;
 
 use Doctrine\DBAL\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
@@ -8,9 +8,9 @@ use Doctrine\DBAL\Schema\Schema;
 /**
  * Auto-generated migration based on mapping information: modify it with caution
  *
- * Generation date: 2015/03/25 01:54:58
+ * Generation date: 2015/05/27 09:11:37
  */
-class Version20150325135456 extends AbstractMigration
+class Version20150527091131 extends AbstractMigration
 {
     public function up(Schema $schema)
     {
@@ -61,6 +61,39 @@ class Version20150325135456 extends AbstractMigration
             ) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB
         ");
         $this->addSql("
+            CREATE TABLE innova_media_resource_playlist_region (
+                id INT AUTO_INCREMENT NOT NULL, 
+                region_id INT DEFAULT NULL, 
+                playlist_id INT NOT NULL, 
+                ordering INT NOT NULL, 
+                INDEX IDX_DC6F27BD98260155 (region_id), 
+                INDEX IDX_DC6F27BD6BBD148 (playlist_id), 
+                PRIMARY KEY(id)
+            ) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB
+        ");
+        $this->addSql("
+            CREATE TABLE innova_media_resource_playlist (
+                id INT AUTO_INCREMENT NOT NULL, 
+                media_resource_id INT DEFAULT NULL, 
+                name VARCHAR(255) NOT NULL, 
+                INDEX IDX_A8D71DAD7E5AEFB6 (media_resource_id), 
+                PRIMARY KEY(id)
+            ) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB
+        ");
+        $this->addSql("
+            CREATE TABLE innova_media_resource_context (
+                id INT AUTO_INCREMENT NOT NULL, 
+                media_resource_id INT NOT NULL, 
+                playlist_id INT DEFAULT NULL, 
+                hasActiveListening TINYINT(1) DEFAULT '0' NOT NULL, 
+                hasAutoPause TINYINT(1) DEFAULT '0' NOT NULL, 
+                hasLiveListening TINYINT(1) DEFAULT '0' NOT NULL, 
+                INDEX IDX_DD5CBE327E5AEFB6 (media_resource_id), 
+                UNIQUE INDEX UNIQ_DD5CBE326BBD148 (playlist_id), 
+                PRIMARY KEY(id)
+            ) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB
+        ");
+        $this->addSql("
             ALTER TABLE innova_media_resource_region 
             ADD CONSTRAINT FK_BB5F60D07E5AEFB6 FOREIGN KEY (media_resource_id) 
             REFERENCES innova_media_resource (id)
@@ -81,6 +114,32 @@ class Version20150325135456 extends AbstractMigration
             REFERENCES claro_resource_node (id) 
             ON DELETE CASCADE
         ");
+        $this->addSql("
+            ALTER TABLE innova_media_resource_playlist_region 
+            ADD CONSTRAINT FK_DC6F27BD98260155 FOREIGN KEY (region_id) 
+            REFERENCES innova_media_resource_region (id)
+        ");
+        $this->addSql("
+            ALTER TABLE innova_media_resource_playlist_region 
+            ADD CONSTRAINT FK_DC6F27BD6BBD148 FOREIGN KEY (playlist_id) 
+            REFERENCES innova_media_resource_playlist (id) 
+            ON DELETE CASCADE
+        ");
+        $this->addSql("
+            ALTER TABLE innova_media_resource_playlist 
+            ADD CONSTRAINT FK_A8D71DAD7E5AEFB6 FOREIGN KEY (media_resource_id) 
+            REFERENCES innova_media_resource (id)
+        ");
+        $this->addSql("
+            ALTER TABLE innova_media_resource_context 
+            ADD CONSTRAINT FK_DD5CBE327E5AEFB6 FOREIGN KEY (media_resource_id) 
+            REFERENCES innova_media_resource (id)
+        ");
+        $this->addSql("
+            ALTER TABLE innova_media_resource_context 
+            ADD CONSTRAINT FK_DD5CBE326BBD148 FOREIGN KEY (playlist_id) 
+            REFERENCES innova_media_resource_playlist (id)
+        ");
     }
 
     public function down(Schema $schema)
@@ -90,12 +149,32 @@ class Version20150325135456 extends AbstractMigration
             DROP FOREIGN KEY FK_FEBE556198260155
         ");
         $this->addSql("
+            ALTER TABLE innova_media_resource_playlist_region 
+            DROP FOREIGN KEY FK_DC6F27BD98260155
+        ");
+        $this->addSql("
             ALTER TABLE innova_media_resource_region 
             DROP FOREIGN KEY FK_BB5F60D07E5AEFB6
         ");
         $this->addSql("
             ALTER TABLE innova_media_resource_media 
             DROP FOREIGN KEY FK_5C0330F07E5AEFB6
+        ");
+        $this->addSql("
+            ALTER TABLE innova_media_resource_playlist 
+            DROP FOREIGN KEY FK_A8D71DAD7E5AEFB6
+        ");
+        $this->addSql("
+            ALTER TABLE innova_media_resource_context 
+            DROP FOREIGN KEY FK_DD5CBE327E5AEFB6
+        ");
+        $this->addSql("
+            ALTER TABLE innova_media_resource_playlist_region 
+            DROP FOREIGN KEY FK_DC6F27BD6BBD148
+        ");
+        $this->addSql("
+            ALTER TABLE innova_media_resource_context 
+            DROP FOREIGN KEY FK_DD5CBE326BBD148
         ");
         $this->addSql("
             DROP TABLE innova_media_resource_region
@@ -108,6 +187,15 @@ class Version20150325135456 extends AbstractMigration
         ");
         $this->addSql("
             DROP TABLE innova_media_resource
+        ");
+        $this->addSql("
+            DROP TABLE innova_media_resource_playlist_region
+        ");
+        $this->addSql("
+            DROP TABLE innova_media_resource_playlist
+        ");
+        $this->addSql("
+            DROP TABLE innova_media_resource_context
         ");
     }
 }
