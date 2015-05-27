@@ -9,4 +9,4 @@ plugin:
           icon: res_file.png
           actions:
                 - name: administrate
-                  menu_name: administrate
+                  menu_name: innova_media_resource_administrate
