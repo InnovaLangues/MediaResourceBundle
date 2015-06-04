@@ -7,9 +7,11 @@ Install with composer :
 
    $ composer require innova/media-resource-bundle
    
-   $ php app/console claroline:plugin:install InnovaMediaResourceBundle
+   $ php app/console claroline:update
 
-Create a folder named innovamediaresourcefiles at the root of the application & set facl on it
+Create a folder named innovamediaresourcefiles at the root of the application and set appropriate rights on it
+
+You'll need to have libav-tools package installed
 
 
 ## Authors
