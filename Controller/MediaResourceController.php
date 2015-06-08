@@ -32,19 +32,18 @@ class MediaResourceController extends Controller {
         $audioPath = $this->get('innova_media_resource.manager.media_resource_media')->getAudioMediaUrl($mr);
         // use of specific method to order regions correctly
         $regions = $this->get('innova_media_resource.manager.media_resource_region')->findByAndOrder($mr);
-        return $this->render('InnovaMediaResourceBundle:MediaResource:details.html.twig', array(
+        // default view is AutoPause !
+        return $this->render('InnovaMediaResourceBundle:MediaResource:details.pause.html.twig', array(
                     '_resource' => $mr,
-                    'edit' => false,
                     'regions' => $regions,
                     'workspace' => $workspace,
-                    'audioPath' => $audioPath,
-                    'playMode' => 'active'
-                        )
+                    'audioPath' => $audioPath
+                )
         );
     }
 
     /**
-     * Player view option
+     * Media resource player other views
      * @Route("/mode/{id}", requirements={"id" = "\d+"}, name="media_resource_change_view") 
      * @ParamConverter("MediaResource", class="InnovaMediaResourceBundle:MediaResource")
      * @Method("POST")
@@ -54,20 +53,23 @@ class MediaResourceController extends Controller {
             throw new AccessDeniedException();
         }
         if ($this->getRequest()->isMethod('POST')) {
-            
+
             $audioPath = $this->get('innova_media_resource.manager.media_resource_media')->getAudioMediaUrl($mr);
             // use of specific method to order regions correctly
             $regions = $this->get('innova_media_resource.manager.media_resource_region')->findByAndOrder($mr);
-            
-            $pause = $this->getRequest()->get('pause');
+
+            $active = $this->getRequest()->get('active');
             $live = $this->getRequest()->get('live');
-            
-            if ($pause) {
-                return $this->render('InnovaMediaResourceBundle:MediaResource:details.pause.html.twig', array(
+
+            if ($active) {
+
+                return $this->render('InnovaMediaResourceBundle:MediaResource:details.html.twig', array(
                             '_resource' => $mr,
+                            'edit' => false,
                             'regions' => $regions,
                             'workspace' => $workspace,
-                            'audioPath' => $audioPath
+                            'audioPath' => $audioPath,
+                            'playMode' => 'active'
                                 )
                 );
             } else if ($live) {
@@ -76,10 +78,10 @@ class MediaResourceController extends Controller {
                             'regions' => $regions,
                             'workspace' => $workspace,
                             'audioPath' => $audioPath
-                                )
+                        )
                 );
             } else {
-                
+
                 $url = $this->generateUrl('innova_media_resource_open', array('id' => $mr->getId(), 'workspaceId' => $workspace->getId()));
                 return $this->redirect($url);
             }
@@ -87,7 +89,7 @@ class MediaResourceController extends Controller {
     }
 
     /**
-     * display a media resource as admin
+     * administrate a media resource
      * @Route("/edit/{id}", requirements={"id" = "\d+"}, name="innova_media_resource_administrate")
      * @Method("GET")
      * @ParamConverter("MediaResource", class="InnovaMediaResourceBundle:MediaResource")
@@ -107,7 +109,7 @@ class MediaResourceController extends Controller {
                     'workspace' => $workspace,
                     'audioPath' => $audioPath,
                     'playMode' => 'active'
-                        )
+                )
         );
     }
 

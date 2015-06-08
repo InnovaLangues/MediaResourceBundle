@@ -131,7 +131,7 @@ var DomUtils = {
             html += '               <input type="checkbox" name="loop"  value="loop" checked>';
         else
             html += '               <input type="checkbox" name="loop" value="loop">';
-        html += Translator.trans('region_config_allow_loop', {}, 'media_resource');//'               Autoriser la lecture en boucle';
+        html += Translator.trans('region_config_allow_loop', {}, 'media_resource');
         html += '               </label>';
         html += '           </div>';
         html += '           <div class="checkbox">';
@@ -140,7 +140,7 @@ var DomUtils = {
             html += '               <input type="checkbox" name="backward" value="backward" checked>';
         else
             html += '               <input type="checkbox" name="backward" value="backward">';
-        html += Translator.trans('region_config_allow_bwb', {}, 'media_resource'); //'               Autoriser la lecture en backward building';
+        html += Translator.trans('region_config_allow_bwb', {}, 'media_resource');
         html += '               </label>';
         html += '           </div>';
         html += '           <div class="checkbox">';
@@ -241,21 +241,10 @@ var DomUtils = {
         return config;
     },
     appendHelpModalConfig: function (modal, config, region) {
-        var root = $(modal).find('#options');
+        var root = $(modal).find('#options');        
         $(root).empty();
         var html = '<hr/>';
-        if (config.loop || config.backward || config.rate || config.text !== '' || config.relatedRegionUuid !== '') {
-            if (config.backward) {
-                html += '<div class="row">';
-                html += '   <div class="col-md-12">';
-                html += '       <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback_backward', {}, 'media_resource') + '" onclick="playBackward();" style="margin:5px;">';
-                html += '           <i class="fa fa-exchange"></i> ';
-                html += '       </button>';
-                html += '       <label>' + Translator.trans('region_help_segment_playback_backward', {}, 'media_resource') + '</label>';
-                html += '   </div>';
-                html += '</div>';
-                html += '<hr/>';
-            }
+        if (config.loop || config.backward || config.rate || config.text !== '' || config.relatedRegionUuid !== '') {            
             if (config.loop) {
                 html += '<div class="row">';
                 html += '   <div class="col-md-12">';
@@ -264,20 +253,30 @@ var DomUtils = {
                 html += '       </button>';
                 html += '       <label>' + Translator.trans('region_help_segment_playback_loop', {}, 'media_resource') + '</label>';
                 html += '   </div>';
-                html += '</div>';
+                html += '</div>';               
+            }
+            if (config.backward) {
                 html += '<hr/>';
+                html += '<div class="row">';
+                html += '   <div class="col-md-12">';
+                html += '       <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback_backward', {}, 'media_resource') + '" onclick="playBackward();" style="margin:5px;">';
+                html += '           <i class="fa fa-exchange"></i> ';
+                html += '       </button>';
+                html += '       <label>' + Translator.trans('region_help_segment_playback_backward', {}, 'media_resource') + '</label>';
+                html += '   </div>';
+                html += '</div>';
             }
             if (config.rate) {
+                html += '<hr/>';
                 html += '<div class="row">';
                 html += '   <div class="col-md-12">';
                 html += '       <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback_rate', {}, 'media_resource') + '"  onclick="playHelp(' + region.start + ', ' + region.end + ', ' + false + ',' + true + ')">x0.8</button>';
                 html += '       <label>' + Translator.trans('region_help_segment_playback_rate', {}, 'media_resource') + '</label>';
                 html += '   </div>';
                 html += '</div>';
-                html += '<hr/>';
             }
             if (config.text !== '') {
-               
+                html += '<hr/>';
                 html += '<div class="row">';
                 html += '   <div class="col-md-12">';
                 html += '       <button id="btn-show-help-text" class="btn btn-default" title="' + Translator.trans('region_help_related_segment_playback', {}, 'media_resource') + '" style="margin:5px;">';
@@ -286,10 +285,10 @@ var DomUtils = {
                 html += '       <label id="help-modal-help-text" style="margin:5px;display:none;"></label>';
                 html += '   </div>';
                 html += '</div>';
-                html += '<hr/>';
             }
             if (config.relatedRegionUuid) {
                 var helpRegionStart = this.getHelpRelatedRegionStart(config.relatedRegionUuid);
+                html += '<hr/>';
                 html += '<div class="row">';
                 html += '   <div class="col-md-12">';
                 html += '       <button class="btn btn-default" title="' + Translator.trans('region_help_related_segment_playback', {}, 'media_resource') + '" onclick="playHelpRelatedRegion( ' + helpRegionStart + ');" style="margin:5px;">';
@@ -339,11 +338,9 @@ var DomUtils = {
         html += '           <div class="time-text end">' + wavesurferUtils.secondsToHms(region.end) + '</div>';
         html += '       </div>';
         // text input
-
         html += '       <div class="col-xs-8">';
         html += '           <div contenteditable="true" class="text-left note">' + region.data.note + '</div>';
         html += '       </div>';
-
         // delete button
         html += '       <div class="col-xs-2">';
         html += '           <div class="btn-group" role="group">';
