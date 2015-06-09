@@ -15,12 +15,10 @@ class MediaResourceManager {
 
     protected $em;
     protected $translator;
-    protected $uploadFileDir;
 
-    public function __construct(EntityManager $em, TranslatorInterface $translator, $uploadFileDir) {
+    public function __construct(EntityManager $em, TranslatorInterface $translator) {
         $this->em = $em;
         $this->translator = $translator;
-        $this->uploadFileDir = $uploadFileDir;
     }
 
     public function getRepository() {
@@ -80,7 +78,7 @@ class MediaResourceManager {
 
         $newName = $this->setFileName($origin->getUrl());
         // make a copy of the file
-        if (copy($this->getUploadDirectory() . '/' . $origin->getUrl(), $this->getUploadDirectory() . '/' . $newName)) {
+        if (copy($this->getUploadRootDir() . '/' . $origin->getUrl(), $this->getUploadRootDir() . '/' . $newName)) {
             // duplicate file
             $new = new Media();
             $new->setType($origin->getType());
@@ -113,7 +111,7 @@ class MediaResourceManager {
         // so we want to force the audio format in any case
         $ext = pathinfo($url, PATHINFO_EXTENSION);
         $name = basename($url, "." . $ext);
-        $cmd = 'avconv -i ' . $this->getUploadDirectory() . '/' . $url . ' -id3v2_version 3 -acodec  libmp3lame -ac 2 -ar 44100 -ab 128k -f mp3 - > ' . $this->getUploadDirectory() . '/' . $name . '_converted.mp3';
+        $cmd = 'avconv -i ' . $this->getUploadRootDir() . '/' . $url . ' -id3v2_version 3 -acodec  libmp3lame -ac 2 -ar 44100 -ab 128k -f mp3 - > ' . $this->getUploadRootDir() . '/' . $name . '.mp3';
 
         exec($cmd, $output, $returnVar);
         // error
@@ -123,7 +121,7 @@ class MediaResourceManager {
             // 2 - create a Media with this sound file
             $media = new Media();
             $media->setType('audio');
-            $media->setUrl($name . '_converted.mp3');
+            $media->setUrl($name . '.mp3');
             return $media;
         }
     }
@@ -132,13 +130,13 @@ class MediaResourceManager {
         if (null === $file) {
             return;
         }
-        $uploaded = $file->move($this->getUploadDirectory(), $url);
+        $uploaded = $file->move($this->getUploadRootDir(), $url);
         unset($file);
         return $uploaded;
     }
 
     public function removeUpload($filename) {
-        $url = $this->getUploadDirectory() . '/' . $filename;
+        $url = $this->getUploadRootDir() . '/' . $filename;
         if (file_exists($url)) {
             unlink($url);
             return true;
@@ -147,8 +145,16 @@ class MediaResourceManager {
         }
     }
 
-    protected function getUploadDirectory() {
+    /*protected function getUploadDirectory() {
         return $this->uploadFileDir;
+    }*/
+    
+    protected function getUploadRootDir() {
+        return __DIR__ . '/../../../../../../web/' . $this->getUploadDir();
+    }
+
+    protected function getUploadDir() {
+        return 'uploads/mrfiles';
     }
 
 }
