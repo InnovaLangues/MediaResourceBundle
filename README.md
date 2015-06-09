@@ -9,7 +9,7 @@ Install with composer :
    
    $ php app/console claroline:plugin:install InnovaMediaResourceBundle
 
-Create a folder named innovamediaresourcefiles at the root of the application & set facl on it
+Create a folder named mrfiles in web/upload directory
 
 
 ## Authors
