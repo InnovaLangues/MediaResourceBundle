@@ -483,7 +483,7 @@ function sayIt(utterance, callback) {
 function handleUtterancePlayback(index, utterance, textArray) {
     var toSay = '';
     var length = textArray.length;
-    for (j = index; j < length; j++) {
+    for (var j = index; j < length; j++) {
         toSay += textArray[j] + ' ';
     }
     utterance.text = toSay;
