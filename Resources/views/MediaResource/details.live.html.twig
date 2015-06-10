@@ -56,13 +56,14 @@
     </div>
     <!-- hidden fields -->
     <input type="hidden" name="type" value="audio">
-    <input type="hidden" name="audio-url" value="{{asset('')}}{{audioPath}}">
-
-
+    <input type="hidden" name="audio-url" value="{{asset('uploads/mrfiles/' ~ audioPath)}}">
+    
 {% endblock %}
 
 {% block javascripts  %}
-    {{parent()}}
+    
+    {{ parent() }}
+    
     {% javascripts         
         '@InnovaMediaResourceBundle/Resources/public/js/wavesurfer/wavesurfer.js' 
         '@InnovaMediaResourceBundle/Resources/public/js/wavesurfer/webaudio.js' 
@@ -74,6 +75,8 @@
         '@InnovaMediaResourceBundle/Resources/public/js/play_live.js' 
         
     %}
+    
     <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
+    
 {% endblock %} 

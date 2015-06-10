@@ -31,21 +31,29 @@ $(document).ready(function () {
 
     audioPlayer.addEventListener('pause', function (e) {
         if (!ended) {
-            nextRegion = getNextRegion(audioPlayer.currentTime);
-            offset = nextRegion.start;
-            paramString = '#t=' + offset + ',' + nextRegion.end;
-            audioPlayer.src = baseAudioUrl + paramString;
+            nextRegion = getNextRegion(audioPlayer.currentTime);            
+            if (nextRegion) {
+                offset = nextRegion.start;
+                paramString = '#t=' + offset + ',' + nextRegion.end;
+                audioPlayer.src = baseAudioUrl + paramString;
 
-            window.setTimeout(function () {
-                audioPlayer.play();
-                if (nextRegion.last) {
-                    ended = true;
-                }
-            }, pauseTime);
+                window.setTimeout(function () {
+                    audioPlayer.play();
+                    if (nextRegion.last) {
+                        ended = true;
+                    }
+                }, pauseTime);
+            }
+            else { // no region defined
+                audioPlayer.currentTime = 0;
+                playButton.disabled = false;
+                ended = false;
+            }
         }
         else { // pause event is sent when ended
             audioPlayer.currentTime = 0;
             playButton.disabled = false;
+            ended = false;
         }
     });
 });
@@ -55,9 +63,14 @@ function play() {
     ended = false;
     audioPlayer.currentTime = 0;
     var nextRegion = getNextRegion(audioPlayer.currentTime);
-    var offset = nextRegion.end;
-    var paramString = '#t=0,' + offset;
-    audioPlayer.src = baseAudioUrl + paramString;
+    if (nextRegion) {
+        var offset = nextRegion.end;
+        var paramString = '#t=0,' + offset;
+        audioPlayer.src = baseAudioUrl + paramString;
+    }
+    else {
+        audioPlayer.src = baseAudioUrl;
+    }
     audioPlayer.play();
 }
 
@@ -69,8 +82,8 @@ function play() {
 function createRegions() {
     $(".region").each(function () {
         var start = $(this).find('input.hidden-start').val();
-        var end = $(this).find('input.hidden-end').val();       
-        if (start && end) {            
+        var end = $(this).find('input.hidden-end').val();
+        if (start && end) {
             var region = {
                 start: start,
                 end: end
@@ -82,16 +95,18 @@ function createRegions() {
 
 function getNextRegion(time) {
     var length = Object.keys(regions).length;
-    length = length - 2;
-    for (var index in regions) {
-        if (regions[index].start <= time && regions[index].end > time) {
+    if (length > 1) {
+        length = length - 2;
+        for (var index in regions) {
+            if (regions[index].start <= time && regions[index].end > time) {
 //            console.log('found @ ' + regions[index].end);
-            var isLast = index > length ? true : false;
-            return {
-                start: regions[index].start,
-                end: regions[index].end,
-                last: isLast
-            };
+                var isLast = index > length ? true : false;
+                return {
+                    start: regions[index].start,
+                    end: regions[index].end,
+                    last: isLast
+                };
+            }
         }
     }
 }

@@ -1,5 +1,9 @@
 # MediaResourceBundle
-This Bundle is a Claroline Plugin
+This Bundle is intended to be used with Claroline Connect (See https://github.com/claroline/Claroline)
+
+## Requirements
+
+This bundle uses avconv (libav-tools package) to encode uploaded files. So you'll need it on your server.
 
 ## Installation
 
