@@ -156,6 +156,9 @@
     <input type="hidden" name="editing" value="{{edit ? 1:0}}">
     <input type="hidden" name="type" value="audio">
     <input type="hidden" name="audio-url" value="{{asset('')}}{{audioPath}}">
+    <input type="hidden" name="wId" value="{{workspace.id}}">
+    <input type="hidden" name="mrId" value="{{_resource.id}}">
+    <input type="hidden" name="serveMediaAction" value="{{path('innova_get_mediaresource_resource_file',  {'workspaceId': workspace.id ,'id':_resource.id})}}">
 
     {% if edit %}
         <input type="hidden" name="update_url" value="{{path('media_resource_save',  {'workspaceId': workspace.id ,'id':_resource.id})}}" />

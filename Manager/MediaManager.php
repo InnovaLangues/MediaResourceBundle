@@ -24,6 +24,15 @@ class MediaManager {
     public function getRepository() {
         return $this->em->getRepository('InnovaMediaResourceBundle:Media');
     }
+    
+    public function getAudioMediaUrlForAjax(MediaResource $mr) {
+        return $this->getUploadDirectory() . '/test.wav';/*
+        $audio = $this->getRepository()->findOneBy(array('mediaResource' => $mr, 'type' => 'audio'));
+        if ($audio) {
+            return $this->getUploadDirectory() . '/' . $audio->getUrl();
+        }
+        return null;*/
+    }
 
     public function getAudioMediaUrl(MediaResource $mr) {
         $audio = $this->getRepository()->findOneBy(array('mediaResource' => $mr, 'type' => 'audio'));
