@@ -26,7 +26,6 @@
         <!-- audio player -->
         <hr/>
         <div class="row media-container">
-
             <!-- play / pause button -->
             <div class="col-md-1">
                 <button type="button" class="btn btn-default fa fa-play" id="play" onclick="play()" title="{{'play_pause' | trans({}, 'media_resource')}}">
@@ -40,7 +39,7 @@
                     </div>
                 </div>
             </div>
-            <audio src="{{path('innova_get_mediaresource_resource_file',  {'workspaceId': workspace.id ,'id':_resource.id})}}" style="width:100%;"></audio>
+            <audio src="" style="width:100%;"></audio>
         </div>
         <hr/>
         <!-- segments hidden -->
