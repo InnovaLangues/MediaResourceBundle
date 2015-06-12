@@ -40,7 +40,7 @@
                     </div>
                 </div>
             </div>
-            <audio src="{{asset('')}}{{audioPath}}" style="width:100%;"></audio>
+            <audio src="{{path('innova_get_mediaresource_resource_file',  {'workspaceId': workspace.id ,'id':_resource.id})}}" style="width:100%;"></audio>
         </div>
         <hr/>
         <!-- segments hidden -->
@@ -75,6 +75,10 @@
                 {% endif %}
             </div>
         </div>
+
+        <input type="hidden" name="wId" value="{{workspace.id}}" />
+        <input type="hidden" name="mrId" value="{{_resource.id}}"/>
+        <input type="hidden" name="serveMediaAction" value="{{path('innova_get_mediaresource_resource_file',  {'workspaceId': workspace.id ,'id':_resource.id})}}" />
     </div>
 {% endblock %}
 

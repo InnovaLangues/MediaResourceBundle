@@ -2,6 +2,9 @@
 var transitionType = 'fast';
 var currentExerciseType = '';
 var audioUrl = '';
+var serveMediaAction;
+var wId;
+var mrId;
 var wavesurfer;
 var playing = false;
 var loop = false;
@@ -32,7 +35,9 @@ $(document).ready(function () {
     currentExerciseType = 'audio';
     
     domUtils = Object.create(DomUtils);
-    audioUrl = $('input[name="audio-url"]').val();
+    serveMediaAction = $('input[name="serveMediaAction"]').val();
+    wId = $('input[name="wId"]').val();
+    mrId = $('input[name="mrId"]').val();
 
     helpButton = document.getElementById('help-btn');
     /* WAVESURFER */
@@ -69,7 +74,28 @@ $(document).ready(function () {
         color: 'rgba(200, 55, 99, 0.1)'
     });
 
-    wavesurfer.load(audioUrl);
+    //wavesurfer.load(audioUrl);
+    var data = {
+        workspaceId: wId,
+        id: mrId
+    };
+    
+    // get media data
+    $.get(serveMediaAction, data)
+            .done(function (response) {
+                var byteCharacters = atob(response);
+                var byteNumbers = new Array(byteCharacters.length);
+                for (var i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                var byteArray = new Uint8Array(byteNumbers);
+                var blob = new Blob([byteArray]);
+                wavesurfer.loadBlob(blob);
+                audioUrl = URL.createObjectURL(blob);
+            })
+            .fail(function () {
+                console.log('loading media resource file failed');
+            });
 
     wavesurfer.on('ready', function () {
         var timeline = Object.create(WaveSurfer.Timeline);
@@ -91,9 +117,6 @@ $(document).ready(function () {
         }
         // 
     });
-
-
-
     /* /WAVESURFER */
 
 

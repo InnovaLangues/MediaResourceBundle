@@ -26,30 +26,12 @@ class MediaManager {
     }
     
     public function getAudioMediaUrlForAjax(MediaResource $mr) {
-        return $this->getUploadDirectory() . '/test.wav';/*
         $audio = $this->getRepository()->findOneBy(array('mediaResource' => $mr, 'type' => 'audio'));
         if ($audio) {
             return $this->getUploadDirectory() . '/' . $audio->getUrl();
         }
-        return null;*/
-    }
-
-    public function getAudioMediaUrl(MediaResource $mr) {
-        $audio = $this->getRepository()->findOneBy(array('mediaResource' => $mr, 'type' => 'audio'));
-        if ($audio) {
-            return $this->getReadFileDirectory() . '/' . $audio->getUrl();
-        }
         return null;
     }
-
-    public function getVideoMedia(MediaResource $mr) {
-        $video = $this->getRepository()->findOneBy(array('mediaResource' => $mr, 'type' => 'video'));
-        if ($video) {
-            return $this->getReadFileDirectory() . '/' . $video->getUrl();
-        }
-        return null;
-    }
-
 
     protected function getReadFileDirectory() {
         return $this->readFileDir;
@@ -58,5 +40,4 @@ class MediaManager {
     protected function getUploadDirectory() {
         return $this->uploadFileDir;
     }
-
 }

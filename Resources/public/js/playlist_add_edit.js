@@ -4,6 +4,9 @@ var collectionHolder = $('.collection tbody');
 var $addButton = $('.add-collection');
 var audio; // audio player dom object
 var aUrl; // audio url
+var serveMediaAction;
+var wId;
+var mrId;
 
 jQuery(document).ready(function () {
     // attach add event
@@ -12,8 +15,33 @@ jQuery(document).ready(function () {
         addRegionPlaylistForm(collectionHolder);
     });
     audio = document.getElementById('aplayer');
-    aUrl = audio.src;
-    // for existing elements (don't know hos to do it in twig)
+
+    serveMediaAction = $('input[name="serveMediaAction"]').val();
+    wId = $('input[name="wId"]').val();
+    mrId = $('input[name="mrId"]').val();
+
+    var data = {
+        workspaceId: wId,
+        id: mrId
+    };
+    // load media data
+    $.get(serveMediaAction, data)
+            .done(function (response) {
+                var byteCharacters = atob(response);
+                var byteNumbers = new Array(byteCharacters.length);
+                for (var i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                var byteArray = new Uint8Array(byteNumbers);
+                var blob = new Blob([byteArray]);
+
+                aUrl = URL.createObjectURL(blob);
+                audio.src = aUrl;
+            })
+            .fail(function () {
+                console.log('loading media resource file failed');
+            });
+
     refreshOrdering();
     togglePlaylistPreListenButton();
 });
@@ -51,7 +79,7 @@ function playlistPreListen() {
     play(items, 0);
 }
 
-function play(items, index) {   
+function play(items, index) {
     if (index < items.length) {
         var start = items[index].start;
         var offset = items[index].end;
@@ -70,7 +98,6 @@ function buildRegionsFromDom() {
     $('.collection tbody tr').each(function (index) {
         var textValue = $(this).find('td.playlist_region_widget_region option:selected').text();
         var item = toSeconds(textValue);
-        //console.log(item);
         items.push(item);
     });
     return items;

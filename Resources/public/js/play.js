@@ -27,6 +27,8 @@ var previousResizedRegionRow = null;
 // current help options
 var helpPlaybackBackward = false;
 var helpIsPlaying = false;
+var helpPlaybackLoop = false;
+var helpPlaybackRate = 1;
 var helpAudioPlayer;
 var helpCurrentWRegion; // the wavesurfer region where we are when asking help
 var helpPreviousWRegion; // the previous wavesurfer region relatively to helpCurrentWRegion
@@ -171,7 +173,7 @@ var actions = {
 $(document).ready(function () {
     // get some hidden inputs usefull values
     currentExerciseType = 'audio';
-    audioUrl = $('input[name="audio-url"]').val();
+    
     isEditing = parseInt($('input[name="editing"]').val()) === 1 ? true : false;
     serveMediaAction = $('input[name="serveMediaAction"]').val();
     wId = $('input[name="wId"]').val();
@@ -236,9 +238,6 @@ $(document).ready(function () {
 
     });
 
-
-
-
     /* JS HELPERS */
     strUtils = Object.create(StringUtils);
     wavesurferUtils = Object.create(WavesurferUtils);
@@ -280,37 +279,23 @@ $(document).ready(function () {
     var data = {
         workspaceId: wId,
         id: mrId
-    }
+    };
 
     $.get(serveMediaAction, data)
             .done(function (response) {
-                console.log('done');
-                //console.log(response);
-                var f = [response];
-                //var t =  ["<a id=\"a\"><b id=\"b\">hey!<\/b><\/a>"];
-                //var blob = new Blob(f, {"type": "audio\/mpeg"});
-                var blob = new Blob(f, {type: 'audio/wav'});
-                var parts = [blob];
-                var file = new File(parts, 'temp.wav',  {type: 'audio/wav'});
-                //var blob2 = new Blob(t, {"type": "text\/xml"});
-                //console.log(blob2);
-
-                /*var reader = new FileReader();
-                reader.addEventListener("loadend", function () {
-                    console.log(reader.result);
-                    // reader.result contains the contents of blob as a typed array
-                });
-                reader.readAsArrayBuffer(blob);*/
-                wavesurfer.loadBlob(file);
+                var byteCharacters = atob(response);
+                var byteNumbers = new Array(byteCharacters.length);
+                for (var i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                var byteArray = new Uint8Array(byteNumbers);
+                var blob = new Blob([byteArray]);
+                wavesurfer.loadBlob(blob);
+                audioUrl = URL.createObjectURL(blob);
             })
             .fail(function () {
-                console.log('fail');
-            })
-            .always(function () {
-                console.log('always');
+                console.log('loading media resource file failed');
             });
-
-    // wavesurfer.load(audioUrl);
 
     wavesurfer.on('ready', function () {
         var timeline = Object.create(WaveSurfer.Timeline);
@@ -523,7 +508,7 @@ function sayIt(utterance, callback) {
 function handleUtterancePlayback(index, utterance, textArray) {
     var toSay = '';
     var length = textArray.length;
-    for (j = index; j < length; j++) {
+    for (var j = index; j < length; j++) {
         toSay += textArray[j] + ' ';
     }
     utterance.text = toSay;
@@ -723,7 +708,6 @@ function deleteRegion(elem) {
 
                             // the "marker" is visible but not draggable... need to hide it
                             // sometimes it is not the first one...
-
                             $('region.wavesurfer-region').each(function () {
                                 var title = $(this).attr('title');
                                 if (title.indexOf('0:00') !== -1) {

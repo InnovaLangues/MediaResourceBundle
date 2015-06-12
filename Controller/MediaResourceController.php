@@ -10,6 +10,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Innova\MediaResourceBundle\Entity\MediaResource;
 use Claroline\CoreBundle\Entity\Workspace\Workspace;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use \Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class MediaResourceController
@@ -30,15 +31,13 @@ class MediaResourceController extends Controller {
         if (false === $this->container->get('security.context')->isGranted('OPEN', $mr->getResourceNode())) {
             throw new AccessDeniedException();
         }
-        $audioPath = $this->get('innova_media_resource.manager.media_resource_media')->getAudioMediaUrl($mr);
         // use of specific method to order regions correctly
         $regions = $this->get('innova_media_resource.manager.media_resource_region')->findByAndOrder($mr);
         // default view is AutoPause !
         return $this->render('InnovaMediaResourceBundle:MediaResource:details.pause.html.twig', array(
                     '_resource' => $mr,
                     'regions' => $regions,
-                    'workspace' => $workspace,
-                    'audioPath' => $audioPath
+                    'workspace' => $workspace
                         )
         );
     }
@@ -55,7 +54,6 @@ class MediaResourceController extends Controller {
         }
         if ($this->getRequest()->isMethod('POST')) {
 
-            $audioPath = $this->get('innova_media_resource.manager.media_resource_media')->getAudioMediaUrl($mr);
             // use of specific method to order regions correctly
             $regions = $this->get('innova_media_resource.manager.media_resource_region')->findByAndOrder($mr);
 
@@ -69,16 +67,15 @@ class MediaResourceController extends Controller {
                             'edit' => false,
                             'regions' => $regions,
                             'workspace' => $workspace,
-                            'audioPath' => $audioPath,
-                            'playMode' => 'active'
+                            //'playMode' => 'active'
                                 )
                 );
             } else if ($live) {
+                
                 return $this->render('InnovaMediaResourceBundle:MediaResource:details.live.html.twig', array(
                             '_resource' => $mr,
                             'regions' => $regions,
-                            'workspace' => $workspace,
-                            'audioPath' => $audioPath
+                            'workspace' => $workspace
                                 )
                 );
             } else {
@@ -100,7 +97,7 @@ class MediaResourceController extends Controller {
         if (false === $this->container->get('security.context')->isGranted('ADMINISTRATE', $mr->getResourceNode())) {
             throw new AccessDeniedException();
         }
-        $audioPath = $this->get('innova_media_resource.manager.media_resource_media')->getAudioMediaUrl($mr);
+
         // use of specific method to order regions correctly
         $regions = $this->get('innova_media_resource.manager.media_resource_region')->findByAndOrder($mr);
         return $this->render('InnovaMediaResourceBundle:MediaResource:details.html.twig', array(
@@ -108,7 +105,7 @@ class MediaResourceController extends Controller {
                     'edit' => true,
                     'regions' => $regions,
                     'workspace' => $workspace,
-                    'audioPath' => $audioPath,
+                    //'audioPath' => $audioPath,
                     'playMode' => 'active'
                         )
         );
@@ -140,139 +137,37 @@ class MediaResourceController extends Controller {
     }
 
     /**
-     * Serve a ressource file that is not in the web folder
+     * Serve a ressource file that is not in the web folder as a base64 string
+     * in JS ajax sucess method just use the response like this :
+     * var byteCharacters = atob(response);
+     * var byteNumbers = new Array(byteCharacters.length);
+     * for (var i = 0; i < byteCharacters.length; i++) {
+     *  byteNumbers[i] = byteCharacters.charCodeAt(i);
+     * }
+     * var byteArray = new Uint8Array(byteNumbers);
+     * var blob = new Blob([byteArray]);
+     * 
+     * Now you can do what you want with the Blob object
      * @Route(
      *     "/get/media/{id}",
      *     name="innova_get_mediaresource_resource_file"
      * )
      * @ParamConverter("MediaResource", class="InnovaMediaResourceBundle:MediaResource")
-     * @Method({"GET"})
+     * @Method({"GET", "POST"})
      */
     public function serveMediaResourceFile(MediaResource $mr) {
 
         $filePath = $this->get('innova_media_resource.manager.media_resource_media')->getAudioMediaUrlForAjax($mr);
-
-        /*
-          $response = new \Symfony\Component\HttpFoundation\BinaryFileResponse($filePath);
-          $response->trustXSendfileTypeHeader();
-          $response->setContentDisposition(
-          ResponseHeaderBag::DISPOSITION_INLINE, basename($filePath), iconv('UTF-8', 'ASCII//TRANSLIT', basename($filePath))
-          );
-          return $response;
-         */
-
-
-        /*
-          $stream = fopen($filePath, 'r');
-          $response = new \Symfony\Component\HttpFoundation\Response(stream_get_contents($stream), 200, array(
-          'Content-Type' => 'application/octet-stream',
-          'Content-Length' => sizeof($filePath),
-          'Content-Disposition', 'attachment; filename="' . basename($filePath) . '"'
-          ));
-
-          return $response;
-         */
-        /*
-          $response = new \Symfony\Component\HttpFoundation\Response();
-          $d = $response->headers->makeDisposition(
-          ResponseHeaderBag::DISPOSITION_INLINE, basename($filePath)
-          );
-          $response->headers->set('Content-Disposition', $d);
-          $finfo = new \finfo(FILEINFO_MIME_TYPE);
-          $type = $finfo->file($filePath);
-          $response->headers->set('Content-type', $type);
-          $response->sendHeaders();
-          $response->setContent(file_get_contents($filePath));
-          return $response;
-         */
-        /*
-          $fp = fopen($filePath, 'r');
-          $content = fread($fp, filesize($filePath));
-          $content = addslashes($content);
-          fclose($fp);
-
-          $response = new \Symfony\Component\HttpFoundation\Response();
-          $response->headers->set('Content-Type', 'application/octet-stream');
-          $response->setContent($content);
-          return $response;
-         */
-
-
-        $response = new \Symfony\Component\HttpFoundation\Response();
-        $file = file_get_contents($filePath);
-        $data = base64_encode($file);
-        $response->setContent($data);
+        $response = new Response();
+        $d = $response->headers->makeDisposition(
+                ResponseHeaderBag::DISPOSITION_INLINE, basename($filePath)
+        );
+        $response->headers->set('Content-Disposition', $d);
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $type = $finfo->file($filePath);
+        $response->headers->set('Content-type', $type);
+        $response->sendHeaders();
+        $response->setContent(base64_encode(file_get_contents($filePath)));
         return $response;
-
-
-
-        /* $response = new \Symfony\Component\HttpFoundation\JsonResponse();
-          $response->headers->set('Content-Type', 'application/json');
-          $response->setData(json_encode(utf8_encode(file_get_contents($filePath)), JSON_UNESCAPED_UNICODE));
-          //$response->setEncodingOptions(JSON_UNESCAPED_UNICODE);
-
-          return $response; */
-
-
-        /*
-          $fp = fopen($filePath, 'r');
-          $content = fread($fp, filesize($filePath));
-          $response = new \Symfony\Component\HttpFoundation\JsonResponse(json_encode(utf8_encode($content), JSON_UNESCAPED_UNICODE));
-          //$response->headers->set('Content-Type', 'application/json');
-          //$response->setData(json_encode($content,JSON_UNESCAPED_UNICODE));
-          //$response->setEncodingOptions(JSON_UNESCAPED_UNICODE);
-
-          return $response;
-         */
-
-
-
-
-        /* $file = file($filePath);
-          //$data = base64_encode($file);
-          $response = new \Symfony\Component\HttpFoundation\JsonResponse();
-          $response->setData(json_encode($file));
-          return $response; */
-
-
-
-        /*
-          $fp = fopen($filePath, 'r');
-          $content = fread($fp, filesize($filePath));
-          //$content = addslashes($content);
-          fclose($fp);
-
-          $response = new \Symfony\Component\HttpFoundation\Response();
-          $response->headers->set('Content-Type', 'application/json');
-          $response->setContent($content);
-          //$response->setEncodingOptions(JSON_UNESCAPED_UNICODE);
-
-          return $response;
-         */
-
-
-
-
-
-        /*
-          $response = new Response();
-          $d = $response->headers->makeDisposition(
-          ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filePath
-          );
-          $response->headers->set('Content-Disposition', $d);
-          $finfo = new finfo(FILEINFO_MIME_TYPE);
-          $type = $finfo->file($filePath);
-          //$response->headers->set('Content-type', $type);
-          $response->sendHeaders();
-          //$response->setContent(fopen($filePath, 'r'));
-
-          $file = fopen($filePath, 'r');
-          //$response->setContent(fread($file,filesize($filePath)));
-          $response->setContent($file);
-          fclose($file);
-          return $response;
-
-         */
     }
-
 }
