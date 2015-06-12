@@ -95,7 +95,7 @@
                     <button type="button" role="button" class="btn btn-default add-collection">{{'media_resource_playlist_add_element' | trans({}, 'resource_form')}}</button>
                 </div>
             </div>
-            <audio id="aplayer" src="{{asset('uploads/mrfiles/')}}{{audioUrl}}"></audio>
+            <audio id="aplayer" src=""></audio>
         {% else %}
             <div class="row">
                 <div class="col-md-12 center-text">
@@ -108,6 +108,9 @@
         <!-- disable the automaticly created add link -->
         {{ form_end(form, {'render_rest': false}) }}
     </div>
+    <input type="hidden" name="wId" value="{{_resource.resourceNode.workspace.id}}">
+    <input type="hidden" name="mrId" value="{{_resource.id}}">
+    <input type="hidden" name="serveMediaAction" value="{{path('innova_get_mediaresource_resource_file',  {'workspaceId': _resource.resourceNode.workspace.id ,'id':_resource.id})}}">
 
     
 {% endblock %}

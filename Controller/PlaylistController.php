@@ -16,8 +16,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Handle MediaRessource Playlist management
- * 
- * 
  */
 class PlaylistController extends Controller {
 
@@ -50,7 +48,6 @@ class PlaylistController extends Controller {
         if (false === $this->container->get('security.context')->isGranted('EDIT', $mr->getResourceNode())) {
             throw new AccessDeniedException();
         }
-        $audioPath = $this->get('innova_media_resource.manager.media_resource_media')->getAudioMediaUrl($mr);
         $playlist = new Playlist();
         $form = $this->createForm(new PlaylistType($mr), $playlist, array(
             'action' => $this->generateUrl('innova_playlist_add', array('id' => $mr->getId())),
@@ -77,14 +74,13 @@ class PlaylistController extends Controller {
 
         return $this->render('InnovaMediaResourceBundle:Playlist:add.html.twig', array(
                     '_resource' => $mr,
-                    'audioUrl' => $audioPath,
                     'form' => $form->createView()
                         )
         );
     }
 
     /**
-     * Show the form for new playlist creation
+     * Show the form for playlist edition
      * @Route("/edit/{id}", requirements={"id" = "\d+"}, name="innova_playlist_edit")
      * @Method({"GET", "POST"})
      * @ParamConverter("Playlist", class="InnovaMediaResourceBundle:Playlist")
@@ -94,7 +90,6 @@ class PlaylistController extends Controller {
         if (false === $this->container->get('security.context')->isGranted('EDIT', $mr->getResourceNode())) {
             throw new AccessDeniedException();
         }
-        $audioPath = $this->get('innova_media_resource.manager.media_resource_media')->getAudioMediaUrl($mr);
         // temporary assign old PlaylistRegion to an ArrayCollection (for deleting)
         $originalPLayListRegions = new ArrayCollection();
         foreach ($playlist->getPlaylistRegions() as $plr) {
@@ -131,14 +126,13 @@ class PlaylistController extends Controller {
 
         return $this->render('InnovaMediaResourceBundle:Playlist:edit.html.twig', array(
                     '_resource' => $mr,
-                    'audioUrl' => $audioPath,
                     'form' => $form->createView()
                     )
         );
     }
 
     /**
-     * Show the form for new playlist creation
+     * Delete a playlist
      * @Route("/delete/{id}", requirements={"id" = "\d+"}, name="innova_playlist_delete")
      * @Method("GET")
      * @ParamConverter("Playlist", class="InnovaMediaResourceBundle:Playlist")

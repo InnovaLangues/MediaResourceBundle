@@ -1,9 +1,9 @@
 # MediaResourceBundle
-This Bundle is intended to be used with Claroline Connect (See https://github.com/claroline/Claroline)
+This Bundle is intended to be used with [Claroline Connect LMS] (https://github.com/claroline/Claroline)
 
 ## Requirements
-
-This bundle uses avconv (libav-tools package) to encode uploaded files. So you'll need it on your server.
+- This bundle uses avconv (libav-tools package) to encode uploaded files. So you'll need it on your server.
+- GoogleTTS Api is also used for backward building help. This functionality will only work on Chrome.
 
 ## Installation
 
@@ -13,8 +13,7 @@ Install with composer :
    
    $ php app/console claroline:plugin:install InnovaMediaResourceBundle
 
-Create a folder named mrfiles in web/upload directory
-
+Create a folder named innovamediaresourcefiles at the root of the application & set appropriate rights on it.
 
 ## Authors
 
@@ -27,4 +26,7 @@ Create a folder named mrfiles in web/upload directory
 
 ## Javascript librairies
 Intensive use of the wonderful library [wavesurfer.js] (http://www.wavesurfer.fm/)
+
+## TODO
+Create AdditionalInstaller script to simplify plugin installation.
 

@@ -8,6 +8,9 @@ var domUtils;
 var transitionType = 'fast';
 var currentExerciseType = '';
 var audioUrl = '';
+var serveMediaAction;
+var wId;
+var mrId;
 var wavesurfer;
 var playing = false;
 var isEditing = false;
@@ -24,6 +27,8 @@ var previousResizedRegionRow = null;
 // current help options
 var helpPlaybackBackward = false;
 var helpIsPlaying = false;
+var helpPlaybackLoop = false;
+var helpPlaybackRate = 1;
 var helpAudioPlayer;
 var helpCurrentWRegion; // the wavesurfer region where we are when asking help
 var helpPreviousWRegion; // the previous wavesurfer region relatively to helpCurrentWRegion
@@ -168,8 +173,11 @@ var actions = {
 $(document).ready(function () {
     // get some hidden inputs usefull values
     currentExerciseType = 'audio';
-    audioUrl = $('input[name="audio-url"]').val();
+    
     isEditing = parseInt($('input[name="editing"]').val()) === 1 ? true : false;
+    serveMediaAction = $('input[name="serveMediaAction"]').val();
+    wId = $('input[name="wId"]').val();
+    mrId = $('input[name="mrId"]').val();
 
     // color config region buttons if needed
     toggleConfigButtonColor();
@@ -225,13 +233,10 @@ $(document).ready(function () {
             domUtils.appendHelpModalConfig(hModal, config, helpCurrentWRegion);
         }
     });
-    
+
     $('body').on('click', '#btn-show-help-text', function (e) {
-        
+
     });
-
-
-
 
     /* JS HELPERS */
     strUtils = Object.create(StringUtils);
@@ -270,7 +275,27 @@ $(document).ready(function () {
         cursorColor: '#999'
     });
 
-    wavesurfer.load(audioUrl);
+
+    var data = {
+        workspaceId: wId,
+        id: mrId
+    };
+
+    $.get(serveMediaAction, data)
+            .done(function (response) {
+                var byteCharacters = atob(response);
+                var byteNumbers = new Array(byteCharacters.length);
+                for (var i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                var byteArray = new Uint8Array(byteNumbers);
+                var blob = new Blob([byteArray]);
+                wavesurfer.loadBlob(blob);
+                audioUrl = URL.createObjectURL(blob);
+            })
+            .fail(function () {
+                console.log('loading media resource file failed');
+            });
 
     wavesurfer.on('ready', function () {
         var timeline = Object.create(WaveSurfer.Timeline);
@@ -408,7 +433,7 @@ function playHelp(start, end, loop, rate) {
     if (rate) {
         helpAudioPlayer.playbackRate = 0.8;
     }
-    else{
+    else {
         helpAudioPlayer.playbackRate = 1;
     }
     helpAudioPlayer.addEventListener('timeupdate', function () {
@@ -424,7 +449,7 @@ function playHelp(start, end, loop, rate) {
         }
 
     });
-    
+
 
     if (helpIsPlaying) {
         helpAudioPlayer.pause();
@@ -526,7 +551,7 @@ function configRegion(elem) {
             wavesurfer.pause();
             playing = false;
         }
-        
+
         // color the config button if any value in config parameters
         toggleConfigButtonColor();
     });
@@ -604,13 +629,13 @@ function addRegion(start, end, note, dataset) {
     region.start = start;
     region.end = end;
     // do not set different colors per region if we are not editing
-    region.color = isEditing ? wavesurferUtils.randomColor(0.1): 'rgba(0, 0, 0, 0.0)';
+    region.color = isEditing ? wavesurferUtils.randomColor(0.1) : 'rgba(0, 0, 0, 0.0)';
     // do not allow region resize if we are not editing
     region.resize = isEditing;
     region.resizeHandlerColor = '#FF0000';
     region.resizeHandlerWidth = '2px';
     // do not show region handlers if we are not editing
-    region.showStartHandler = isEditing ? true:false;
+    region.showStartHandler = isEditing ? true : false;
     region.drag = false;
     region.showEndHandler = false;
     region.data = {note: note};
@@ -660,7 +685,7 @@ function deleteRegion(elem) {
                         }
                     }
 
-                    var start = toRemove.start;                   
+                    var start = toRemove.start;
                     var end = toRemove.end;
                     // if we are deleting the first region
                     if (start === 0) {
@@ -677,22 +702,21 @@ function deleteRegion(elem) {
 
                             var divToUpdate = currentRow.next().find(".time-text.start");
                             divToUpdate.text(wavesurferUtils.secondsToHms(start));
-                            
+
                             // remove segment DOM row
                             $(currentRow).remove();
-                            
+
                             // the "marker" is visible but not draggable... need to hide it
                             // sometimes it is not the first one...
-                           
-                            $('region.wavesurfer-region').each(function(){
+                            $('region.wavesurfer-region').each(function () {
                                 var title = $(this).attr('title');
-                                if(title.indexOf('0:00') !== -1){
+                                if (title.indexOf('0:00') !== -1) {
                                     var $marker = $(this).find('handle').first();
                                     $marker.hide();
                                 }
-                                
+
                             });
-                            
+
                         } else {
                             console.log('not found');
                         }

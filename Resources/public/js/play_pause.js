@@ -7,6 +7,10 @@ var regions = [];
 var audioPlayer;
 var playButton;
 
+var serveMediaAction;
+var wId;
+var mrId;
+
 // ======================================================================================================== //
 // DOCUMENT READY
 // ======================================================================================================== //
@@ -17,12 +21,39 @@ $(document).ready(function () {
     audioPlayer.loop = false;
     baseAudioUrl = audioPlayer.src;
 
+    serveMediaAction = $('input[name="serveMediaAction"]').val();
+    wId = $('input[name="wId"]').val();
+    mrId = $('input[name="mrId"]').val();
+
     /* JS HELPERS */
     domUtils = Object.create(DomUtils);
     jUtils = Object.create(JavascriptUtils);
     /* /JS HELPERS */
 
+    // create regions JS objects
     createRegions();
+
+    var data = {
+        workspaceId: wId,
+        id: mrId
+    };
+    // get media data
+    $.get(serveMediaAction, data)
+            .done(function (response) {
+                var byteCharacters = atob(response);
+                var byteNumbers = new Array(byteCharacters.length);
+                for (var i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                var byteArray = new Uint8Array(byteNumbers);
+                var blob = new Blob([byteArray]);
+                baseAudioUrl = URL.createObjectURL(blob);
+                audioPlayer.src = baseAudioUrl;
+                //wavesurfer.loadBlob(blob);
+            })
+            .fail(function () {
+                console.log('loading media resource file failed');
+            });
 
     audioPlayer.addEventListener('timeupdate', function (e) {
         var percent = audioPlayer.currentTime * 100 / audioPlayer.duration;
@@ -30,25 +61,19 @@ $(document).ready(function () {
     });
 
     audioPlayer.addEventListener('pause', function (e) {
-        if (!ended) {
-            nextRegion = getNextRegion(audioPlayer.currentTime);            
-            if (nextRegion) {
-                offset = nextRegion.start;
-                paramString = '#t=' + offset + ',' + nextRegion.end;
-                audioPlayer.src = baseAudioUrl + paramString;
+        nextRegion = getNextRegion(audioPlayer.currentTime);
+        if (!ended && nextRegion) {
+            
+            offset = nextRegion.start;
+            paramString = '#t=' + offset + ',' + nextRegion.end;
+            audioPlayer.src = baseAudioUrl + paramString;
 
-                window.setTimeout(function () {
-                    audioPlayer.play();
-                    if (nextRegion.last) {
-                        ended = true;
-                    }
-                }, pauseTime);
-            }
-            else { // no region defined
-                audioPlayer.currentTime = 0;
-                playButton.disabled = false;
-                ended = false;
-            }
+            window.setTimeout(function () {
+                audioPlayer.play();
+                if (nextRegion.last) {
+                    ended = true;
+                }
+            }, pauseTime);
         }
         else { // pause event is sent when ended
             audioPlayer.currentTime = 0;
@@ -62,15 +87,13 @@ function play() {
     playButton.disabled = true;
     ended = false;
     audioPlayer.currentTime = 0;
+    var paramString = '';
     var nextRegion = getNextRegion(audioPlayer.currentTime);
     if (nextRegion) {
         var offset = nextRegion.end;
-        var paramString = '#t=0,' + offset;
-        audioPlayer.src = baseAudioUrl + paramString;
+        paramString = '#t=0,' + offset;
     }
-    else {
-        audioPlayer.src = baseAudioUrl;
-    }
+    audioPlayer.src = baseAudioUrl + paramString;
     audioPlayer.play();
 }
 
@@ -95,18 +118,15 @@ function createRegions() {
 
 function getNextRegion(time) {
     var length = Object.keys(regions).length;
-    if (length > 1) {
-        length = length - 2;
-        for (var index in regions) {
-            if (regions[index].start <= time && regions[index].end > time) {
-//            console.log('found @ ' + regions[index].end);
-                var isLast = index > length ? true : false;
-                return {
-                    start: regions[index].start,
-                    end: regions[index].end,
-                    last: isLast
-                };
-            }
+    length = length - 2;
+    for (var index in regions) {
+        if (regions[index].start <= time && regions[index].end > time) {
+            var isLast = index > length ? true : false;
+            return {
+                start: regions[index].start,
+                end: regions[index].end,
+                last: isLast
+            };
         }
     }
 }
