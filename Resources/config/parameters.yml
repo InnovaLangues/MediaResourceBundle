@@ -8,3 +8,9 @@ parameters:
     # Managers
     innova_media_resource.manager.playlist_region.class:    Innova\MediaResourceBundle\Manager\PlaylistRegionManager
     innova_media_resource.manager.playlist.class:           Innova\MediaResourceBundle\Manager\PlaylistManager
+    
+    # Parameters  
+    # for upload
+    innova_media_resource.param.upload_files_directory:     "%kernel.root_dir%/../innovamediaresourcefiles"
+    # for display
+    innova_media_resource.param.read_files_directory:       "/../../innovamediaresourcefiles"

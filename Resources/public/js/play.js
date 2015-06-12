@@ -328,12 +328,10 @@ $(document).ready(function () {
     });
 
     wavesurfer.on('region-click', function (region, e) {
-        //highlightRegionRow(region);
         domUtils.highlightRegionRow(region);
     });
 
     wavesurfer.on('region-in', function (region) {
-        //highlightRegionRow(region);
         domUtils.highlightRegionRow(region);
     });
 
@@ -342,11 +340,9 @@ $(document).ready(function () {
         wavesurfer.on('region-resize-start', function (region, e) {
             isResizing = true;
             currentlyResizedRegion = region;
-            //currentlyResizedRegionRow = getRegionRow(region.start + 0.1, region.end - 0.1);
             currentlyResizedRegionRow = domUtils.getRegionRow(region.start + 0.1, region.end - 0.1);
 
             previousResizedRegion = wavesurferUtils.getPrevRegion(wavesurfer, region.start + 0.1);
-            //previousResizedRegionRow = getRegionRow(previousResizedRegion.start, previousResizedRegion.end);
             previousResizedRegionRow = domUtils.getRegionRow(previousResizedRegion.start, previousResizedRegion.end);
             originalStart = region.start;
             originalEnd = region.end;

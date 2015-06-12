@@ -19,7 +19,6 @@ $(document).ready(function () {
     var progress = document.getElementById('seekbar');
     playButton = document.getElementById('play');
     audioPlayer.loop = false;
-    baseAudioUrl = audioPlayer.src;
 
     serveMediaAction = $('input[name="serveMediaAction"]').val();
     wId = $('input[name="wId"]').val();
@@ -49,7 +48,6 @@ $(document).ready(function () {
                 var blob = new Blob([byteArray]);
                 baseAudioUrl = URL.createObjectURL(blob);
                 audioPlayer.src = baseAudioUrl;
-                //wavesurfer.loadBlob(blob);
             })
             .fail(function () {
                 console.log('loading media resource file failed');

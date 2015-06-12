@@ -4,7 +4,6 @@ namespace Innova\MediaResourceBundle\Manager;
 
 use Doctrine\ORM\EntityManager;
 use Innova\MediaResourceBundle\Entity\MediaResource;
-use Innova\MediaResourceBundle\Entity\Media;
 
 /**
  * Media Manager

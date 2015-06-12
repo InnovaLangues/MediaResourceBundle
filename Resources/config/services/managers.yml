@@ -3,11 +3,14 @@ services:
         class: Innova\MediaResourceBundle\Manager\MediaResourceManager 
         arguments:
             entityManager:  @doctrine.orm.entity_manager
-            translator:     @translator
+            translator:     @translator            
+            uploadfileDir:  %innova_media_resource.param.upload_files_directory%
     innova_media_resource.manager.media_resource_media:
         class: Innova\MediaResourceBundle\Manager\MediaManager 
         arguments:
-            entityManager:  @doctrine.orm.entity_manager
+            entityManager:  @doctrine.orm.entity_manager            
+            readfileDir:    %innova_media_resource.param.read_files_directory%
+            uploadfileDir:  %innova_media_resource.param.upload_files_directory%
     innova_media_resource.manager.media_resource_region:
         class: Innova\MediaResourceBundle\Manager\RegionManager 
         arguments:
