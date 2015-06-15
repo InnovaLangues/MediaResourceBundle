@@ -15,10 +15,12 @@ class MediaResourceManager {
 
     protected $em;
     protected $translator;
+    protected $uploadFileDir;
 
-    public function __construct(EntityManager $em, TranslatorInterface $translator) {
+    public function __construct(EntityManager $em, TranslatorInterface $translator, $uploadfileDir) {
         $this->em = $em;
         $this->translator = $translator;
+        $this->uploadFileDir = $uploadfileDir;
     }
 
     public function getRepository() {
@@ -78,7 +80,7 @@ class MediaResourceManager {
 
         $newName = $this->setFileName($origin->getUrl());
         // make a copy of the file
-        if (copy($this->getUploadRootDir() . '/' . $origin->getUrl(), $this->getUploadRootDir() . '/' . $newName)) {
+        if (copy($this->getUploadDirectory() . '/' . $origin->getUrl(), $this->getUploadDirectory() . '/' . $newName)) {
             // duplicate file
             $new = new Media();
             $new->setType($origin->getType());
@@ -100,7 +102,7 @@ class MediaResourceManager {
     }
 
     /**
-     * encode original file (in any case!!) an create Media Entity
+     * encode original file (in any case!!) an create a Media Entity
      * @param string $url original video file url
      * @param bool $fromVideo if we must extract audio from video or just convert original file to ogg
      * @return Media or null if conversion error
@@ -111,7 +113,7 @@ class MediaResourceManager {
         // so we want to force the audio format in any case
         $ext = pathinfo($url, PATHINFO_EXTENSION);
         $name = basename($url, "." . $ext);
-        $cmd = 'avconv -i ' . $this->getUploadRootDir() . '/' . $url . ' -id3v2_version 3 -acodec  libmp3lame -ac 2 -ar 44100 -ab 128k -f mp3 - > ' . $this->getUploadRootDir() . '/' . $name . '.mp3';
+        $cmd = 'avconv -i ' . $this->getUploadDirectory() . '/' . $url . ' -id3v2_version 3 -acodec  libmp3lame -ac 2 -ar 44100 -ab 128k -f mp3 - > ' . $this->getUploadDirectory() . '/' . $name . '.mp3';
 
         exec($cmd, $output, $returnVar);
         // error
@@ -130,13 +132,13 @@ class MediaResourceManager {
         if (null === $file) {
             return;
         }
-        $uploaded = $file->move($this->getUploadRootDir(), $url);
+        $uploaded = $file->move($this->getUploadDirectory(), $url);
         unset($file);
         return $uploaded;
     }
 
     public function removeUpload($filename) {
-        $url = $this->getUploadRootDir() . '/' . $filename;
+        $url = $this->getUploadDirectory() . '/' . $filename;
         if (file_exists($url)) {
             unlink($url);
             return true;
@@ -145,16 +147,7 @@ class MediaResourceManager {
         }
     }
 
-    /*protected function getUploadDirectory() {
+    protected function getUploadDirectory() {
         return $this->uploadFileDir;
-    }*/
-    
-    protected function getUploadRootDir() {
-        return __DIR__ . '/../../../../../../web/' . $this->getUploadDir();
     }
-
-    protected function getUploadDir() {
-        return 'uploads/mrfiles';
-    }
-
 }

@@ -12,5 +12,3 @@ parameters:
     # Parameters  
     # for upload
     innova_media_resource.param.upload_files_directory:     "%kernel.root_dir%/../innovamediaresourcefiles"
-    # for display
-    innova_media_resource.param.read_files_directory:       "/../../innovamediaresourcefiles"
