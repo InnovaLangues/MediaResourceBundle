@@ -66,8 +66,7 @@ class MediaResourceController extends Controller {
                             '_resource' => $mr,
                             'edit' => false,
                             'regions' => $regions,
-                            'workspace' => $workspace,
-                            //'playMode' => 'active'
+                            'workspace' => $workspace
                                 )
                 );
             } else if ($live) {
@@ -105,7 +104,6 @@ class MediaResourceController extends Controller {
                     'edit' => true,
                     'regions' => $regions,
                     'workspace' => $workspace,
-                    //'audioPath' => $audioPath,
                     'playMode' => 'active'
                         )
         );
