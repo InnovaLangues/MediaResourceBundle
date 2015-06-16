@@ -113,8 +113,8 @@ class MediaResourceManager {
         // so we want to force the audio format in any case
         $ext = pathinfo($url, PATHINFO_EXTENSION);
         $name = basename($url, "." . $ext);
-        $cmd = 'avconv -i ' . $this->getUploadDirectory() . '/' . $url . ' -id3v2_version 3 -acodec  libmp3lame -ac 2 -ar 44100 -ab 128k -f mp3 - > ' . $this->getUploadDirectory() . '/' . $name . '.mp3';
-
+        //$cmd = 'avconv -i ' . $this->getUploadDirectory() . '/' . $url . ' -id3v2_version 3 -acodec  libmp3lame -ac 2 -ar 44100 -ab 128k -f mp3 - > ' . $this->getUploadDirectory() . '/' . $name . '.mp3';
+        $cmd = 'avconv -i ' . $this->getUploadDirectory() . '/' . $url . ' -c:a libvorbis -q:a 5 ' . $this->getUploadDirectory() . '/' . $name . '.ogg';
         exec($cmd, $output, $returnVar);
         // error
         if ($returnVar !== 0) {
@@ -123,7 +123,7 @@ class MediaResourceManager {
             // 2 - create a Media with this sound file
             $media = new Media();
             $media->setType('audio');
-            $media->setUrl($name . '.mp3');
+            $media->setUrl($name . '.ogg');
             return $media;
         }
     }

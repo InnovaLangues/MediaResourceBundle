@@ -53,6 +53,7 @@ $(document).ready(function () {
                 console.log('loading media resource file failed');
             });
 
+    // draw progress bar while playing
     audioPlayer.addEventListener('timeupdate', function (e) {
         var percent = audioPlayer.currentTime * 100 / audioPlayer.duration;
         progress.style.width = percent + '%';
@@ -128,4 +129,3 @@ function getNextRegion(time) {
         }
     }
 }
-

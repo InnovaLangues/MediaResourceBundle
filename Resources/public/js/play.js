@@ -33,8 +33,10 @@ var helpAudioPlayer;
 var helpCurrentWRegion; // the wavesurfer region where we are when asking help
 var helpPreviousWRegion; // the previous wavesurfer region relatively to helpCurrentWRegion
 var currentHelpRelatedRegion; // the related help region; 
+var helpRegion; // the region we are listening to
 var currentHelpTextLevel = 0;
 var hModal;
+var helpAudioPlayer;
 
 var utterance; // global SpeechSynthesisUtterance instance;
 
@@ -134,9 +136,35 @@ var actions = {
             var config = domUtils.getRegionRowHelpConfig(currentDomRow);
             domUtils.appendHelpModalConfig(hModal, config, helpCurrentWRegion);
 
+            helpRegion = {
+                start: helpCurrentWRegion.start + 0.1,
+                end: helpCurrentWRegion.end - 0.1
+            };
+
+            helpAudioPlayer = document.getElementsByTagName("audio")[0];
+
+            helpAudioPlayer.addEventListener('timeupdate', function () {
+                if (helpAudioPlayer.currentTime >= helpRegion.end) {
+                    helpAudioPlayer.pause();
+                    helpAudioPlayer.currentTime = helpRegion.start;
+                    if (helpAudioPlayer.loop) {
+                        helpAudioPlayer.play();
+                    }
+                    else {
+                        helpIsPlaying = false;
+                    }
+                }
+            });
+
             // listen to tab click event
             $('#help-tab-panel a').click(function (e) {
                 e.preventDefault();
+
+                if (helpIsPlaying) {
+                    helpAudioPlayer.pause();
+                    helpIsPlaying = false;
+                }
+
                 $(this).tab('show');
             })
         });
@@ -150,6 +178,8 @@ var actions = {
             helpPreviousWRegion = null;
             helpCurrentWRegion = null;
             hModal = null;
+            helpAudioPlayer = null;
+            helpRegion = {};
         });
 
         hModal.modal("show");
@@ -173,7 +203,7 @@ var actions = {
 $(document).ready(function () {
     // get some hidden inputs usefull values
     currentExerciseType = 'audio';
-    
+
     isEditing = parseInt($('input[name="editing"]').val()) === 1 ? true : false;
     serveMediaAction = $('input[name="serveMediaAction"]').val();
     wId = $('input[name="wId"]').val();
@@ -222,21 +252,39 @@ $(document).ready(function () {
 
     // HELP MODAL EVENTS ATTACHED TO THE BODY
     $('body').on('change', 'input[name=segment]:radio', function (e) {
+
+        if (helpIsPlaying) {
+            helpAudioPlayer.pause();
+            helpIsPlaying = false;
+        }
+
         if (e.target.value === 'previous') {
             var currentDomRow = domUtils.getRegionRow(helpPreviousWRegion.start + 0.1, helpPreviousWRegion.end - 0.1);
             var config = domUtils.getRegionRowHelpConfig(currentDomRow);
             domUtils.appendHelpModalConfig(hModal, config, helpPreviousWRegion);
+
+            helpRegion = {
+                start: helpPreviousWRegion.start + 0.1,
+                end: helpPreviousWRegion.end - 0.1
+            };
         }
         else if (e.target.value === 'current') {
             var currentDomRow = domUtils.getRegionRow(helpCurrentWRegion.start + 0.1, helpCurrentWRegion.end - 0.1);
             var config = domUtils.getRegionRowHelpConfig(currentDomRow);
             domUtils.appendHelpModalConfig(hModal, config, helpCurrentWRegion);
+
+            helpRegion = {
+                start: helpCurrentWRegion.start + 0.1,
+                end: helpCurrentWRegion.end - 0.1
+            };
         }
-    });
 
-    $('body').on('click', '#btn-show-help-text', function (e) {
 
     });
+
+    /*$('body').on('click', '#btn-show-help-text', function (e) {
+     
+     });*/
 
     /* JS HELPERS */
     strUtils = Object.create(StringUtils);
@@ -424,7 +472,6 @@ $(document).ready(function () {
  * @param {float} end
  */
 function playHelp(start, end, loop, rate) {
-    helpAudioPlayer = document.getElementsByTagName("audio")[0];
     helpAudioPlayer.loop = loop;
     if (rate) {
         helpAudioPlayer.playbackRate = 0.8;
@@ -432,20 +479,6 @@ function playHelp(start, end, loop, rate) {
     else {
         helpAudioPlayer.playbackRate = 1;
     }
-    helpAudioPlayer.addEventListener('timeupdate', function () {
-        if (helpAudioPlayer.currentTime >= end) {
-            helpAudioPlayer.pause();
-            helpAudioPlayer.currentTime = start;
-            if (helpAudioPlayer.loop) {
-                helpAudioPlayer.play();
-            }
-            else {
-                helpIsPlaying = false;
-            }
-        }
-
-    });
-
 
     if (helpIsPlaying) {
         helpAudioPlayer.pause();
@@ -568,6 +601,7 @@ function checkIfRowHasConfigValue(row) {
  * @param {type} elem the source of the event
  */
 function onSelectedRegionChange(elem) {
+    console.log('changed');
     var idx = elem.selectedIndex;
     var val = elem.options[idx].value;
     var wRegionId = $('#' + val).find('button.btn-danger').data('id');
