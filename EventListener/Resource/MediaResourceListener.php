@@ -66,16 +66,11 @@ class MediaResourceListener extends ContainerAware {
         $request = $this->container->get('request');
         $form->submit($request);
         if ($form->isValid()) {
-            $mediaResource = $form->getData();
-            // check access
-            if (false === $this->container->get('security.context')->isGranted('CREATE', $mediaResource->getResourceNode())) {
-                throw new AccessDeniedException();
-            }
+            $mediaResource = $form->getData();           
             $file = $form['file']->getData();
             
             $this->container->get('innova_media_resource.manager.media_resource')->handleMediaResourceMedia($file, $mediaResource);
-
-            // Send new path to dispatcher through event object
+            // Send new MediaResource to dispatcher through event object
             $event->setResources(array($mediaResource));
         } else {
             $content = $this->container->get('templating')->render(
