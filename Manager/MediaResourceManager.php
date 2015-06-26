@@ -116,7 +116,6 @@ class MediaResourceManager {
         $suffix = '_coded.ogg';
         // $cmd = 'avconv -i ' . $this->getUploadDirectory() . '/' . $url . ' -id3v2_version 3 -acodec  libmp3lame -ac 2 -ar 44100 -ab 128k -f mp3 - > ' . $this->getUploadDirectory() . '/' . $name . $suffix;
         $cmd = 'avconv -i '. $this->getUploadDirectory() . '/' . $url .' -c:a libvorbis -q:a 5 ' . $this->getUploadDirectory() . '/' . $name . $suffix;
-        // $cmd = 'avconv -i ' . $this->getUploadDirectory() . '/' . $url . ' -id3v2_version 3 -acodec  libmp3lame -ac 2 -ar 44100 -ab 128k -f mp3 - > ' . $this->getUploadDirectory() . '/' . $name . '_coded.mp3';
         
         $output;
         $returnVar;

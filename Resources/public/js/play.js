@@ -282,9 +282,6 @@ $(document).ready(function () {
 
         // enable selected region preview button only        
         $('#help-region-choice .input-group').each(function () {
-            //console.log($(this).find('input[name=segment]').val());
-            //console.log($(this).find('input[name=segment]').val() == selectedValue);
-            //console.log($(this).find('button'));
             $(this).find('button').prop('disabled', $(this).find('input[name=segment]').val() !== selectedValue);
         });
 
