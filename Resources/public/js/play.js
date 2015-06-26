@@ -166,7 +166,7 @@ var actions = {
                 }
 
                 $(this).tab('show');
-            })
+            });
         });
 
         hModal.on('hidden.bs.modal', function () {
@@ -250,7 +250,7 @@ $(document).ready(function () {
         isInRegionNoteRow = false;
     });
 
-    // HELP MODAL EVENTS ATTACHED TO THE BODY
+    // HELP MODAL SELECT REGION (CURRENT / PREVIOUS) EVENT
     $('body').on('change', 'input[name=segment]:radio', function (e) {
 
         if (helpIsPlaying) {
@@ -258,17 +258,18 @@ $(document).ready(function () {
             helpIsPlaying = false;
         }
 
-        if (e.target.value === 'previous') {
+        var selectedValue = e.target.value;
+
+        if (selectedValue === 'previous') {
             var currentDomRow = domUtils.getRegionRow(helpPreviousWRegion.start + 0.1, helpPreviousWRegion.end - 0.1);
             var config = domUtils.getRegionRowHelpConfig(currentDomRow);
             domUtils.appendHelpModalConfig(hModal, config, helpPreviousWRegion);
-
             helpRegion = {
                 start: helpPreviousWRegion.start + 0.1,
                 end: helpPreviousWRegion.end - 0.1
             };
         }
-        else if (e.target.value === 'current') {
+        else if (selectedValue === 'current') {
             var currentDomRow = domUtils.getRegionRow(helpCurrentWRegion.start + 0.1, helpCurrentWRegion.end - 0.1);
             var config = domUtils.getRegionRowHelpConfig(currentDomRow);
             domUtils.appendHelpModalConfig(hModal, config, helpCurrentWRegion);
@@ -279,12 +280,16 @@ $(document).ready(function () {
             };
         }
 
+        // enable selected region preview button only        
+        $('#help-region-choice .input-group').each(function () {
+            //console.log($(this).find('input[name=segment]').val());
+            //console.log($(this).find('input[name=segment]').val() == selectedValue);
+            //console.log($(this).find('button'));
+            $(this).find('button').prop('disabled', $(this).find('input[name=segment]').val() !== selectedValue);
+        });
+
 
     });
-
-    /*$('body').on('click', '#btn-show-help-text', function (e) {
-     
-     });*/
 
     /* JS HELPERS */
     strUtils = Object.create(StringUtils);
@@ -601,7 +606,6 @@ function checkIfRowHasConfigValue(row) {
  * @param {type} elem the source of the event
  */
 function onSelectedRegionChange(elem) {
-    console.log('changed');
     var idx = elem.selectedIndex;
     var val = elem.options[idx].value;
     var wRegionId = $('#' + val).find('button.btn-danger').data('id');

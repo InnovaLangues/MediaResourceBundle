@@ -12,15 +12,15 @@ var DomUtils = {
         var html = '<div id="help-tab-panel" class="row" role="tabpanel">';
         html += '       <ul class="nav nav-tabs" role="tablist">';
         html += '           <li role="presentation" class="active">';
-        html += '               <a href="#choice" aria-controls="choice" role="tab" data-toggle="tab">' + Translator.trans('help_modal_choice_tab_label', {}, 'media_resource') + '</a>';
+        html += '               <a href="#help-region-choice" aria-controls="help-region-choice" role="tab" data-toggle="tab">' + Translator.trans('help_modal_choice_tab_label', {}, 'media_resource') + '</a>';
         html += '           </li>';
         html += '           <li role="presentation">';
-        html += '               <a href="#options" aria-controls="options" role="tab" data-toggle="tab">' + Translator.trans('help_modal_help_tab_label', {}, 'media_resource') + '</a>';
+        html += '               <a href="#region-help-available" aria-controls="region-help-available" role="tab" data-toggle="tab">' + Translator.trans('help_modal_help_tab_label', {}, 'media_resource') + '</a>';
         html += '           </li>';
         html += '       </ul>';
         html += '       <div class="tab-content">';
         //                  FIRST PANE
-        html += '           <div role="tabpanel" class="tab-pane active" id="choice">';
+        html += '           <div role="tabpanel" class="tab-pane active" id="help-region-choice">';
         html += '               <div class="row">';
         html += '                   <div class="col-md-12 text-center">';
         html += Translator.trans('help_modal_intro', {}, 'media_resource');
@@ -53,7 +53,7 @@ var DomUtils = {
             html += '                       <div class="input-group-addon">';
             html += '                           <input type="radio" name="segment" value="previous">';
             html += '                       </div>';
-            html += '                       <button class="btn btn-default" title="' + Translator.trans('region_help_segment_playback', {}, 'media_resource') + '" onclick="playHelp(' + previous.start + ', ' + previous.end + ', ' + false + ',' + false + ')" style="margin:5px;">';
+            html += '                       <button disabled class="btn btn-default" title="' + Translator.trans('region_help_segment_playback', {}, 'media_resource') + '" onclick="playHelp(' + previous.start + ', ' + previous.end + ', ' + false + ',' + false + ')" style="margin:5px;">';
             html += '                           <i class="fa fa-play"></i> ';
             html += '                           / ';
             html += '                           <i class="fa fa-pause"></i>';
@@ -63,8 +63,8 @@ var DomUtils = {
             html += '           </div>';
         }
         html += '            </div>'; // END OF FIRST PANE
-        //                  SECOND PANE = Available helps for selected region (current or previous)
-        html += '           <div role="tabpanel" class="tab-pane" id="options">';
+        //                  SECOND PANE = Available help for selected region (current or previous)
+        html += '           <div role="tabpanel" class="tab-pane" id="region-help-available">';
         html += '           </div>';
         html += '       </div>';
         html += '   </div>';
@@ -241,7 +241,7 @@ var DomUtils = {
         return config;
     },
     appendHelpModalConfig: function (modal, config, region) {
-        var root = $(modal).find('#options');        
+        var root = $(modal).find('#region-help-available');        
         $(root).empty();
         var html = '<hr/>';
         if (config.loop || config.backward || config.rate || config.text !== '' || config.relatedRegionUuid !== '') {            
