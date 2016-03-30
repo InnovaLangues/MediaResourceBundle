@@ -24,6 +24,13 @@ Create a folder named innovamediaresourcefiles at the root of the application & 
 * Nicolas Dufour (eldoniel)
 * Patrick Guillou (pitrackster)
 
+
+## Requests
+
+Go to [Claroline](https://github.com/claroline/Claroline/issues) if you want to ask for new features.
+
+Go to [Claroline Support](https://github.com/claroline/ClaroSupport/issues) if you encounter some bugs.
+
 ## Javascript librairies
 Intensive use of the wonderful library [wavesurfer.js] (http://www.wavesurfer.fm/)
 
